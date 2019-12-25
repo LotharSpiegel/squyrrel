@@ -22,7 +22,7 @@ class TestSquyrrel:
         root_path = find_first_parent(path=os.path.dirname(os.path.abspath(__file__)),
                                       parent='tests')
         self.squyrrel = Squyrrel(root_path=root_path)
-        self.squyrrel.add_path
+        print('root_path: ', self.squyrrel.root_path)
 
     def test_nutcracker_init(self):
         assert self.squyrrel.num_registered_packages == 0
@@ -30,13 +30,12 @@ class TestSquyrrel:
     def test_get_full_package_path(self):
         pprint(sys.path)
         full_path = self.squyrrel.get_full_package_path(relative_path='test_package')
-        print('full_path: ', full_path)
         assert full_path is not None
         assert full_path.endswith('test_package')
 
     def test_get_full_package_path_add_path_before(self):
         print('root path: ', self.squyrrel.root_path)
-        added = self.squyrrel.add_path('../../../squyrrel')
+        added = self.squyrrel.add_relative_path('../../../squyrrel')
         print('added path: ', added)
         full_path = self.squyrrel.get_full_package_path(relative_path='core')
         assert full_path is not None
@@ -117,8 +116,10 @@ class TestSquyrrel:
 
 
 def main():
-    squyrrel = Squyrrel()
-    squyrrel.add_path('../../../squyrrel')
+    root_path = find_first_parent(path=os.path.dirname(os.path.abspath(__file__)),
+                                  parent='tests')
+    squyrrel = Squyrrel(root_path=root_path)
+    squyrrel.add_relative_path('../../../squyrrel')
     package_meta = squyrrel.register_package('test_package')
     squyrrel.load_package(package_meta)
 

@@ -9,3 +9,7 @@ class ModuleNotRegisteredException(Exception):
 
 class ModuleRottenException(Exception):
     pass
+
+
+class PackageNotFoundException(Exception):
+    pass

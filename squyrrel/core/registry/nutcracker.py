@@ -15,22 +15,28 @@ class Squyrrel(metaclass=Singleton):
         self.packages = {}
         self.root_path = root_path
         self.paths = []
-        self.add_path(self.root_path)
+        self.add_absolute_path(self.root_path)
 
     @property
     def num_registered_packages(self):
         return len(self.packages)
 
-    def add_path(self, relative_path):
+    def add_absolute_path(self, absolute_path):
+        if absolute_path is None:
+            return None
+        if not absolute_path in self.paths:
+            print('adding path ', absolute_path)
+            self.paths.append(absolute_path)
+            if not absolute_path in sys.path:
+                sys.path.append(absolute_path)
+        return absolute_path
+
+    def add_relative_path(self, relative_path):
         """relative_path is meant to be relative to Squyrrel.root_path"""
         if self.root_path is None:
             return None
-        full_path = os.path.abspath(os.path.join(self.root_path, relative_path))
-        if not full_path in self.paths:
-            self.paths.append(full_path)
-            if not full_path in sys.path:
-                sys.path.append(full_path)
-        return full_path
+        absolute_path = os.path.abspath(os.path.join(self.root_path, relative_path))
+        return self.add_absolute_path(absolute_path)
 
     def get_full_package_path(self, relative_path):
         paths_tried = []
@@ -49,8 +55,8 @@ class Squyrrel(metaclass=Singleton):
         print('register package <{relative_path}>..'.format(relative_path=relative_path))
         full_path = self.get_full_package_path(relative_path)
         if full_path is None:
-            print('registering package <{relative_path}> failed'.format(relative_path=relative_path))
-            return None
+            raise PackageNotFoundException('registering package with relative path <{relative_path}> failed'.format(
+                relative_path=relative_path))
         package_name = os.path.basename(relative_path)
         self.packages[package_name] = PackageMeta(
             package_name=package_name,

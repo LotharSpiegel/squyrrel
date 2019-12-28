@@ -61,6 +61,7 @@ class Squyrrel(metaclass=Singleton):
         self.packages[package_name] = PackageMeta(
             package_name=package_name,
             package_path=full_path,
+            relative_path=relative_path,
             package_import_string=convert_path_to_import_string(relative_path),
             namespace=None)
         print('Successfully registered package {package_name}'.format(package_name=package_name))
@@ -74,16 +75,16 @@ class Squyrrel(metaclass=Singleton):
                 return package_meta
         return None # todo raise exception
 
-    def inspect_directory(self, path):
+    def inspect_directory(self, package_meta):
         modules = []
-        for root, sub_dirs, files in os.walk(path):
+        for root, sub_dirs, files in os.walk(package_meta.path):
             for file in files:
                 file_name, file_ext = os.path.splitext(file)
                 if file_ext == '.py':
                     modules.append(file_name)
-            is_package = '__init__.py' in files
+            package_meta.has_init = '__init__.py' in files
             break
-        return is_package, modules, sub_dirs
+        return modules, sub_dirs
 
     # def get_module_import_string(self, package_meta, module_name):
     #     return '{package_path}.{}'
@@ -145,10 +146,11 @@ class Squyrrel(metaclass=Singleton):
                 return class_meta
         return None
 
-    def load_package(self, package_meta, ignore_rotten_modules=True, load_classes=True):
-        is_package, modules, sub_dirs = self.inspect_directory(package_meta.path)
+    def load_package(self, package_meta, ignore_rotten_modules=True,
+                           load_classes=True, load_subpackages=True):
+        modules, sub_dirs = self.inspect_directory(package_meta)
         print('load_package <{package}>...'.format(package=repr(package_meta)))
-        print('is package (contains __init__.py):', is_package)
+        print('is package (contains __init__.py):', package_meta.has_init)
         for module in modules:
             module_meta = self.register_module(package_meta, module_name=module)
             try:
@@ -158,3 +160,23 @@ class Squyrrel(metaclass=Singleton):
                     raise
             if load_classes:
                 self.load_module_classes(module_meta=module_meta, imported_module=imported_module)
+
+        #if is_package:
+        if not load_subpackages:
+            return
+        for dir in sub_dirs:
+            print('inspecting subdir {} ..'.format(dir))
+            relative_dir_path = os.path.join(package_meta.relative_path, dir)
+            subpackage_meta = self.register_package(relative_dir_path)
+            subpackage_meta = self.load_package(subpackage_meta,
+                ignore_rotten_modules=ignore_rotten_modules,
+                load_classes=load_classes,
+                load_subpackages=load_subpackages)
+            if subpackage_meta.has_init:
+                print('add subpackage {} to package {}'.format(package_meta.name, subpackage_meta.name))
+                package_meta.add_subpackage(subpackage_meta)
+
+        return package_meta
+
+    def find_subpackage(self, name):
+        return None

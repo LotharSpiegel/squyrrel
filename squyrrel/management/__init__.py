@@ -28,13 +28,21 @@ class SquyrrelCommandManager:
             subcommand = 'help'
 
         if subcommand == 'help':
-            print('help..')
+            self.show_help()
         else:
             command = self.fetch_command(subcommand)
             if command is None:
                 print('Did not find command <{}>'.format(subcommand))
             else:
                 command.run_from_argv(self.argv, base_path=self.base_path)
+
+    def show_help(self):
+        print(
+"""
+-- Squyrrel Command Line Interface --
+
+Usage: manage.py load_package [name] -r [root_path] -p [path]
+""")
 
 
 def execute_from_command_line(argv=None, base_path=None):

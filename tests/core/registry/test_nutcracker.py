@@ -60,8 +60,8 @@ class TestSquyrrel:
         package_meta = self.squyrrel.register_package(relative_path='test_package')
         assert package_meta is not None
 
-        is_package, modules, sub_dirs = self.squyrrel.inspect_directory(package_meta.path)
-        print('is package:', is_package)
+        modules, sub_dirs = self.squyrrel.inspect_directory(package_meta)
+        print('is package:', package_meta.has_init)
         print('Found modules:', modules)
         print('Found subdirs:', sub_dirs)
 
@@ -113,6 +113,13 @@ class TestSquyrrel:
         assert test_class1_meta is not None
         test_class1_instance = test_class1_meta()
         assert test_class1_instance.test_attribute == 'set'
+
+    def test_load_package(self):
+        package = self.squyrrel.register_package(relative_path='test_package')
+        package = self.squyrrel.load_package(package)
+
+        assert len(package.subpackages) == 1
+        assert package.find_subpackage('sub_package') is not None
 
 
 def main():

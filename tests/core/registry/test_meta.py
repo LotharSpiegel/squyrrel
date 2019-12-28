@@ -7,6 +7,7 @@ def build_package():
     return PackageMeta(
         package_name='test_package',
         package_path='a/b/c',
+        relative_path='b/c',
         package_import_string='a.b.c',
         namespace=None)
 

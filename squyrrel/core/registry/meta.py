@@ -5,16 +5,21 @@ class PackageMeta:
     def __init__(self,
                 package_name,
                 package_path,
+                relative_path,
                 package_import_string,
                 namespace):
         self.name = package_name
         self.path = package_path
+        self.relative_path = relative_path
         self.import_string = package_import_string
         self.namespace = namespace
 
         self.modules = {}
         self.dependencies = []
         self.failed_dependencies = []
+        self.subpackages = []
+        self.parent = None
+        self.has_init = False
 
     def add_module(self, module_name):
         # TODO: there can be different modules with same name inside a package
@@ -27,6 +32,16 @@ class PackageMeta:
         for module_name_, module_meta in self.modules.items():
             if module_name_ == module_name:
                 return module_meta
+        return None
+
+    def add_subpackage(self, package_meta):
+        self.subpackages.append(package_meta)
+        package_meta.parent = self
+
+    def find_subpackage(self, package_name):
+        for subpackage in self.subpackages:
+            if subpackage.name == package_name:
+                return subpackage
         return None
 
     @property
@@ -44,8 +59,8 @@ class PackageMeta:
         return self.name
 
     def __repr__(self):
-        return 'PackageMeta(package_name={name}, package_path={path}, import_string={import_string})'.format(
-            name=self.name, path=self.path, import_string=self.import_string)
+        return 'PackageMeta(package_name={name}, package_path={path}, relative_path={rel_path}, import_string={import_string})'.format(
+            name=self.name, path=self.path, rel_path=self.relative_path, import_string=self.import_string)
 
     def __getitem__(self, module_name):
         return self.modules.get(module_name, None)

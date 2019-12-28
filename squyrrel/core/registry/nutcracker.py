@@ -11,11 +11,46 @@ from squyrrel.core.utils.paths import convert_path_to_import_string
 
 class Squyrrel(metaclass=Singleton):
 
-    def __init__(self, root_path=None):
+    config_module_name = 'config'
+
+    def __init__(self, root_path=None, config_path=None):
         self.packages = {}
         self.root_path = root_path
         self.paths = []
         self.add_absolute_path(self.root_path)
+        self.load_config(config_path or 'config.py')
+
+    def load_config(self, config_path):
+        self.squyrrel_package = self.register_package('squyrrel')
+        self.squyrrel_config_module = self.register_module(self.squyrrel_package,
+            module_name=self.config_module_name)
+        self.load_module(self.squyrrel_package, self.config_module_name)
+        squyrrel_config = self.find_class_meta_by_name('SquyrrelConfig')
+        # find class by annotation!
+        if squyrrel_config is not None:
+            self.config(squyrrel_config.class_reference)
+
+    def config(self, config_class):
+        # config_methods = inspect.getmembers(config_class, predicate=inspect.ismethod)
+        # squyrrel_methods = inspect.getmembers(Squyrrel, predicate=inspect.ismethod)
+        # print('config methods:')
+        # print(config_methods)
+        # print('squyrrel_methods methods:')
+        # print(squyrrel_methods)
+        squyrrel_methods = [attrib for attrib in dir(Squyrrel) if callable(getattr(Squyrrel, attrib))]
+        config_methods = [attrib for attrib in dir(config_class) if callable(getattr(config_class, attrib))]
+
+        exclude_dunders = True
+
+        if exclude_dunders:
+            config_methods = filter(lambda method: not method.startswith("__"), config_methods)
+
+        for method_name in config_methods:
+            print('configure...', method_name)
+            self.config_method(method_name, getattr(config_class, method_name))
+
+    def config_method(self, method_name, new_method):
+        setattr(self, method_name, lambda *args, **kwargs: new_method(self, *args, **kwargs))
 
     @property
     def num_registered_packages(self):
@@ -52,10 +87,10 @@ class Squyrrel(metaclass=Singleton):
 
     def register_package(self, relative_path):
         # possibly add check with find_package_by_name
-        print('register package <{relative_path}>..'.format(relative_path=relative_path))
+        print('register package/dir <{relative_path}>..'.format(relative_path=relative_path))
         full_path = self.get_full_package_path(relative_path)
         if full_path is None:
-            raise PackageNotFoundException('registering package with relative path <{relative_path}> failed'.format(
+            raise PackageNotFoundException('registering package/dir with relative path <{relative_path}> failed'.format(
                 relative_path=relative_path))
         package_name = os.path.basename(relative_path)
         self.packages[package_name] = PackageMeta(
@@ -64,7 +99,7 @@ class Squyrrel(metaclass=Singleton):
             relative_path=relative_path,
             package_import_string=convert_path_to_import_string(relative_path),
             namespace=None)
-        print('Successfully registered package {package_name}'.format(package_name=package_name))
+        print('Successfully registered package/dir {package_name}'.format(package_name=package_name))
         print('Full path: ', full_path)
         return self.packages[package_name]
 
@@ -98,26 +133,28 @@ class Squyrrel(metaclass=Singleton):
                 package_name=package.name))
         return package.add_module(module_name=module_name)
 
-    def load_module(self, package, module_name):
+    def load_module(self, package, module_name, load_classes=True):
         print('load module <{module_name}>..'.format(module_name=module_name))
         module_registered = False
 
-        module = package.find_registered_module(module_name)
-        if module is None:
+        module_meta = package.find_registered_module(module_name)
+        if module_meta is None:
             raise ModuleNotRegisteredException('Error while loading module: Module {} not registered yet'.format(module_name))
 
         try:
-            mod = importlib.import_module(module.import_string)
+            imported_module = importlib.import_module(module_meta.import_string)
         except ModuleNotFoundError:
-            module.status = 'not found'
+            module_meta.status = 'not found'
             raise
         except Exception as exc:
-            module.exception = exc
+            module_meta.exception = exc
             print('module <{module_name}> is rotten: {exc}'.format(module_name=module_name, exc=str(exc)))
             raise ModuleRottenException from exc
 
-        module.loaded = True
-        return mod
+        if load_classes:
+            self.load_module_classes(module_meta=module_meta, imported_module=imported_module)
+
+        module_meta.loaded = True
 
     def load_module_classes(self, module_meta, imported_module):
         print('load classes of module {module}..'.format(module=module_meta))
@@ -126,6 +163,7 @@ class Squyrrel(metaclass=Singleton):
             inspect.getmembers(imported_module,
                 lambda member: inspect.isclass(member) and member.__module__ == mod_imp_str))}
         for class_name, class_reference in classes.items():
+            print('add class {}'.format(class_name))
             module_meta.add_class(class_reference=class_reference,
                                   class_name=class_name)
         module_meta.classes_loaded = True
@@ -146,26 +184,34 @@ class Squyrrel(metaclass=Singleton):
                 return class_meta
         return None
 
+    def _load_packages_filter(self, package_meta):
+        return True
+
     def load_package(self, package_meta, ignore_rotten_modules=True,
-                           load_classes=True, load_subpackages=True):
+                           load_classes=True, load_subpackages=True,
+                           load_packages_filter=None):
+        print('\nload package <{package}>...'.format(package=repr(package_meta)))
+
+        if load_packages_filter is None:
+            load_packages_filter = self._load_packages_filter
+        if not load_packages_filter(package_meta):
+            print('package {} did not pass filter'.format(package_meta))
+            return package_meta
+
         modules, sub_dirs = self.inspect_directory(package_meta)
-        print('load_package <{package}>...'.format(package=repr(package_meta)))
         print('is package (contains __init__.py):', package_meta.has_init)
         for module in modules:
             module_meta = self.register_module(package_meta, module_name=module)
             try:
-                imported_module = self.load_module(package_meta, module_name=module)
+                self.load_module(package_meta, module_name=module, load_classes=load_classes)
             except ModuleRottenException:
                 if not ignore_rotten_modules:
                     raise
-            if load_classes:
-                self.load_module_classes(module_meta=module_meta, imported_module=imported_module)
 
-        #if is_package:
         if not load_subpackages:
             return
         for dir in sub_dirs:
-            print('inspecting subdir {} ..'.format(dir))
+            print('\ninspecting subdir {} ..'.format(dir))
             relative_dir_path = os.path.join(package_meta.relative_path, dir)
             subpackage_meta = self.register_package(relative_dir_path)
             subpackage_meta = self.load_package(subpackage_meta,
@@ -176,6 +222,7 @@ class Squyrrel(metaclass=Singleton):
                 print('add subpackage {} to package {}'.format(package_meta.name, subpackage_meta.name))
                 package_meta.add_subpackage(subpackage_meta)
 
+        package_meta.loaded = True
         return package_meta
 
     def find_subpackage(self, name):

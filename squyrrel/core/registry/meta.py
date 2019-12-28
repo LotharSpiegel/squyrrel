@@ -20,6 +20,7 @@ class PackageMeta:
         self.subpackages = []
         self.parent = None
         self.has_init = False
+        self.loaded = False
 
     def add_module(self, module_name):
         # TODO: there can be different modules with same name inside a package

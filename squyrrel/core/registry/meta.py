@@ -49,8 +49,13 @@ class PackageMeta:
     def num_modules(self):
         return len(self.modules)
 
-    def find_class_meta_by_name(self, class_name):
-        for module in self.modules.values():
+    def find_class_meta_by_name(self, class_name, module=None):
+        if module is None:
+            for module in self.modules.values():
+                class_meta = module[class_name]
+                if class_meta is not None:
+                    return class_meta
+        else:
             class_meta = module[class_name]
             if class_meta is not None:
                 return class_meta

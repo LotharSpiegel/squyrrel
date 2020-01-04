@@ -6,6 +6,7 @@ import sys
 from squyrrel.core.registry.nutcracker import Squyrrel
 from squyrrel.core.utils.paths import find_first_parent
 from squyrrel.core.registry.exceptions import *
+from squyrrel.core.registry.config_registry import IConfigRegistry
 
 
 def test_nutcracker_is_singleton():
@@ -25,7 +26,7 @@ class TestSquyrrel:
         print('root_path: ', self.squyrrel.root_path)
 
     def test_nutcracker_init(self):
-        assert self.squyrrel.num_registered_packages == 0
+        assert self.squyrrel.num_registered_packages == 1  # squyrrel package itself
 
     def test_get_full_package_path(self):
         pprint(sys.path)
@@ -44,7 +45,7 @@ class TestSquyrrel:
     def test_register_package(self):
         package_meta = self.squyrrel.register_package(relative_path='test_package')
 
-        assert self.squyrrel.num_registered_packages == 1
+        assert self.squyrrel.num_registered_packages == 2
         assert package_meta.name == 'test_package'
         assert package_meta.import_string == 'test_package'
         print('import string:', package_meta.import_string)
@@ -97,7 +98,7 @@ class TestSquyrrel:
     def test_load_module(self):
         package = self.squyrrel.register_package(relative_path='test_package')
         self.squyrrel.register_module(package, 'module1')
-        self.squyrrel.load_module(package, 'module1')
+        self.squyrrel.load_module(package, 'module1', load_classes=False)
         assert package['module1'].loaded == True
         assert package['module1'].classes_loaded == False
 
@@ -121,6 +122,41 @@ class TestSquyrrel:
         assert len(package.subpackages) == 1
         assert package.find_subpackage('sub_package') is not None
 
+    def test_squyrrel_class_instance_factory_and_config(self):
+        print('\n\tStart test_squyrrel_class_instance_factory_and_config')
+        package = self.squyrrel.register_package(relative_path='test_package')
+        package = self.squyrrel.load_package(package)
+
+        sub_package = self.squyrrel.find_package_by_name('sub_package')
+        module = sub_package.find_registered_module('test_config_factory_module')
+        A_meta = sub_package.find_class_meta_by_name('A', module)
+        B_meta = sub_package.find_class_meta_by_name('B', module)
+        X2_meta = sub_package.find_class_meta_by_name('X2', module)
+        Y2_meta = sub_package.find_class_meta_by_name('Y2', module)
+
+        assert A_meta.class_name == 'A'
+
+        A_instance = A_meta()
+
+        assert A_instance.quack() == 'x = X1, y = Y1'
+
+        assert Y2_meta.class_name == 'Y2'
+        X2_instance = X2_meta()
+        Y2_instance = Y2_meta()
+        A_instance = A_meta(x=X2_instance, y=Y2_instance)
+
+        assert A_instance.quack() == 'x = X2, y = Y2'
+
+        # now with squyrrel create_instance factory method
+
+        A_instance = self.squyrrel.create_instance(A_meta)
+
+        assert A_instance.quack() == 'x = X2, y = Y2'
+
+        # AConfig2_meta = sub_package.find_class_meta_by_name('AConfig2', module)
+        # assert AConfig2_meta is not None
+
+        assert A_instance.test_property == 'config 2'
 
 def main():
     root_path = find_first_parent(path=os.path.dirname(os.path.abspath(__file__)),

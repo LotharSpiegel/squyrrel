@@ -4,7 +4,9 @@ import os
 import sys
 
 from squyrrel.core.registry.exceptions import *
+from squyrrel.core.registry.exception_handler import ExceptionHandler
 from squyrrel.core.registry.meta import PackageMeta
+from squyrrel.core.registry.config_registry import ConfigRegistry
 from squyrrel.core.utils.singleton import Singleton
 from squyrrel.core.utils.paths import convert_path_to_import_string
 
@@ -19,6 +21,12 @@ class Squyrrel(metaclass=Singleton):
         self.paths = []
         self.add_absolute_path(self.root_path)
         self.load_config(config_path or 'config.py')
+
+        self.active_profile = None
+        self.module_import_exception_handler = ExceptionHandler() # traceback_limit=
+
+    def activate_profile(self, profile_name):
+        self.active_profile = profile_name
 
     def load_config(self, config_path):
         self.squyrrel_package = self.register_package('squyrrel')
@@ -147,14 +155,24 @@ class Squyrrel(metaclass=Singleton):
             module_meta.status = 'not found'
             raise
         except Exception as exc:
-            module_meta.exception = exc
-            print('module <{module_name}> is rotten: {exc}'.format(module_name=module_name, exc=str(exc)))
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            module_meta.exception = (exc_type, exc_value, exc_traceback)
+            self.module_import_exception_handler.handle(module_meta, exc_type, exc_value, exc_traceback)
             raise ModuleRottenException from exc
 
         if load_classes:
             self.load_module_classes(module_meta=module_meta, imported_module=imported_module)
 
         module_meta.loaded = True
+
+    def load_class(self, module_meta, class_name, class_reference):
+        print('add class {}'.format(class_name))
+        module_meta.add_class(class_reference=class_reference,
+                              class_name=class_name)
+        #if hasattr(class_reference, 'is_class_config'):
+        #    if class_reference.is_class_config:
+        #        self.add_config()
+        #is_class_config
 
     def load_module_classes(self, module_meta, imported_module):
         print('load classes of module {module}..'.format(module=module_meta))
@@ -163,9 +181,7 @@ class Squyrrel(metaclass=Singleton):
             inspect.getmembers(imported_module,
                 lambda member: inspect.isclass(member) and member.__module__ == mod_imp_str))}
         for class_name, class_reference in classes.items():
-            print('add class {}'.format(class_name))
-            module_meta.add_class(class_reference=class_reference,
-                                  class_name=class_name)
+            self.load_class(module_meta, class_name, class_reference)
         module_meta.classes_loaded = True
         print('loaded {num_classes} classes in module module {module}'.format(
             num_classes=module_meta.num_classes, module=module_meta))
@@ -227,3 +243,18 @@ class Squyrrel(metaclass=Singleton):
 
     def find_subpackage(self, name):
         return None
+
+    def create_instance(self, class_meta, *args, **kwargs):
+        print('\ncreate_instance')
+        class_config = self.get_class_config(class_meta=class_meta)
+        if class_config is None:
+            instance = class_meta(*args, **kwargs)
+        else:
+            print('\ncreate_instance, class_config!')
+            instance = class_meta(*args, **class_config.config_init_kwargs(kwargs))
+            class_config.config(instance)
+        return instance
+
+    def get_class_config(self, class_meta):
+        class_name = class_meta.class_name
+        return ConfigRegistry().get_config(class_name, profile_name=self.active_profile)

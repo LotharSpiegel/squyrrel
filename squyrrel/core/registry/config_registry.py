@@ -6,9 +6,11 @@ class ConfigRegistry(metaclass=Singleton):
     class_configs = {}
 
     def add_config(self, config_cls, name, bases, attrs):
-        if not 'config_init_kwargs' in attrs:
-            config_cls.config_init_kwargs = lambda kwargs: kwargs
-        print('\n\nadd_config, attrs=' + str(attrs))
+        # if not 'config_init_kwargs' in attrs:
+        #     config_cls.config_init_kwargs = lambda kwargs: kwargs
+        # if not 'config' in attrs:
+        #     config_cls.config = lambda instance, *args, **kwargs: None
+        # print('\n\nadd_config, attrs=' + str(attrs))
         try:
             class_reference = attrs['class_reference']
         except KeyError:
@@ -57,3 +59,49 @@ class IConfigRegistry(type): # Singleton(type)
 class IConfig(object, metaclass=IConfigRegistry):
 
     class_reference = None
+
+    @classmethod
+    def get_methods(cls, exclude_dunders=True):
+        attribs = dir(cls)
+        method_names = set(attrib for attrib in attribs if callable(getattr(cls, attrib)))
+
+        #print('all method names:', method_names)
+
+        for base in cls.__bases__:
+            base_method_names = set(attrib for attrib in dir(base) if callable(getattr(base, attrib)))
+            print(f'base: {base.__name__} has:', base_method_names)
+            for m in base_method_names:
+                if m in method_names:
+                    method_names.remove(m)
+            #method_names = method_names.difference(set(attrib for attrib in attribs if callable(getattr(base, attrib))))
+
+        #print('only mine:', method_names)
+
+        if exclude_dunders:
+            method_names = [method_name for method_name in method_names if not method_name.startswith('__')]
+            #methods = filter(lambda method: not method.startswith("__"), methods)
+
+        return [getattr(cls, method_name) for method_name in method_names]
+
+    # methods = cls.get_methods(exclude_dunders=exclude_dunders)
+    # print(methods)
+    # for method in methods:
+    #     print(type(method))
+    #     print(method)
+    #     setattr(method, 'hook', 'hook')
+    #     if hasattr(method, 'hook'):
+    #         print('method has hook!')
+    # return [method for method in methods if hasattr(method, 'hook') and method.hook == 'replace']
+
+    @classmethod
+    def get_hook_methods(cls, hook, exclude_dunders=True):
+        methods = cls.get_methods(exclude_dunders=exclude_dunders)
+        # print(methods)
+        # for method in methods:
+        #     print(type(method))
+        #     print(method)
+        #     setattr(method, 'hook', 'hook')
+        #     if hasattr(method, 'hook'):
+        #         print('method has hook!')
+        HOOK_ATTR = 'hook_name'
+        return [method for method in methods if hasattr(method, HOOK_ATTR) and getattr(method, HOOK_ATTR) == hook]

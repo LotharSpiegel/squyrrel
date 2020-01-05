@@ -20,45 +20,56 @@ class Squyrrel(metaclass=Singleton):
         self.root_path = root_path
         self.paths = []
         self.add_absolute_path(self.root_path)
-        self.load_config(config_path or 'config.py')
+
+        self.squyrrel_package = self.register_package('squyrrel')
 
         self.active_profile = None
         self.module_import_exception_handler = ExceptionHandler() # traceback_limit=
+
+        self.load_config(config_path)
+        self.load_package(self.squyrrel_package)
 
     def activate_profile(self, profile_name):
         self.active_profile = profile_name
 
     def load_config(self, config_path):
-        self.squyrrel_package = self.register_package('squyrrel')
-        self.squyrrel_config_module = self.register_module(self.squyrrel_package,
-            module_name=self.config_module_name)
-        self.load_module(self.squyrrel_package, self.config_module_name)
-        squyrrel_config = self.find_class_meta_by_name('SquyrrelConfig')
+        #self.squyrrel_config_module = self.register_module(self.squyrrel_package,
+        #    module_name=self.config_module_name)
+        #self.load_module(self.squyrrel_package, self.config_module_name)
+        #squyrrel_config = self.find_class_meta_by_name('SquyrrelConfig')
         # find class by annotation!
-        if squyrrel_config is not None:
-            self.config(squyrrel_config.class_reference)
+        if config_path is None:
+            from .config import SquyrrelDefaultConfig
+            config_cls = SquyrrelDefaultConfig
+        else:
+            raise Exception('Not implemented')
+        self.config_instance(instance=self, cls=Squyrrel, config_cls=config_cls)
 
-    def config(self, config_class):
+    def config_instance(self, instance, cls, config_cls, exclude_dunders=True, params=None):
         # config_methods = inspect.getmembers(config_class, predicate=inspect.ismethod)
         # squyrrel_methods = inspect.getmembers(Squyrrel, predicate=inspect.ismethod)
         # print('config methods:')
         # print(config_methods)
         # print('squyrrel_methods methods:')
         # print(squyrrel_methods)
-        squyrrel_methods = [attrib for attrib in dir(Squyrrel) if callable(getattr(Squyrrel, attrib))]
-        config_methods = [attrib for attrib in dir(config_class) if callable(getattr(config_class, attrib))]
+        replace_methods = config_cls.get_hook_methods('replace', exclude_dunders=exclude_dunders)
+        for method_name in replace_methods:
+            if hasattr(cls, method_name):
+                self.replace_method(instance=instance, method_name=method_name, new_method=getattr(config_cls, method_name))
 
-        exclude_dunders = True
+        # afterInit hook
+        after_init_methods = config_cls.get_hook_methods('after init')
+        if params is None:
+            params = {}
+        after_init_args = params.get('after_init_args', None)
+        after_init_kwargs = params.get('after_init_kwargs', None)
+        for method in after_init_methods:
+            method(instance, *(after_init_args or []), **(after_init_kwargs or {}))
 
-        if exclude_dunders:
-            config_methods = filter(lambda method: not method.startswith("__"), config_methods)
-
-        for method_name in config_methods:
-            print('configure...', method_name)
-            self.config_method(method_name, getattr(config_class, method_name))
-
-    def config_method(self, method_name, new_method):
-        setattr(self, method_name, lambda *args, **kwargs: new_method(self, *args, **kwargs))
+    def replace_method(self, instance, method_name, new_method):
+        print(f'replace on {instance.__class__.__name__}, method {method_name} with..')
+        #print(new_method)
+        setattr(instance, method_name, lambda *args, **kwargs: new_method(instance, *args, **kwargs))
 
     @property
     def num_registered_packages(self):
@@ -180,8 +191,10 @@ class Squyrrel(metaclass=Singleton):
         print('load classes of module {module}..'.format(module=module_meta))
         mod_imp_str = module_meta.import_string
         classes = {m[0]: m[1] for m in sorted(
-            inspect.getmembers(imported_module,
-                lambda member: inspect.isclass(member) and member.__module__ == mod_imp_str))}
+                inspect.getmembers(
+                    imported_module,
+                    lambda member: inspect.isclass(member) and member.__module__ == mod_imp_str)
+        )}
         for class_name, class_reference in classes.items():
             self.load_class(module_meta, class_name, class_reference)
         module_meta.classes_loaded = True
@@ -247,15 +260,20 @@ class Squyrrel(metaclass=Singleton):
     def find_subpackage(self, name):
         return None
 
-    def create_instance(self, class_meta, *args, **kwargs):
-        print('\ncreate_instance')
+    def create_instance(self, class_meta, params=None):
+        print(f'\ncreate_instance of class <{class_meta.class_name}>')
         class_config = self.get_class_config(class_meta=class_meta)
-        if class_config is None:
-            instance = class_meta(*args, **kwargs)
-        else:
-            print('\ncreate_instance, class_config!')
-            instance = class_meta(*args, **class_config.config_init_kwargs(kwargs))
-            class_config.config(instance)
+
+        if params is None:
+            params = {}
+        init_args = params.get('init_args', None)
+        init_kwargs = params.get('init_kwargs', None)
+        instance = class_meta(*(init_args or []), **(init_kwargs or {}))
+        if class_config is not None:
+            print(f'config class: {class_config.__name__}')
+            ##configured_kwargs = class_config.config_init_kwargs(kwargs)
+            self.config_instance(instance=instance, cls=class_meta.class_reference, config_cls=class_config, params=params)
+            # class_config.config(instance, *args, **configured_kwargs)
         return instance
 
     def get_class_config(self, class_meta):

@@ -15,7 +15,10 @@ class ConfigRegistry(metaclass=Singleton):
             raise Exception(f'{name} is missing attribute `class_reference`')
         if class_reference is None:
             return
-        class_name = class_reference.__name__
+        if isinstance(class_reference, str):
+            class_name = class_reference
+        else:
+            class_name = class_reference.__name__
         if class_name in self.class_configs:
             self.class_configs[class_name].append(config_cls)
         else:

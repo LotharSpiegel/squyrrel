@@ -26,14 +26,21 @@ class PackageMeta:
         # TODO: there can be different modules with same name inside a package
         # (in different subpackages)
         new_module = ModuleMeta(package=self, module_name=module_name)
+        new_module.status = 'registered'
         self.modules[module_name] = new_module
         return new_module
 
-    def find_registered_module(self, module_name):
+    def find_module(self, module_name, status=None):
+        # todo handle case when there is more than one module with the same name
+        if status is None:
+            status = 'registered'
         for module_name_, module_meta in self.modules.items():
             if module_name_ == module_name:
-                return module_meta
-        return None
+                if module_meta.status == status:
+                    return module_meta
+                else:
+                    raise Exception(f'Found module with name <{module_name}>, but its status is `{module_meta.status}`, not `{status}`!')
+        raise Exception(f'Did not find module with name <{module_name}>')
 
     def add_subpackage(self, package_meta):
         self.subpackages.append(package_meta)
@@ -43,7 +50,7 @@ class PackageMeta:
         for subpackage in self.subpackages:
             if subpackage.name == package_name:
                 return subpackage
-        return None
+        raise Exception(f'Did not find subpackage with name <{package_name}>!')
 
     @property
     def num_modules(self):
@@ -59,7 +66,7 @@ class PackageMeta:
             class_meta = module[class_name]
             if class_meta is not None:
                 return class_meta
-        return None
+        raise Exception(f'Did not find class with name <{class_name}>!')
 
     def __str__(self):
         return self.name

@@ -145,7 +145,7 @@ class Squyrrel(metaclass=Singleton):
         print('load module <{module_name}>..'.format(module_name=module_name))
         module_registered = False
 
-        module_meta = package.find_registered_module(module_name)
+        module_meta = package.find_module(module_name, status='registered')
         if module_meta is None:
             raise ModuleNotRegisteredException('Error while loading module: Module {} not registered yet'.format(module_name))
 
@@ -158,11 +158,13 @@ class Squyrrel(metaclass=Singleton):
             exc_type, exc_value, exc_traceback = sys.exc_info()
             module_meta.exception = (exc_type, exc_value, exc_traceback)
             self.module_import_exception_handler.handle(module_meta, exc_type, exc_value, exc_traceback)
+            module_meta.status = 'rotten'
             raise ModuleRottenException from exc
 
         if load_classes:
             self.load_module_classes(module_meta=module_meta, imported_module=imported_module)
 
+        module_meta.status = 'loaded'
         module_meta.loaded = True
 
     def load_class(self, module_meta, class_name, class_reference):
@@ -221,6 +223,7 @@ class Squyrrel(metaclass=Singleton):
             try:
                 self.load_module(package_meta, module_name=module, load_classes=load_classes)
             except ModuleRottenException:
+
                 if not ignore_rotten_modules:
                     raise
 

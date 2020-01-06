@@ -3,6 +3,7 @@ import sys
 
 
 from squyrrel.core.registry.config_registry import IConfig
+from squyrrel.core.registry.signals import squyrrel_debug_signal, squyrrel_error_signal
 from squyrrel import Squyrrel
 # from squyrrel.gui.windows.base import MainWindow
 
@@ -27,6 +28,8 @@ class App(object):
         self.awake_squyrrel()
         self.load_packages()
         self.build_gui()
+        self.pop_debugging_signals_cache()
+        self.connect_signals()
 
     def awake_squyrrel(self):
         root_path = os.getcwd()
@@ -55,17 +58,27 @@ class App(object):
         return self.squyrrel.create_instance(class_meta, params)
 
     def build_gui(self):
+        print('build_gui')
         self.main_window = self.gui_factory('windows', 'base', 'MainWindow')
         self.debug_window = self.gui_factory('windows', 'base', 'TextWindow', parent=self.main_window,
                                             config_kwargs={'window_title': 'Debug'})
         text = self.gui_factory('widgets', 'smarttext', 'SmartText', parent=self.debug_window)
         self.debug_window.init_text_widget(text)
 
-    def test(self):
-        self.debug_window.text.set_text('Veniam do deserunt amet ea incididunt sunt occaecat in occaecat officia incididunt ad duis velit voluptate labore sit exercitation minim dolor irure quis non.')
+    def pop_debugging_signals_cache(self):
+        stamps = squyrrel_debug_signal.clear_cache()
+        for stamp in stamps:
+            self.debug(*stamp.args, **stamp.kwargs)
+
+    def connect_signals(self):
+        squyrrel_debug_signal.connect(self.debug)
 
     def start(self):
         self.main_window.mainloop()
+
+    def debug(self, text):
+        debug_text = f'\n{text}'
+        self.debug_window.text.append(debug_text)
 
 
 def main():

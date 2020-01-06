@@ -49,3 +49,16 @@ def test_add_class_to_module():
     assert TestClass is not None
     assert TestClass.__name__ == TestClassMeta.class_name
 
+def test_package_str():
+    package = build_package()
+    assert str(package) == 'test_package'
+
+def test_module_str():
+    module = build_module()
+    assert str(module) == 'a.b.c.test_module'
+
+def test_class_str():
+    module = build_module()
+    module.add_class(build_class('TestClass'))
+
+    assert str(module['TestClass']) == 'a.b.c.test_module.TestClass'

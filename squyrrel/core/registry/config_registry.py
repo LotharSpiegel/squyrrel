@@ -43,14 +43,12 @@ class IConfigRegistry(type): # Singleton(type)
     def __new__(cls, name, bases, attrs):
         # when e.g. squyrrel loads module,
         # this is called
-        print('\n\nIConfigRegistry.__new__!!!')
-        print('name:', name)
 
         config_class = super().__new__(cls, name, bases, attrs)
 
         # can add class attribute here
         # can add this class to squyrrel
-        print(attrs) # enthält class_name, init, config
+        # print(attrs) # enthält class_name, init, config
         if name != 'IConfig':
             ConfigRegistry().add_config(config_class, name, bases, attrs)
         return config_class
@@ -61,7 +59,7 @@ class IConfig(object, metaclass=IConfigRegistry):
     class_reference = None
 
     @classmethod
-    def get_methods(cls, exclude_dunders=True):
+    def get_method_names(cls, exclude_dunders=True):
         attribs = dir(cls)
         method_names = set(attrib for attrib in attribs if callable(getattr(cls, attrib)))
 
@@ -69,7 +67,7 @@ class IConfig(object, metaclass=IConfigRegistry):
 
         for base in cls.__bases__:
             base_method_names = set(attrib for attrib in dir(base) if callable(getattr(base, attrib)))
-            print(f'base: {base.__name__} has:', base_method_names)
+            # print(f'base: {base.__name__} has:', base_method_names)
             for m in base_method_names:
                 if m in method_names:
                     method_names.remove(m)
@@ -80,9 +78,11 @@ class IConfig(object, metaclass=IConfigRegistry):
         if exclude_dunders:
             method_names = [method_name for method_name in method_names if not method_name.startswith('__')]
             #methods = filter(lambda method: not method.startswith("__"), methods)
+        return method_names
 
-        return [getattr(cls, method_name) for method_name in method_names]
-
+    @classmethod
+    def get_methods(cls, exclude_dunders=True):
+        return [getattr(cls, method_name) for method_name in cls.get_method_names(exclude_dunders=exclude_dunders)]
     # methods = cls.get_methods(exclude_dunders=exclude_dunders)
     # print(methods)
     # for method in methods:

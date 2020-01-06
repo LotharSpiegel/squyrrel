@@ -16,7 +16,7 @@ class TextWindow(tk.Toplevel):
 
     def init_text_widget(self, text):
         self.text = text
-        self.text.pack()
+        self.text.pack(fill='both', expand='yes')
 
 
 class TextWindowDefaultConfig(IConfig):

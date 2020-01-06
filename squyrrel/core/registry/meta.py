@@ -143,8 +143,8 @@ class ClassMeta:
         self.class_reference = class_reference
 
     def __str__(self):
-        return '{package_name}.{module_name}.{class_name}'.format(
-                self.module.package.name, self.module.name, self.class_name)
+        return '{module_str}.{class_name}'.format(
+                module_str=str(self.module), class_name=self.class_name)
 
     def __call__(self, *args, **kwargs):
         return self.class_reference(*args, **kwargs)

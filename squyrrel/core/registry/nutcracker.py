@@ -33,13 +33,13 @@ class Squyrrel(metaclass=Singleton):
         self.load_package(self.squyrrel_package)
 
     @exclude_from_logging
-    def format_debug_text(self, text):
+    def format_debug_output(self, text):
         return '{indent}{text}'.format(indent=self.debug_indent_level*'\t',
                                        text=text)
 
     @exclude_from_logging
     def debug(self, text):
-        debug_text = self.format_debug_text(text)
+        debug_text = self.format_debug_output(text)
         squyrrel_debug_signal.emit(debug_text)
 
     def activate_profile(self, profile_name):
@@ -77,7 +77,7 @@ class Squyrrel(metaclass=Singleton):
         after_init_args = params.get('after_init_args', None)
         after_init_kwargs = params.get('after_init_kwargs', None)
         for method in after_init_methods:
-            print('after init config:', method.__name__)
+            self.debug(f'after init hook for {instance.__class__.__name__}: {config_cls.__class__.__name__}.{method.__name__}')
             method(instance, *(after_init_args or []), **(after_init_kwargs or {}))
 
     def replace_method(self, instance, method_name, new_method):

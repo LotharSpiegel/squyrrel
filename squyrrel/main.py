@@ -4,6 +4,7 @@ import sys
 
 from squyrrel.core.registry.config_registry import IConfig
 from squyrrel.core.registry.signals import squyrrel_debug_signal, squyrrel_error_signal
+from squyrrel.core.decorators.config import hook
 from squyrrel import Squyrrel
 # from squyrrel.gui.windows.base import MainWindow
 
@@ -11,17 +12,22 @@ from squyrrel import Squyrrel
 class MainWindowConfig(IConfig):
     class_reference = 'MainWindow'
 
-    @staticmethod
-    def config_init_kwargs(kwargs):
-        return kwargs
-
-    @staticmethod
-    def config_after_init(window, *args, **kwargs):
+    @hook('after init')
+    def config(window):
         window.title('Main Window')
 
 
-class App(object):
+class SmartTextDefaultConfig(IConfig):
+    class_reference = 'SmartText'
 
+    @hook('after init')
+    def config(widget):
+        json_filepath = 'gui/widgets/themes/grey_scale.json'
+        data = widget.load_theme(json_filepath)
+        widget.apply_theme(data)
+
+
+class App(object):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

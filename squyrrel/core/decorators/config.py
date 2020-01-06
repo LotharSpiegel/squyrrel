@@ -1,14 +1,20 @@
+from squyrrel.core.constants import HOOK_NAME, HOOK_ORDER
+
 
 class hook:
 
-    def __init__(self, hook_name):
-        self.hook_name = hook_name
+    def __init__(self, hook, order=None):
+        self.hook_name = hook
+        self.hook_order = order or 999
 
     def __call__(self, func):
         #def wrapper(*args, **kwargs):
         #    func(*args, **kwargs)
         #wrapper.hook_name = self.hook_name
-        func.hook_name = self.hook_name
+        setattr(func, HOOK_NAME, self.hook_name)
+        setattr(func, HOOK_ORDER, self.hook_order)
+        #func.__hook_name__ = self.hook_name
+        #func.__hook_order__ = self.hook_order
         return func
 
 

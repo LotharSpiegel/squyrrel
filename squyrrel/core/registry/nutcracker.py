@@ -11,6 +11,7 @@ from squyrrel.core.registry.signals import squyrrel_debug_signal, squyrrel_error
 from squyrrel.core.utils.singleton import Singleton
 from squyrrel.core.utils.paths import convert_path_to_import_string
 from squyrrel.core.decorators.config import exclude_from_logging
+from squyrrel.core.logging.utils import arguments_tostring
 
 
 class Squyrrel(metaclass=Singleton):
@@ -74,11 +75,20 @@ class Squyrrel(metaclass=Singleton):
         after_init_methods = config_cls.get_hook_methods('after init')
         if params is None:
             params = {}
-        after_init_args = params.get('after_init_args', None)
-        after_init_kwargs = params.get('after_init_kwargs', None)
+        after_init_args = params.get('after_init_args', []) or []
+        after_init_kwargs = params.get('after_init_kwargs', {}) or {}
+        if not 'squyrrel' in after_init_kwargs and instance != self:
+            after_init_kwargs['squyrrel'] = self
         for method in after_init_methods:
             self.debug(f'after init hook for {instance.__class__.__name__}: {config_cls.__class__.__name__}.{method.__name__}')
-            method(instance, *(after_init_args or []), **(after_init_kwargs or {}))
+            try:
+                method(instance, *after_init_args, **after_init_kwargs)
+            except TypeError as exc:
+                arguments = arguments_tostring(*after_init_args, **after_init_kwargs)
+                add_message = (f'. Wrong arguments for calling <{config_cls.__name__}.{method.__name__}>; Used: {arguments}')
+                self.debug(str(exc) + add_message)
+                # todo: -> self.error
+                # raise type(exc)(str(exc) + add_message).with_traceback(sys.exc_info()[2])# from exc
 
     def replace_method(self, instance, method_name, new_method):
         setattr(instance, method_name, lambda *args, **kwargs: new_method(instance, *args, **kwargs))

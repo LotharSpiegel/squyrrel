@@ -47,5 +47,5 @@ class AConfig2(IConfig):
         return kwargs
 
     @staticmethod # hook for hooking in exactly after __init__ (squyrrel.config_instance)
-    def config(inst):
+    def config(inst, **kwargs):
         inst.test_property = 'config 2'

@@ -23,5 +23,5 @@ class TextWindowDefaultConfig(IConfig):
     class_reference = TextWindow
 
     @hook('after init')
-    def config_after_init(window, *args, **kwargs):
+    def config(window, *args, **kwargs):
         window.title(kwargs.get('window_title', ''))

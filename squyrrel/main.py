@@ -13,18 +13,9 @@ class MainWindowConfig(IConfig):
     class_reference = 'MainWindow'
 
     @hook('after init')
-    def config(window):
+    def config(window, **kwargs):
         window.title('Main Window')
 
-
-class SmartTextDefaultConfig(IConfig):
-    class_reference = 'SmartText'
-
-    @hook('after init')
-    def config(widget):
-        json_filepath = 'gui/widgets/themes/grey_scale.json'
-        data = widget.load_theme(json_filepath)
-        widget.apply_theme(data)
 
 
 class App(object):
@@ -59,6 +50,7 @@ class App(object):
         params = {
             'init_args': [parent],
             'init_kwargs': init_kwargs,
+            # 'after_init_args': [parent],
             'after_init_kwargs': config_kwargs,
         }
         return self.squyrrel.create_instance(class_meta, params)

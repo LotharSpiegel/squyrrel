@@ -3,6 +3,8 @@ import os
 from tkinter import *
 # import tkinter.ttk as ttk
 from squyrrel.core.registry.config_registry import IConfig
+from squyrrel.gui.decorators.config import gui_logging
+from squyrrel.core.decorators.config import hook
 
 
 class SmartText(Frame):
@@ -52,10 +54,12 @@ class SmartText(Frame):
         with open(json_filepath, 'r') as file:
             return json.load(file)
 
+    @gui_logging
     def apply_theme(self, data):
         for key, value in data.items():
             self.config_option(key, value)
 
+    @gui_logging
     def config_option(self, key, value):
         method_name = f'config_{key}'
         try:
@@ -122,3 +126,28 @@ class SmartText(Frame):
     # "line_numbers_active_line_bg": "gray18",
     # "line_numbers_sel_bg": "gray37",
     # "cursor_bg": "white"
+
+from squyrrel.core.logging.utils import log_call
+
+class SmartTextDefaultConfig(IConfig):
+    class_reference = 'SmartText'
+
+    @hook('after init', order=1)
+    def setup_logging(widget, **kwargs):
+        squyrrel = kwargs['squyrrel']
+        squyrrel.debug('Setup logging of SmartText methods..')
+
+        method_names = set(attrib for attrib in dir(widget) if callable(getattr(widget, attrib)))
+        method_names = [method_name for method_name in method_names if not method_name.startswith('__')]
+
+        for method_name in method_names:
+            method = getattr(widget, method_name)
+            if hasattr(method, '__include_in_gui_logging__'):
+                print(method)
+                setattr(widget, method_name, log_call(squyrrel, caller_name=widget.__class__.__name__, func=method))
+
+    @hook('after init', order=2)
+    def config(widget, **kwargs):
+        json_filepath = 'gui/widgets/themes/grey_scale.json'
+        data = widget.load_theme(json_filepath)
+        widget.apply_theme(data)

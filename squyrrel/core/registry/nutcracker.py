@@ -12,6 +12,7 @@ from squyrrel.core.utils.singleton import Singleton
 from squyrrel.core.utils.paths import convert_path_to_import_string
 from squyrrel.core.decorators.config import exclude_from_logging
 from squyrrel.core.logging.utils import arguments_tostring
+from squyrrel.core.constants import *
 
 
 class Squyrrel(metaclass=Singleton):
@@ -39,9 +40,15 @@ class Squyrrel(metaclass=Singleton):
                                        text=text)
 
     @exclude_from_logging
-    def debug(self, text):
-        debug_text = self.format_debug_output(text)
-        squyrrel_debug_signal.emit(debug_text)
+    def debug(self, message, tags=None):
+        debug_text = self.format_debug_output(message)
+        squyrrel_debug_signal.emit(debug_text, tags=tags)
+
+    @exclude_from_logging
+    def error(self, message):
+        error_text = self.format_debug_output(message)
+        squyrrel_debug_signal.emit(error_text, tags='error')
+
 
     def activate_profile(self, profile_name):
         self.active_profile = profile_name
@@ -72,7 +79,7 @@ class Squyrrel(metaclass=Singleton):
                 self.replace_method(instance=instance, method_name=method_name, new_method=getattr(config_cls, method_name))
 
         # afterInit hook
-        after_init_methods = config_cls.get_hook_methods('after init')
+        after_init_methods = config_cls.get_hook_methods(HOOK_AFTER_INIT)
         if params is None:
             params = {}
         after_init_args = params.get('after_init_args', []) or []
@@ -81,14 +88,15 @@ class Squyrrel(metaclass=Singleton):
             after_init_kwargs['squyrrel'] = self
         for method in after_init_methods:
             self.debug(f'after init hook for {instance.__class__.__name__}: {config_cls.__class__.__name__}.{method.__name__}')
-            try:
-                method(instance, *after_init_args, **after_init_kwargs)
-            except TypeError as exc:
-                arguments = arguments_tostring(*after_init_args, **after_init_kwargs)
-                add_message = (f'. Wrong arguments for calling <{config_cls.__name__}.{method.__name__}>; Used: {arguments}')
-                self.debug(str(exc) + add_message)
+            method(instance, *after_init_args, **after_init_kwargs)
+            #try:
+            #    method(instance, *after_init_args, **after_init_kwargs)
+            #except TypeError as exc:
+            #    arguments = arguments_tostring(*after_init_args, **after_init_kwargs)
+            #    add_message = (f'. Wrong arguments for calling <{config_cls.__name__}.{method.__name__}>; Used: {arguments}')
+                # self.debug(str(exc) + add_message)
                 # todo: -> self.error
-                # raise type(exc)(str(exc) + add_message).with_traceback(sys.exc_info()[2])# from exc
+            #    raise type(exc)(str(exc) + add_message).with_traceback(sys.exc_info()[2])# from exc
 
     def replace_method(self, instance, method_name, new_method):
         setattr(instance, method_name, lambda *args, **kwargs: new_method(instance, *args, **kwargs))
@@ -149,7 +157,7 @@ class Squyrrel(metaclass=Singleton):
         for package_name, package_meta in self.packages.items():
             if name == package_name:
                 return package_meta
-        return None # todo raise exception
+        raise PackageNotFoundException(name)
 
     def inspect_directory(self, package_meta):
         modules = []
@@ -179,8 +187,8 @@ class Squyrrel(metaclass=Singleton):
         module_registered = False
 
         module_meta = package.find_module(module_name, status='registered')
-        if module_meta is None:
-            raise ModuleNotRegisteredException('Error while loading module: Module {} not registered yet'.format(module_name))
+        # if module_meta is None:
+        #     raise ModuleNotRegisteredException('Error while loading module: Module {} not registered yet'.format(module_name))
 
         try:
             imported_module = importlib.import_module(module_meta.import_string)
@@ -227,15 +235,12 @@ class Squyrrel(metaclass=Singleton):
         if package_name is None:
             packages = self.packages.values()
         else:
-            package = find_package_by_name(package_name)
-            if package is None:
-                return None
-            packages = [package]
+            packages = [self.find_package_by_name(package_name)]
         for package in packages:
-            class_meta = package.find_class_meta_by_name(class_name)
+            class_meta = package.find_class_meta_by_name(class_name, raise_not_found=False)
             if class_meta is not None:
                 return class_meta
-        return None
+        raise ClassNotFoundException(f'Did not find class with name <{class_name}>!')
 
     def _load_packages_filter(self, package_meta):
         return True
@@ -283,18 +288,23 @@ class Squyrrel(metaclass=Singleton):
 
     def create_instance(self, class_meta, params=None):
         self.debug(f'\ncreate_instance of class <{class_meta.class_name}>')
-        class_config = self.get_class_config(class_meta=class_meta)
+        config_cls = self.get_class_config(class_meta=class_meta)
 
         if params is None:
             params = {}
         init_args = params.get('init_args', None)
         init_kwargs = params.get('init_kwargs', None)
+
+        init_kwargs_methods = config_cls.get_hook_methods(HOOK_INIT_KWARGS)
+        for method in init_kwargs_methods:
+            init_kwargs = method(init_kwargs or {})
+
         instance = class_meta(*(init_args or []), **(init_kwargs or {}))
-        if class_config is not None:
-            self.debug(f'config class: {class_config.__name__}')
+        if config_cls is not None:
+            self.debug(f'config class: {config_cls.__name__}')
             ##configured_kwargs = class_config.config_init_kwargs(kwargs)
-            self.config_instance(instance=instance, cls=class_meta.class_reference, config_cls=class_config, params=params)
-            # class_config.config(instance, *args, **configured_kwargs)
+            self.config_instance(instance=instance, cls=class_meta.class_reference, config_cls=config_cls, params=params)
+            # config_cls.config(instance, *args, **configured_kwargs)
         return instance
 
     def get_class_config(self, class_meta):

@@ -1,4 +1,9 @@
 
+
+class ClassNotFoundException(Exception):
+    pass
+
+
 class ModuleNotFoundException(Exception):
     pass
 

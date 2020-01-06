@@ -25,9 +25,6 @@ class TestSquyrrel:
         self.squyrrel = Squyrrel(root_path=root_path)
         print('root_path: ', self.squyrrel.root_path)
 
-    def test_nutcracker_init(self):
-        assert self.squyrrel.num_registered_packages == 1  # squyrrel package itself
-
     def test_get_full_package_path(self):
         pprint(sys.path)
         full_path = self.squyrrel.get_full_package_path(relative_path='test_package')
@@ -43,9 +40,10 @@ class TestSquyrrel:
         print('full_path: ', full_path)
 
     def test_register_package(self):
+        num_registered_packages = self.squyrrel.num_registered_packages
         package_meta = self.squyrrel.register_package(relative_path='test_package')
 
-        assert self.squyrrel.num_registered_packages == 2
+        assert self.squyrrel.num_registered_packages == num_registered_packages + 1
         assert package_meta.name == 'test_package'
         assert package_meta.import_string == 'test_package'
         print('import string:', package_meta.import_string)
@@ -56,6 +54,10 @@ class TestSquyrrel:
 
         assert package_meta is not None
         assert package_meta.name == 'test_package'
+
+    def test_find_package_by_name_when_not_existing_raises_exception(self):
+        with pytest.raises(PackageNotFoundException):
+            self.squyrrel.find_package_by_name('not_existing_package')
 
     def test_inspect_directory(self):
         package_meta = self.squyrrel.register_package(relative_path='test_package')
@@ -80,8 +82,10 @@ class TestSquyrrel:
 
     def test_load_module_not_registered_raise_exception(self):
         package = self.squyrrel.register_package(relative_path='test_package')
+        package.add_module('not_registered_module', status='foo')
+
         with pytest.raises(ModuleNotRegisteredException):
-            self.squyrrel.load_module(package, module_name='module1')
+            self.squyrrel.load_module(package, module_name='not_registered_module')
 
     def test_load_module_raise_module_not_found_error(self):
         package = self.squyrrel.register_package(relative_path='test_package')
@@ -128,11 +132,21 @@ class TestSquyrrel:
         package = self.squyrrel.load_package(package)
 
         sub_package = self.squyrrel.find_package_by_name('sub_package')
-        module = sub_package.find_registered_module('test_config_factory_module')
-        A_meta = sub_package.find_class_meta_by_name('A', module)
-        B_meta = sub_package.find_class_meta_by_name('B', module)
-        X2_meta = sub_package.find_class_meta_by_name('X2', module)
-        Y2_meta = sub_package.find_class_meta_by_name('Y2', module)
+        module = sub_package.find_module('config_factory_module', status='loaded')
+        A_meta = sub_package.find_class_meta_by_name('A', module_meta=module)
+        X2_meta = sub_package.find_class_meta_by_name('X2', module_meta=module)
+        Y2_meta = sub_package.find_class_meta_by_name('Y2', module_meta=module)
+
+        A_config = self.squyrrel.get_class_config(class_meta=A_meta)
+        assert A_config is not None
+
+        instance = A_meta()
+        self.squyrrel.config_instance(
+            instance=instance,
+            cls=A_meta.class_reference,
+            config_cls=A_config
+        )
+        assert instance.test_property == 'config 2'
 
         assert A_meta.class_name == 'A'
 

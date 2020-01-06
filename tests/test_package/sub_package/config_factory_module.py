@@ -1,4 +1,6 @@
 from squyrrel.core.registry.config_registry import IConfig, IConfigRegistry
+from squyrrel.core.decorators.config import hook
+from squyrrel.core.constants import HOOK_INIT_KWARGS, HOOK_AFTER_INIT
 
 
 class A:
@@ -40,12 +42,12 @@ class AConfig2(IConfig):
 
     class_reference = A
 
-    @staticmethod
-    def config_init_kwargs(kwargs): # hook for hooking into __init__, replacing kwargs
+    @hook(HOOK_INIT_KWARGS)
+    def config_init_kwargs(kwargs):
         kwargs['x'] = X2()
         kwargs['y'] = Y2()
         return kwargs
 
-    @staticmethod # hook for hooking in exactly after __init__ (squyrrel.config_instance)
+    @hook(HOOK_AFTER_INIT)
     def config(inst, **kwargs):
         inst.test_property = 'config 2'

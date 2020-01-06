@@ -2,9 +2,7 @@ import json
 import os
 from tkinter import *
 # import tkinter.ttk as ttk
-from squyrrel.core.registry.config_registry import IConfig
 from squyrrel.gui.decorators.config import gui_logging
-from squyrrel.core.decorators.config import hook
 
 
 class SmartText(Frame):
@@ -32,11 +30,16 @@ class SmartText(Frame):
         self.inner_frame.pack(fill=BOTH, expand=YES)
         self.text.pack(side=LEFT, fill=BOTH, expand=YES)
 
-    def append(self, text, tags=None):
+    def append(self, text, tags=None, trigger_change=True):
         self.text.insert(END, text, tags)
         self.text.mark_set(INSERT, '1.0')
         self.text.see(INSERT)
-        self._on_change()
+        if trigger_change:
+            self._on_change()
+
+    def println(self, text, tags=None):
+        self.append('\n', tags=None, trigger_change=False)
+        self.append(text, tags=tags)
 
     def set_text(self, text, tags=None):
         self.text.delete('1.0', END)
@@ -52,6 +55,8 @@ class SmartText(Frame):
         if not os.path.isfile(json_filepath):
             raise Exception(f'Did not find {json_filepath}')
         with open(json_filepath, 'r') as file:
+            #print(file)
+            #print(file.read())
             return json.load(file)
 
     @gui_logging
@@ -112,42 +117,6 @@ class SmartText(Frame):
     def config_wrap(self, value):
         self.text.config(wrap=value)
 
-    #def config_bg(self, value):
-    #    pass
-
-    # "font": ["courier", 9, "normal"],
-    # "bg": "#131819",
-    # "fg": "#c4cfd3",
-    # "active_line_bg": "gray18",
-    # "sel_bg": "gray37",
-    # "sel_fg": "#c4cfd3",
-    # "line_numbers_bg": "#131819",
-    # "line_numbers_fg": "#c4cfd3",
-    # "line_numbers_active_line_bg": "gray18",
-    # "line_numbers_sel_bg": "gray37",
-    # "cursor_bg": "white"
-
-from squyrrel.core.logging.utils import log_call
-
-class SmartTextDefaultConfig(IConfig):
-    class_reference = 'SmartText'
-
-    @hook('after init', order=1)
-    def setup_logging(widget, **kwargs):
-        squyrrel = kwargs['squyrrel']
-        squyrrel.debug('Setup logging of SmartText methods..')
-
-        method_names = set(attrib for attrib in dir(widget) if callable(getattr(widget, attrib)))
-        method_names = [method_name for method_name in method_names if not method_name.startswith('__')]
-
-        for method_name in method_names:
-            method = getattr(widget, method_name)
-            if hasattr(method, '__include_in_gui_logging__'):
-                print(method)
-                setattr(widget, method_name, log_call(squyrrel, caller_name=widget.__class__.__name__, func=method))
-
-    @hook('after init', order=2)
-    def config(widget, **kwargs):
-        json_filepath = 'gui/widgets/themes/grey_scale.json'
-        data = widget.load_theme(json_filepath)
-        widget.apply_theme(data)
+    def config_tags(self, tags):
+        for key, value in tags.items():
+            self.text.tag_config(key, value)

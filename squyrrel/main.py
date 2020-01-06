@@ -6,13 +6,14 @@ from squyrrel.core.registry.config_registry import IConfig
 from squyrrel.core.registry.signals import squyrrel_debug_signal, squyrrel_error_signal
 from squyrrel.core.decorators.config import hook
 from squyrrel import Squyrrel
+from squyrrel.core.constants import HOOK_AFTER_INIT
 # from squyrrel.gui.windows.base import MainWindow
 
 
 class MainWindowConfig(IConfig):
     class_reference = 'MainWindow'
 
-    @hook('after init')
+    @hook(HOOK_AFTER_INIT)
     def config(window, **kwargs):
         window.title('Main Window')
 
@@ -74,9 +75,8 @@ class App(object):
     def start(self):
         self.main_window.mainloop()
 
-    def debug(self, text):
-        debug_text = f'\n{text}'
-        self.debug_window.text.append(debug_text)
+    def debug(self, text, tags=None):
+        self.debug_window.text.println(text, tags=tags)
 
 
 def main():

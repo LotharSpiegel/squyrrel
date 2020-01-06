@@ -3,6 +3,7 @@ from squyrrel.core.decorators.config import hook
 from squyrrel.core.registry.signals import squyrrel_debug_signal
 from squyrrel.core.registry.logging import debug
 from squyrrel.core.logging.utils import log_call
+from squyrrel.core.constants import HOOK_AFTER_INIT
 
 
 class SquyrrelDefaultConfig(IConfig):
@@ -14,11 +15,11 @@ class SquyrrelDefaultConfig(IConfig):
             return False
         return True
 
-    @hook('after init')
+    @hook(HOOK_AFTER_INIT)
     def connect_signals(squyrrel, **kwargs):
         squyrrel_debug_signal.connect(debug)
 
-    @hook('after init')
+    @hook(HOOK_AFTER_INIT)
     def install_logging(squyrrel, **kwargs):
         #squyrrel = kwargs['squyrrel']
         squyrrel.debug('Setup logging of Squyrrel methods..')

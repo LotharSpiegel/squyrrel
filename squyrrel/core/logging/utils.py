@@ -16,14 +16,14 @@ def arguments_tostring(*args, **kwargs):
 def format_func_call(caller_name, func, *args, **kwargs):
     return f'{caller_name}.{func.__name__}({arguments_tostring(*args, **kwargs)})'
 
-def log_call(squyrrel, caller_name, func):
+def log_call(squyrrel, caller_name, func, tags=None):
+    if tags is None:
+        tags = 'call'
     def wrapper(*args, **kwargs):
-        squyrrel.debug(format_func_call(caller_name, func, *args, **kwargs))
+        squyrrel.debug(format_func_call(caller_name, func, *args, **kwargs), tags=tags)
         squyrrel.debug_indent_level += 1
         return_value = func(*args, **kwargs)
         squyrrel.debug_indent_level -= 1
-        #if caller_name != 'Squyrrel':
-        #    print('log', func)
         return return_value
     wrapper.__name__ = func.__name__
     return wrapper

@@ -1,3 +1,4 @@
+from squyrrel.core.registry.exceptions import *
 
 
 class PackageMeta:
@@ -22,25 +23,31 @@ class PackageMeta:
         self.has_init = False
         self.loaded = False
 
-    def add_module(self, module_name):
+    def add_module(self, module_name, status='registered'):
         # TODO: there can be different modules with same name inside a package
         # (in different subpackages)
         new_module = ModuleMeta(package=self, module_name=module_name)
-        new_module.status = 'registered'
+        new_module.status = status
         self.modules[module_name] = new_module
         return new_module
 
     def find_module(self, module_name, status=None):
         # todo handle case when there is more than one module with the same name
-        if status is None:
-            status = 'registered'
+
+        #if status is None:
+        #    status = 'registered'
         for module_name_, module_meta in self.modules.items():
             if module_name_ == module_name:
-                if module_meta.status == status:
+                if status is None:
                     return module_meta
                 else:
-                    raise Exception(f'Found module with name <{module_name}>, but its status is `{module_meta.status}`, not `{status}`!')
-        raise Exception(f'Did not find module with name <{module_name}>')
+                    if module_meta.status == status:
+                        return module_meta
+                    else:
+                        if status == 'registered':
+                            raise ModuleNotRegisteredException(f'Found module with name <{module_name}>, but its status is `{module_meta.status}`, not `{status}`!')
+                    #    raise Exception(f'Found module with name <{module_name}>, but its status is `{module_meta.status}`, not `{status}`!')
+        raise ModuleNotFoundException(f'Did not find module with name <{module_name}>')
 
     def add_subpackage(self, package_meta):
         self.subpackages.append(package_meta)
@@ -50,27 +57,30 @@ class PackageMeta:
         for subpackage in self.subpackages:
             if subpackage.name == package_name:
                 return subpackage
-        raise Exception(f'Did not find subpackage with name <{package_name}>!')
+        raise PackageNotFoundException(f'Did not find subpackage with name <{package_name}>!')
 
     @property
     def num_modules(self):
         return len(self.modules)
 
-    def find_class_meta_by_name(self, class_name, module_name=None, module_status=None):
-        module_meta = None
+    def find_class_meta_by_name(self, class_name, module_name=None, module_meta=None, module_status=None, raise_not_found=True):
         if module_status is None: module_status = 'loaded'
-        if module_name is not None:
-            module_meta = self.find_module(module_name, status=module_status)
         if module_meta is None:
-            for module_meta in self.modules.values():
-                class_meta = module_meta[class_name]
-                if class_meta is not None:
-                    return class_meta
+            if module_name is None:
+                modules = self.modules.values()
+            else:
+                modules = [self.find_module(module_name=module_name, status=module_status)]
         else:
+            modules = [module_meta]
+
+        for module_meta in modules:
             class_meta = module_meta[class_name]
             if class_meta is not None:
                 return class_meta
-        raise Exception(f'Did not find class with name <{class_name}>!')
+        if raise_not_found:
+            raise ClassNotFoundException(f'Did not find class with name <{class_name}>!')
+        else:
+            return None
 
     def __str__(self):
         return self.name

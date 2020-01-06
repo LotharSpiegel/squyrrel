@@ -7,6 +7,6 @@ log = logging.getLogger('Squyrrel')
 log.setLevel(logging.DEBUG)
 
 
-def debug(text):
+def debug(text, tags=None):
     # log.debug(text)
     pass

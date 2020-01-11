@@ -5,9 +5,74 @@ from tkinter import *
 from squyrrel.gui.decorators.config import gui_logging
 
 
+class TextLineNumbers(Canvas):
+    def __init__(self, *args, **kwargs):
+        Canvas.__init__(self, *args, **kwargs)
+        #self.config(borderwidth=0, relief=FLAT)
+        self.textwidget = None
+        self.bg = 'black'
+        self.fg = 'white'
+        self.active_line_bg = 'black'
+        self.active_line_fg = 'white'
+        self.sel_bg = 'black'
+        self.sel_fg = 'white'
+
+    def attach(self, text_widget):
+        self.textwidget = text_widget
+
+    def redraw(self, *args):
+        '''redraw line numbers'''
+        self.delete("all")
+
+        i = self.textwidget.index("@0,0")
+        while True:
+            dline = self.textwidget.dlineinfo(i)
+            if dline is None: break
+            y = dline[1]
+            linenum = str(i).split(".")[0]
+            self.create_text(2, y, anchor="nw", text=linenum, fill=self.fg)
+            i = self.textwidget.index("%s+1line" % i)
+
+START = '1.0'
+SEL_FIRST = SEL + '.first'
+SEL_LAST = SEL + '.last'
+
+class CustomText(Text):
+    def __init__(self, *args, **kwargs):
+        Text.__init__(self, *args, **kwargs)
+
+        # create a proxy for the underlying widget
+        self._orig = self._w + "_orig"
+        self.tk.call("rename", self._w, self._orig)
+        self.tk.createcommand(self._w, self._proxy)
+
+    def _proxy(self, *args):
+        # let the actual widget perform the requested action
+        cmd = (self._orig,) + args
+        try:
+            result = self.tk.call(cmd)
+        except TclError:
+            result = None
+
+        # generate an event if something was added or deleted,
+        # or the cursor position changed
+        if (args[0] in ("insert", "replace", "delete") or
+            args[0:3] == ("mark", "set", "insert") or
+            args[0:2] == ("xview", "moveto") or
+            args[0:2] == ("xview", "scroll") or
+            args[0:2] == ("yview", "moveto") or
+            args[0:2] == ("yview", "scroll")
+        ):
+            self.event_generate("<<Change>>", when="tail")
+
+        # return what the actual widget returned
+        return result
+
+
 class SmartText(Frame):
 
     def __init__(self, parent, **kwargs):
+        self.text_class = kwargs.get('text_class', Text)
         Frame.__init__(self, parent, **kwargs)
         self.create_widgets()
         self.pack_widgets()
@@ -17,17 +82,26 @@ class SmartText(Frame):
         self.inner_frame = Frame(self, background=None)
         self.vbar = Scrollbar(self)
         self.hbar = Scrollbar(self, orient='horizontal')
-        self.text = Text(self.inner_frame, padx=3, wrap='none', border=0)
+        self.text = self.text_class(self.inner_frame, padx=3, wrap='none', border=0)
         self.text.config(yscrollcommand=self.vbar.set)
         self.text.config(xscrollcommand=self.hbar.set)
         self.vbar.config(command=self.text.yview)
         self.hbar.config(command=self.text.xview)
         self.text.config(autoseparators=1)
+        self.line_number_bar = TextLineNumbers(self.inner_frame, bd=0, highlightthickness=0, width=30)
+        #, padx=3, wrap='none', takefocus=0, border=0, background='khaki', state='disabled')
+        self.line_number_bar.attach(self.text)
+        self.show_line_numbers = True
 
     def pack_widgets(self):
         self.vbar.pack(side=RIGHT, fill=Y)
         self.hbar.pack(side=BOTTOM, fill=X)
+        self._pack_inner_frame()
+
+    def _pack_inner_frame(self):
         self.inner_frame.pack(fill=BOTH, expand=YES)
+        if self.show_line_numbers:
+            self.line_number_bar.pack(side=LEFT, fill=Y)
         self.text.pack(side=LEFT, fill=BOTH, expand=YES)
 
     def append(self, text, tags=None, trigger_change=True):
@@ -48,8 +122,8 @@ class SmartText(Frame):
     def get_text(self, start='1.0', end=END):
         return self.text.get(start, end)
 
-    def _on_change(self):
-        pass
+    def _on_change(self, event=None):
+        self.line_number_bar.redraw()
 
     def load_theme(self, json_filepath):
         if not os.path.isfile(json_filepath):
@@ -120,3 +194,44 @@ class SmartText(Frame):
     def config_tags(self, tags):
         for key, value in tags.items():
             self.text.tag_config(key, value)
+
+    # The next five functions handle the line numbering feature
+
+    def show_line_numbers_widget(self):
+        self.show_line_numbers = True
+        self.text.pack_forget()
+        self.line_number_bar.pack_forget()
+        self._pack_inner_frame()
+
+    def hide_line_numbers_widget(self):
+        self.show_line_numbers = False
+        self.text.pack_forget()
+        self.line_number_bar.pack_forget()
+        self._pack_inner_frame()
+
+    def on_change_show_line_numbers(self, *args):
+        if self.show_line_numbers:
+            #self.update_line_numbers()
+            self.show_line_numbers_widget()
+        else:
+            self.hide_line_numbers_widget()
+
+    #def update_line_numbers(self, event=None):
+    #    pass
+
+        # line_numbers = self.get_line_numbers()
+        # self.line_number_bar.config(state='normal')
+        # self.line_number_bar.delete('1.0', 'end')
+        # self.line_number_bar.insert('1.0', line_numbers)
+        # self.line_number_bar.config(state='disabled')
+
+    def get_line_numbers(self):
+        output = ''
+        if self.show_line_numbers:
+            row, col = self.text.index("end").split('.')
+            for i in range(1, int(row)):
+                output += str(i)+ '\n'
+        return output
+
+    def dlineinfo(self, index):
+        return self.text.dlineinfo(index)

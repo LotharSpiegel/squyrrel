@@ -286,6 +286,12 @@ class Squyrrel(metaclass=Singleton):
     def find_subpackage(self, name):
         return None
 
+    def apply_init_kwargs_hook(self, init_kwargs, config_cls=None):
+        if config_cls is not None:
+            init_kwargs_methods = config_cls.get_hook_methods(HOOK_INIT_KWARGS)
+            for method in init_kwargs_methods:
+                init_kwargs = method(init_kwargs or {})
+
     def create_instance(self, class_meta, params=None):
         self.debug(f'\ncreate_instance of class <{class_meta.class_name}>')
         config_cls = self.get_class_config(class_meta=class_meta)
@@ -295,16 +301,14 @@ class Squyrrel(metaclass=Singleton):
         init_args = params.get('init_args', None)
         init_kwargs = params.get('init_kwargs', None)
 
-        init_kwargs_methods = config_cls.get_hook_methods(HOOK_INIT_KWARGS)
-        for method in init_kwargs_methods:
-            init_kwargs = method(init_kwargs or {})
+        init_kwargs = self.apply_init_kwargs_hook(init_kwargs, config_cls=config_cls)
 
         instance = class_meta(*(init_args or []), **(init_kwargs or {}))
+
         if config_cls is not None:
             self.debug(f'config class: {config_cls.__name__}')
-            ##configured_kwargs = class_config.config_init_kwargs(kwargs)
             self.config_instance(instance=instance, cls=class_meta.class_reference, config_cls=config_cls, params=params)
-            # config_cls.config(instance, *args, **configured_kwargs)
+
         return instance
 
     def get_class_config(self, class_meta):

@@ -127,6 +127,7 @@ class TestSquyrrel:
         assert package.find_subpackage('sub_package') is not None
 
     def test_squyrrel_class_instance_factory_and_config(self):
+        # todo: divide into several tests
         print('\n\tStart test_squyrrel_class_instance_factory_and_config')
         package = self.squyrrel.register_package(relative_path='test_package')
         package = self.squyrrel.load_package(package)

@@ -1,11 +1,16 @@
 from squyrrel.core.logging.utils import log_call
 from squyrrel.core.registry.config_registry import IConfig
 from squyrrel.core.decorators.config import hook
-from squyrrel.core.constants import HOOK_AFTER_INIT
+from squyrrel.core.constants import HOOK_AFTER_INIT, HOOK_INIT_KWARGS
+from squyrrel.gui.widgets.smarttext import CustomText
 
 
 class SmartTextDefaultConfig(IConfig):
     class_reference = 'SmartText'
+
+    @hook(HOOK_INIT_KWARGS)
+    def config_init_kwargs(kwargs):
+        kwargs['text_class'] = CustomText
 
     @hook(HOOK_AFTER_INIT, order=1)
     def setup_logging(widget, **kwargs):

@@ -1,25 +1,35 @@
-from squyrrel.core.registry.config_registry import IConfig
-from squyrrel.core.decorators.config import hook
+from squyrrel.core.config.base import IConfig
+from squyrrel.core.config.decorators import hook
 from squyrrel.core.registry.signals import squyrrel_debug_signal
 from squyrrel.core.registry.logging import debug
 from squyrrel.core.logging.utils import log_call
-from squyrrel.core.constants import HOOK_AFTER_INIT
 
 
 class SquyrrelDefaultConfig(IConfig):
 
     class_reference = 'Squyrrel'
 
-    def _load_packages_filter(squyrrel, package_meta):
-        if package_meta.name == 'sql':
-            return False
+    exclude_subpackages = ('gui', 'sql',)
+
+    @hook(IConfig.HOOK_REPLACE)
+    def _load_package_filter(squyrrel, package_meta):
+        if squyrrel.loading:
+            if package_meta.name in SquyrrelDefaultConfig.exclude_subpackages:
+                return False
         return True
 
-    @hook(HOOK_AFTER_INIT)
+    @hook(IConfig.HOOK_REPLACE)
+    def _register_package_filter(squyrrel, package_name):
+        if squyrrel.loading:
+            if package_name in SquyrrelDefaultConfig.exclude_subpackages:
+                return False
+        return True
+
+    @hook(IConfig.HOOK_AFTER_INIT)
     def connect_signals(squyrrel, **kwargs):
         squyrrel_debug_signal.connect(debug)
 
-    @hook(HOOK_AFTER_INIT)
+    @hook(IConfig.HOOK_AFTER_INIT)
     def install_logging(squyrrel, **kwargs):
         #squyrrel = kwargs['squyrrel']
         squyrrel.debug('Setup logging of Squyrrel methods..')
@@ -31,6 +41,9 @@ class SquyrrelDefaultConfig(IConfig):
             method = getattr(squyrrel, method_name)
             if not hasattr(method, '__exclude_from_logging__'):
                 setattr(squyrrel, method_name, log_call(squyrrel, caller_name='Squyrrel', func=method))
+
+
+
             # squyrrel.replace_method(instance=squyrrel, method_name=method_name, new_method=log_call_method)
 
             # print('replaced {}'.format(method_name))

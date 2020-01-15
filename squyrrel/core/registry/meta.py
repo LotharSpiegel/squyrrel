@@ -1,4 +1,5 @@
 from squyrrel.core.registry.exceptions import *
+from squyrrel.core.context import Context
 
 
 class PackageMeta:
@@ -22,6 +23,7 @@ class PackageMeta:
         self.parent = None
         self.has_init = False
         self.loaded = False
+        self.status = None
 
     def add_module(self, module_name, status='registered'):
         # TODO: there can be different modules with same name inside a package
@@ -117,6 +119,7 @@ class ModuleMeta:
                               class_name=class_name,
                               class_reference=class_reference)
         self.classes[class_reference.__name__] = new_class
+        return new_class
 
     @property
     def num_classes(self):
@@ -126,6 +129,9 @@ class ModuleMeta:
     def import_string(self):
         return '{package_import_string}.{module_name}'.format(
             package_import_string=self.package.import_string, module_name=self.name)
+
+    def __repr__(self):
+        return f'ModuleMeta(package={self.package}, module_name={self.name})'
 
     def __str__(self):
         return self.import_string
@@ -152,9 +158,32 @@ class ClassMeta:
         self.class_name = class_name
         self.class_reference = class_reference
 
+    def get_all_bases(self):
+        return self.class_reference.__bases__
+
+    @staticmethod
+    def get_all_ancestors(cls, bases=None):
+        bases = bases or []
+        bases.append(cls)
+        for cls in cls.__bases__:
+            ClassMeta.get_all_ancestors(cls, bases)
+        return tuple(bases)
+
+    def has_ancestor(self, cls):
+        """Returns True if self.class_reference has cls as ancestor or equals cls"""
+        return cls in ClassMeta.get_all_ancestors(self.class_reference)
+
     def __str__(self):
         return '{module_str}.{class_name}'.format(
                 module_str=str(self.module), class_name=self.class_name)
 
     def __call__(self, *args, **kwargs):
         return self.class_reference(*args, **kwargs)
+
+
+class PythonContext(Context):
+
+    def build(self, squyrrel):
+        for package_name, package_meta in squyrrel.packages.items():
+            self.add(package_name, package_meta)
+        return self

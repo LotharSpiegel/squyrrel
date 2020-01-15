@@ -1,5 +1,4 @@
 from squyrrel.core.utils.singleton import Singleton
-from squyrrel.core.constants import HOOK_NAME, HOOK_ORDER
 
 
 class ConfigRegistry(metaclass=Singleton):
@@ -57,6 +56,14 @@ class IConfigRegistry(type): # Singleton(type)
 
 class IConfig(object, metaclass=IConfigRegistry):
 
+    HOOK_NAME = '__hook_name__'
+    HOOK_ORDER = '__hook_order__'
+
+    # hooks:
+    HOOK_AFTER_INIT = 'HOOK_AFTER_INIT'
+    HOOK_INIT_KWARGS = 'HOOK_INIT_KWARGS'
+    HOOK_REPLACE = 'HOOK_REPLACE'
+
     class_reference = None
 
     @classmethod
@@ -97,6 +104,7 @@ class IConfig(object, metaclass=IConfigRegistry):
     @classmethod
     def get_hook_methods(cls, hook, exclude_dunders=True):
         methods = cls.get_methods(exclude_dunders=exclude_dunders)
-        hook_methods = [method for method in methods if hasattr(method, HOOK_NAME) and getattr(method, HOOK_NAME) == hook]
-        hook_methods.sort(key=lambda method: getattr(method, HOOK_ORDER))
+        hook_methods = [method for method in methods if
+            hasattr(method, cls.HOOK_NAME) and getattr(method, cls.HOOK_NAME) == hook]
+        hook_methods.sort(key=lambda method: getattr(method, cls.HOOK_ORDER))
         return hook_methods

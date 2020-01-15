@@ -1,15 +1,20 @@
 from collections import deque
 
+from squyrrel.core.logging.utils import arguments_tostring
 
-NO_NAME = 'NO_NAME'
+
+NO_NAME_SIGNAL = 'NO_NAME_SIGNAL'
 
 class Signal:
 
-    def __init__(self, name=None, caching=True):
+    def __init__(self, name=None, caching=True, before_emit_hook=None, apply_filter=None):
         self._slots = []
-        self.name = name or NO_NAME
+        self.name = name or NO_NAME_SIGNAL
         self.cache = SignalCache()
         self.caching = caching
+        self.apply_filter = apply_filter or self.apply_filter
+        self.children = []
+        self.before_emit_hook = before_emit_hook
 
     def connect(self, slot):
         """Connect slot to signal"""
@@ -31,11 +36,30 @@ class Signal:
     def emit(self, *args, **kwargs):
         """Calls all slots (connected to this signal)"""
 
+        if not self.apply_filter(*args, **kwargs):
+            return
+
+        if self.before_emit_hook is not None:
+            self.before_emit_hook(*args, **kwargs)
+
         for slot in self._slots:
             slot(*args, **kwargs)
 
+        for child in self.children:
+            # args, kwargs = self.deform_child_args(*args, **kwargs)
+            child.emit(*args, **kwargs)
+
         if self.caching:
             self.cache.append(args, kwargs)
+
+    def add_child(self, child):
+        self.children.append(child)
+
+    def remove_child(self, child):
+        self.children.remove(child)
+
+    def apply_filter(self, *args, **kwargs):
+        return True
 
     def is_connected(self, slot):
         return slot in self._slots
@@ -44,6 +68,12 @@ class Signal:
         _cache = list(self.cache.cache)
         self.cache.cache.clear()
         return _cache
+
+    def filtered(self, apply_filter, **kwargs):
+        kwargs['apply_filter'] = apply_filter
+        new_signal = Signal(**kwargs)
+        self.add_child(new_signal)
+        return new_signal
 
 
 class SignalFreeze:

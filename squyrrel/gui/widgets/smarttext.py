@@ -72,10 +72,11 @@ class CustomText(Text):
 class SmartText(Frame):
 
     def __init__(self, parent, **kwargs):
-        self.text_class = kwargs.get('text_class', Text)
+        self.text_class = kwargs.get('text_class', CustomText)
         Frame.__init__(self, parent, **kwargs)
         self.create_widgets()
         self.pack_widgets()
+        self.set_bindings()
 
     def create_widgets(self, parent=None):
         parent = parent or self
@@ -85,18 +86,24 @@ class SmartText(Frame):
         self.text = self.text_class(self.inner_frame, padx=3, wrap='none', border=0)
         self.text.config(yscrollcommand=self.vbar.set)
         self.text.config(xscrollcommand=self.hbar.set)
-        self.vbar.config(command=self.text.yview)
-        self.hbar.config(command=self.text.xview)
-        self.text.config(autoseparators=1)
         self.line_number_bar = TextLineNumbers(self.inner_frame, bd=0, highlightthickness=0, width=30)
         #, padx=3, wrap='none', takefocus=0, border=0, background='khaki', state='disabled')
         self.line_number_bar.attach(self.text)
+        self.text.config(autoseparators=1)
+        self.vbar.config(command=self.text.yview)
+        self.hbar.config(command=self.text.xview)
         self.show_line_numbers = True
 
     def pack_widgets(self):
         self.vbar.pack(side=RIGHT, fill=Y)
         self.hbar.pack(side=BOTTOM, fill=X)
         self._pack_inner_frame()
+
+    def set_bindings(self):
+        self.bind("<<Change>>", self._on_change)
+
+    def bind(self, *args, **kwargs):
+        self.text.bind(*args, **kwargs)
 
     def _pack_inner_frame(self):
         self.inner_frame.pack(fill=BOTH, expand=YES)
@@ -106,18 +113,23 @@ class SmartText(Frame):
 
     def append(self, text, tags=None, trigger_change=True):
         self.text.insert(END, text, tags)
-        self.text.mark_set(INSERT, '1.0')
+        self.text.mark_set(INSERT, END)
         self.text.see(INSERT)
         if trigger_change:
             self._on_change()
 
-    def println(self, text, tags=None):
+    def new_line(self, tags=None):
         self.append('\n', tags=None, trigger_change=False)
+
+    def println(self, text, tags=None):
+        self.new_line(tags=None)
         self.append(text, tags=tags)
 
-    def set_text(self, text, tags=None):
+    def set_text(self, text, tags=None, trigger_change=True):
         self.text.delete('1.0', END)
         self.append(text, tags)
+        if trigger_change:
+            self._on_change()
 
     def get_text(self, start='1.0', end=END):
         return self.text.get(start, end)
@@ -171,16 +183,23 @@ class SmartText(Frame):
         self.text.tag_raise('sel')
 
     def config_line_numbers_bg(self, value):
-        pass
+        self.line_number_bar.bg = value
+        self.line_number_bar.config(bg=value)
 
     def config_line_numbers_fg(self, value):
-        pass
+        self.line_number_bar.fg = value
 
     def config_line_numbers_active_line_bg(self, value):
-        pass
+        self.line_number_bar.active_line_bg = value
+
+    def config_line_numbers_active_line_fg(self, value):
+        self.line_number_bar.active_line_fg = value
 
     def config_line_numbers_sel_bg(self, value):
-        pass
+        self.line_number_bar.sel_bg = value
+
+    def config_line_numbers_sel_fg(self, value):
+        self.line_number_bar.sel_fg = value
 
     def config_cursor_bg(self, value):
         self.text.config(insertbackground=value)

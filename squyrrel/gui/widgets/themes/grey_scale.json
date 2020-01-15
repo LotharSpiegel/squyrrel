@@ -19,6 +19,9 @@
         },
         "gui_call": {
             "foreground": "#36c96c"
+        },
+        "signal": {
+            "foreground": "d63ddb"
         }
     }
 }

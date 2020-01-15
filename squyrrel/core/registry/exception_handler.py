@@ -16,7 +16,7 @@ class ExceptionHandler:
 
     def handle(self, module_meta, exc_type, exc_value, exc_traceback):
         module_name = module_meta.name
-        print(f'module <{module_name}> is rotten: {exc_type}: {exc_value}')
+        print(f'Module <{module_name}> is rotten: {exc_type}: {exc_value}')
         traceback.print_tb(exc_traceback, limit=self.traceback_limit, file=sys.stdout)
 
 

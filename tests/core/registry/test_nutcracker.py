@@ -3,10 +3,10 @@ from pprint import pprint
 import os.path
 import sys
 
-from squyrrel.core.registry.nutcracker import Squyrrel
+from squyrrel import Squyrrel
 from squyrrel.core.utils.paths import find_first_parent
 from squyrrel.core.registry.exceptions import *
-from squyrrel.core.registry.config_registry import IConfigRegistry
+from squyrrel.core.config.base import IConfigRegistry
 
 
 def test_nutcracker_is_singleton():

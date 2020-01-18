@@ -25,7 +25,9 @@ class App:
         except:
             self.write_log()
             raise
+        # self.append_init_debugging()
 
+    def append_init_debugging(self):
         for stamp in self.pop_debugging_signals_cache():
             self.debug(*stamp.args, **stamp.kwargs)
 
@@ -42,11 +44,13 @@ class App:
 
     def awake_squyrrel(self):
         self.squyrrel = Squyrrel() # root_path=self.config['root_path']
-        self.squyrrel.app = self
 
     def load_dependencies(self):
         # Squyrrel.load_package(PackageMeta(package_name=squyrrel, package_path=c:\users\lothar\passion\squyrrel\squyrrel, relative_path=squyrrel, import_string=squyrrel))
         self.squyrrel.register_and_load_package('squyrrel/gui')
+        self.squyrrel.register_and_load_package('squyrrel/ide')
+        class_meta = self.squyrrel.find_class_meta_by_name(class_name='App', package_name='ide', module_name='main')
+        class_meta.add_instance(self)
 
     def write_log(self):
         with open(self.config['log_file'], 'w') as file:

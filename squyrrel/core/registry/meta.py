@@ -114,6 +114,8 @@ class ModuleMeta:
         self.classes_loaded = False
 
     def add_class(self, class_reference, class_name=None):
+        #todo: check if class_reference already existing
+        # if so, raise ClassAlreadyAddedException!
         if class_name is None:
             class_name = class_reference.__name__
         new_class = ClassMeta(module=self,
@@ -121,6 +123,9 @@ class ModuleMeta:
                               class_reference=class_reference)
         self.classes[class_reference.__name__] = new_class
         return new_class
+
+    def find_class_by_reference(self, class_reference):
+        raise NotImplementedError
 
     @property
     def num_classes(self):
@@ -158,6 +163,7 @@ class ClassMeta:
         self.module = module
         self.class_name = class_name
         self.class_reference = class_reference
+        self.instances = []
 
     def get_all_bases(self):
         return self.class_reference.__bases__
@@ -173,6 +179,19 @@ class ClassMeta:
     def has_ancestor(self, cls):
         """Returns True if self.class_reference has cls as ancestor or equals cls"""
         return cls in ClassMeta.get_all_ancestors(self.class_reference)
+
+    def add_instance(self, instance):
+        self.instances.append(instance)
+
+    def remove_instance(self, instance):
+        self.instances.remove(instance)
+
+    def delete_instance(self, instance):
+        # todo: test!!
+        del instance
+
+    def get_first_instance(self):
+        return self.instances[0]
 
     def __str__(self):
         return '{module_str}.{class_name}'.format(

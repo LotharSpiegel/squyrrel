@@ -6,6 +6,10 @@ from .base import BaseCommand, CommandError
 class SquyrrelCommand(BaseCommand):
     prefix = 's'
 
+    __inject__ = {
+        '_squyrrel': 'Squyrrel',
+    }
+
 
 class SquyrrelReloadCommand(SquyrrelCommand):
     name = 'reload'

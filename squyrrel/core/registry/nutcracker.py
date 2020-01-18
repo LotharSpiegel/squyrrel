@@ -424,7 +424,7 @@ Packages not loaded (because they were filtered): {', '.join(filtered_packages)}
             for method in init_kwargs_methods:
                 init_kwargs = method(init_kwargs or {})
 
-    def create_instance(self, class_meta, params=None):
+    def create_instance(self, class_meta, params=None, add_object=True):
         self.debug(f'\nCreate_instance of class <{class_meta.class_name}>')
         config_cls = self.get_class_config(class_meta=class_meta)
 
@@ -441,7 +441,23 @@ Packages not loaded (because they were filtered): {', '.join(filtered_packages)}
             self.debug(f'config class: {config_cls.__name__}')
             self.config_instance(instance=instance, cls=class_meta.class_reference, config_cls=config_cls, params=params)
 
+        if add_object:
+            class_meta.add_instance(instance)
+
         return instance
+
+    def get_object(self, class_name, package_name=None, module_name=None, **kwargs):
+        # todo: refine searching criteria
+        if class_name == 'Squyrrel':
+            return self
+
+        print('get_object, class_name=', class_name)
+
+        class_meta = self.find_class_meta_by_name(class_name, package_name=package_name, module_name=module_name)
+        try:
+            return class_meta.get_first_instance()
+        except IndexError:
+            raise Exception(f'No object of class <{str(class_meta)}> stored!')
 
     def get_class_config(self, class_meta):
         class_name = class_meta.class_name

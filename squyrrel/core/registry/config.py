@@ -10,7 +10,7 @@ class SquyrrelDefaultConfig(IConfig):
     class_reference = 'Squyrrel'
 
     exclude_subpackages_from_registration = ()
-    exclude_subpackages_from_loading = ('gui', 'sql')
+    exclude_subpackages_from_loading = ('db', 'gui', 'ide', 'sql')
 
     @hook(IConfig.HOOK_REPLACE)
     def _load_package_filter(squyrrel, package_meta):

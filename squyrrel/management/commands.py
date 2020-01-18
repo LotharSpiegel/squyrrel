@@ -16,8 +16,11 @@ from .base import BaseCommand, CommandError
 #         return Squyrrel()
 
 class HelpCommand(BaseCommand):
-
     name = 'help'
+
+    __inject__ = {
+        '_cmd_mgr': 'CommandManager',
+    }
 
     def handle(self, *args, **options):
         command_infos = []
@@ -36,6 +39,10 @@ Available commands:
 class SourceCodeCommand(BaseCommand):
     name = 'source-code'
 
+    __inject__ = {
+        '_squyrrel': 'Squyrrel',
+    }
+
     def add_arguments(self, parser):
         parser.add_argument('name', type=str, help='Name of the class or method or module')
 
@@ -47,7 +54,13 @@ class SourceCodeCommand(BaseCommand):
 
 class ClassInfoCommand(BaseCommand):
     name = 'class-info'
+
     help = ("class-info [class name] -m [module]")
+
+    __inject__ = {
+        '_squyrrel': 'Squyrrel',
+    }
+
 
     def add_arguments(self, parser):
         parser.add_argument('name', type=str, help='Name of the class')

@@ -66,10 +66,10 @@ class BaseCommand:
         print('cmd_options=', cmd_options)
         return args, cmd_options
 
-    def execute_from_argv(self, prog_name, command_name, argv):
+    def execute_from_argv(self, prog_name, argv):
         print('execute_from_argv')
         print('argv=', argv)
-        parser = self.create_parser(prog_name, command_name=command_name)
+        parser = self.create_parser(prog_name, command_name=str(self))
         args, cmd_options = self.parse_command_args(parser, argv)
         return self.execute(*args, **cmd_options)
 

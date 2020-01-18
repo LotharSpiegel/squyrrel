@@ -44,8 +44,8 @@ class CommandManager:
             raise exc
         return prefix, name
 
-    def fetch_command(self, command_key, **kwargs):
-        return self.get_command_class(command_key)(**kwargs)
+    # def fetch_command(self, command_key, **kwargs):
+    #     return self.get_command_class(command_key)(**kwargs)
 
     def get_command_class(self, command_key):
         prefix, name = self.convert_command_key_to_prefix_and_name(command_key)
@@ -62,14 +62,16 @@ class CommandManager:
     #     command = self.fetch_command(command_key)
     #     return command.execute(*args, **kwargs)
 
-    def execute_from_input(self, prog_name, user_input, **kwargs):
-        """The entries in kwargs will be added as attributes to the instantiated command object"""
+    def parse_user_input(self, user_input):
         user_inputs = user_input.split()
         command_key = user_inputs[0]
         argv = user_inputs[1:]
-        command = self.fetch_command(command_key, **kwargs)
+        return command_key, argv
+
+    def execute_command(self, command, argv, prog_name=None):
+        """The entries in kwargs will be added as attributes to the instantiated command object"""
         try:
-            return command.execute_from_argv(prog_name, command_key, argv)
+            return command.execute_from_argv(prog_name, argv)
         except Exception as exc:
             # exc_type, exc_value, exc_traceback = sys.exc_info()
             squyrrel_debug_signal.emit(f'Error on executing command <{command_key}>', tags='error')

@@ -9,19 +9,20 @@ class SquyrrelDefaultConfig(IConfig):
 
     class_reference = 'Squyrrel'
 
-    exclude_subpackages = ('gui', 'sql',)
+    exclude_subpackages_from_registration = ()
+    exclude_subpackages_from_loading = ('gui', 'sql')
 
     @hook(IConfig.HOOK_REPLACE)
     def _load_package_filter(squyrrel, package_meta):
         if squyrrel.loading:
-            if package_meta.name in SquyrrelDefaultConfig.exclude_subpackages:
+            if package_meta.name in SquyrrelDefaultConfig.exclude_subpackages_from_loading:
                 return False
         return True
 
     @hook(IConfig.HOOK_REPLACE)
     def _register_package_filter(squyrrel, package_name):
         if squyrrel.loading:
-            if package_name in SquyrrelDefaultConfig.exclude_subpackages:
+            if package_name in SquyrrelDefaultConfig.exclude_subpackages_from_registration:
                 return False
         return True
 

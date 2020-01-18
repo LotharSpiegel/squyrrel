@@ -7,7 +7,7 @@ from squyrrel.core.registry.signals import (squyrrel_debug_signal, squyrrel_erro
     class_loaded_signal, command_loaded_signal)
 
 
-from shell import on_return
+from shell import on_return, execute_cmd_from_shell
 
 
 class App:
@@ -46,7 +46,6 @@ class App:
 
     def load_dependencies(self):
         # Squyrrel.load_package(PackageMeta(package_name=squyrrel, package_path=c:\users\lothar\passion\squyrrel\squyrrel, relative_path=squyrrel, import_string=squyrrel))
-
         self.squyrrel.register_and_load_package('squyrrel/gui')
 
     def write_log(self):
@@ -71,7 +70,17 @@ class App:
     def debug(self, msg, tags=None):
         self.log_window.text.println(msg, tags=tags)
 
+    def write_in_shell(self, text, tags=None):
+        self.cmd_window.text.append(text, tags=tags)
+        self.cmd_window.text.new_line()
+
+    def ghost_cmd(self, cmd_line):
+        self.write_in_shell(text=cmd_line)
+        execute_cmd_from_shell(squyrrel=self.squyrrel, cmd_line=cmd_line)
+
     def start(self):
+        self.write_in_shell('Start Squyrrel CLI (version=0.1.0)')
+        self.ghost_cmd(cmd_line='s.report')
         self.main_window.mainloop()
 
     def command_loaded(self, msg):

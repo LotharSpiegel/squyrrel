@@ -119,7 +119,7 @@ class SmartText(Frame):
             self._on_change()
 
     def new_line(self, tags=None):
-        self.append('\n', tags=None, trigger_change=False)
+        self.append('\n', tags=None)
 
     def println(self, text, tags=None):
         self.new_line(tags=None)

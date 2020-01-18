@@ -1,12 +1,16 @@
+"""
+- add arg (optional) info to BaseCommand
+- if help is None: generate help out of prefix, name and arguments
+"""
+
+
 from argparse import ArgumentParser, HelpFormatter
 import os
 import sys
 
-from .exceptions import ArgumentParserException
+from .constants import __NO_PREFIX__
+from .exceptions import *
 
-
-class CommandError(Exception):
-    pass
 
 
 class CommandParser(ArgumentParser):
@@ -17,13 +21,15 @@ class BaseCommand:
 
     help = ''
     name = None
+    prefix = None
 
-    def __init__(self, stdout=None, stderr=None):
-        pass
+    def __init__(self, **kwargs):
+        for key, value in kwargs.items():
+            setattr(self, key, value)
 
     @classmethod
-    def command_name(cls):
-        return getattr(cls, 'name', cls.__name__)
+    def command_prefix(cls):
+        return getattr(cls, 'prefix', None)
 
     def create_parser(self, prog_name, command_name, **kwargs):
         parser = CommandParser(
@@ -60,12 +66,11 @@ class BaseCommand:
         print('cmd_options=', cmd_options)
         return args, cmd_options
 
-    def execute_from_argv(self, prog_name, command_name, argv, **kwargs):
+    def execute_from_argv(self, prog_name, command_name, argv):
         print('execute_from_argv')
         print('argv=', argv)
         parser = self.create_parser(prog_name, command_name=command_name)
         args, cmd_options = self.parse_command_args(parser, argv)
-        cmd_options.update(kwargs)
         return self.execute(*args, **cmd_options)
 
     def run_from_argv(self, argv, base_path=None):
@@ -87,18 +92,26 @@ class BaseCommand:
                 print(str(e)) # --> Logging
 
             sys.exit(1)
-        finally:
-            # try:
-            #     connections.close_all()
-            # except ImproperlyConfigured:
-            #     pass
-            pass
 
     def execute(self, *args, **options):
-        output = self.handle(*args, **options)
-        # if output:
-        #     self.stdout.write(output)
-        return output
+        return self.handle(*args, **options)
 
     def handle(self, *args, **options):
         raise NotImplementedError('A subclass of BaseCommand must provide a handle() method')
+
+    @staticmethod
+    def _cmd_info(obj):
+        if obj.prefix is None or obj.prefix == __NO_PREFIX__:
+            cmd_name = obj.name
+        else:
+            cmd_name = f'{obj.prefix}.{obj.name}'
+        if obj.help is None:
+            return cmd_name
+        return f'{cmd_name}: {obj.help}'
+
+    @classmethod
+    def cmd_info(cls):
+        return BaseCommand._cmd_info(cls)
+
+    def __str__(self):
+        return BaseCommand._cmd_info(self)

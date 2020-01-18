@@ -43,7 +43,10 @@ class Signal:
             self.before_emit_hook(*args, **kwargs)
 
         for slot in self._slots:
-            slot(*args, **kwargs)
+            try:
+                slot(*args, **kwargs)
+            except TypeError:
+                print('Warning: TypeError...')
 
         for child in self.children:
             # args, kwargs = self.deform_child_args(*args, **kwargs)

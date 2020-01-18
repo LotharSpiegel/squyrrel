@@ -22,6 +22,7 @@ class PackageMeta:
         self.subpackages = []
         self.parent = None
         self.has_init = False
+        self.registered = False
         self.loaded = False
         self.status = None
 

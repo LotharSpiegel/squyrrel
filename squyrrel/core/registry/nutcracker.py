@@ -1,3 +1,10 @@
+"""
+Todo: register/unregister package: more refined than storing with key = package_name
+(should also depend on path or other metrics)
+
+"""
+
+
 from functools import wraps
 import importlib
 import inspect
@@ -16,42 +23,66 @@ from squyrrel.core.config.decorators import exclude_from_logging
 from squyrrel.core.logging.utils import arguments_tostring
 
 
+__SQUYRREL_PACKAGE_NAME__ = 'squyrrel'
+
+
 
 class Squyrrel(metaclass=Singleton):
 
     config_module_name = 'config'
 
     def __init__(self, root_path=None, config_class=None):
+
+        self.initialize(root_path=root_path, config_class=config_class)
+
+        self.load_squyrrel_package()
+
+    def initialize(self, root_path=None, config_class=None):
         self.packages = {}
         self.root_path = root_path or self.get_squyrrel_package_root_path()
         self.paths = []
-        self.loading = True
+        self.loading = False
         self.add_absolute_path(self.root_path)
         self.debug_indent_level = 0
         self.context = None
-
         self.active_profile = None
+        self.last_report = None
         self.module_import_exception_handler = ExceptionHandler() # traceback_limit=
-
         self.load_config(config_class)
 
-        self.squyrrel_package = self.register_package('squyrrel')
+    def load_squyrrel_package(self):
+        num_packages_before = self.num_registered_packages
+        self.loading = True
+        self.squyrrel_package = self.register_package(__SQUYRREL_PACKAGE_NAME__)
         self.load_package(self.squyrrel_package)
-
-        self.build_context()
-
         self.loading = False
+        self.build_context()
+        self.report(num_packages_before)
+
+    def reload_squyrrel_package(self):
+        # make backup copy of squyrrel package?
+        self.unregister_package(self.squyrrel_package)
+        self.load_squyrrel_package()
 
     def get_squyrrel_package_root_path(self):
-        return find_first_parent(__file__, 'squyrrel')
+        return find_first_parent(__file__, __SQUYRREL_PACKAGE_NAME__)
 
     def build_context(self):
         pass
 
+    def report(self, num_packages_before):
+        filtered_packages = [str(package) for package in self.squyrrel_package.subpackages if (package.registered and not package.loaded)]
+        self.last_report = f"""
+Loaded squyrrel package.
+Loaded {self.num_registered_packages - num_packages_before} (sub)packages.
+Packages registered: {', '.join([str(package) for package in self.squyrrel_package.subpackages])}
+Packages not loaded (because they were filtered): {', '.join(filtered_packages)}
+"""
+        self.debug(self.last_report)
+
     @exclude_from_logging
     def format_debug_output(self, text):
-        return '{indent}{text}'.format(indent=self.debug_indent_level*'\t',
-                                       text=text)
+        return '{indent}{text}'.format(indent=self.debug_indent_level*'\t', text=text)
 
     @exclude_from_logging
     def debug(self, message, tags=None):
@@ -152,7 +183,7 @@ class Squyrrel(metaclass=Singleton):
             if os.path.exists(check_path):
                 return check_path
         paths = '\n'.join(paths_tried)
-        print('Did not find package <{relative_path}>. Tried the following paths: \n{paths}'.format(
+        self.debug('Did not find package <{relative_path}>. Tried the following paths: \n{paths}'.format(
             relative_path=relative_path, paths=paths))
         return None
 
@@ -261,9 +292,22 @@ class Squyrrel(metaclass=Singleton):
         package_meta = self.register_package(relative_path)
         return self.load_package(package_meta)
 
-    def register_package(self, relative_path, register_package_filter=None):
+    def unregister_package(self, package_meta):
+        # todo: refine package_key (method on PackageMeta, eventually hash code or uid)
+        if not package_meta.loaded:
+            return
+        for subpackage in package_meta.subpackages:
+            self.unregister_package(subpackage)
+        package_key = package_meta.name
+        del self.packages[package_key]
+
+    def package_already_registered(self, package_name):
+        #TODO:refine with path, ..
+        return package_name in self.packages.keys()
+
+    def register_package(self, relative_path, register_package_filter=None, raise_when_already_registered=False):
         # possibly add check with find_package_by_name
-        self.debug(f'Register package/dir <{relative_path}>..')
+        self.debug(f'Register package <{relative_path}>..')
         full_path = self.get_full_package_path(relative_path)
         if full_path is None:
             raise PackageNotFoundException('registering package/dir with relative path <{relative_path}> failed'.format(
@@ -271,8 +315,10 @@ class Squyrrel(metaclass=Singleton):
         package_name = os.path.basename(relative_path)
         if package_name == '__pycache__':
             pass
-        elif package_name in self.packages.keys():
-            raise Exception(f'There is already a package with name <{package_name}> registered!')
+        elif self.package_already_registered(package_name=package_name):
+            if raise_when_already_registered:
+                raise Exception(f'There is already a package with name <{package_name}> registered!')
+            return self.packages[package_name]
 
         package_meta = PackageMeta(
             package_name=package_name,
@@ -284,31 +330,68 @@ class Squyrrel(metaclass=Singleton):
         if register_package_filter is None:
             register_package_filter = self._register_package_filter
         if not register_package_filter(package_name):
-            self.debug(f'Package {package_name} did not pass filter')
-            package_meta.status = 'excluded_by_filter'
+            self.debug(f'Package {package_name} did not pass register filter')
+            print(f'Package {package_name} did not pass register filter')
+            package_meta.status = 'excluded by filter'
             return package_meta
 
+        package_meta.status = 'registered'
+        package_meta.registered = True
         self.packages[package_name] = package_meta
-
         self.debug(f'Successfully registered package/dir {package_name}')
         self.debug('Full path: ' + full_path)
         return self.packages[package_name]
 
+    @property
+    def loaded_packages(self):
+        return [package for package in self.packages if package.loaded]
+        return self._loaded_packages
+
+    def package_already_loaded(self, package_meta):
+        return False
+
     def load_package(self, package_meta, ignore_rotten_modules=False,
                            load_classes=True, load_subpackages=True,
-                           load_package_filter=None):
-        # self.debug('Load package <{package}>...'.format(package=repr(package_meta)))
+                           load_package_filter=None, raise_when_already_loaded=False):
+        self.debug('Load package <{package}>...'.format(package=repr(package_meta)))
 
-        modules, sub_dirs = self.inspect_directory(package_meta)
-        self.debug(f'is package (contains __init__.py): {package_meta.has_init}')
+        if self.package_already_loaded(package_meta=package_meta):
+            if raise_when_already_loaded:
+                raise Exception(f'Package <{str(package_meta)}> is already loaded!')
+            return
+
+        modules, subdirs = self.inspect_directory(package_meta)
+        self.debug(f'..is package (contains __init__.py): {package_meta.has_init}')
 
         if load_package_filter is None:
             load_package_filter = self._load_package_filter
         if not load_package_filter(package_meta):
-            self.debug(f'Package {str(package_meta)} did not pass filter')
-            package_meta.status = 'excluded_by_filter'
+            self.debug(f'Package {str(package_meta)} did not pass loading filter')
+            print(f'Package {str(package_meta)} did not pass loading filter')
+            package_meta.status = 'excluded by filter'
             return package_meta
 
+        self.register_and_load_modules(
+            package_meta=package_meta,
+            modules=modules,
+            ignore_rotten_modules=ignore_rotten_modules,
+            load_classes=load_classes)
+
+        package_meta.status = 'loaded'
+        package_meta.loaded = True
+
+        if not load_subpackages:
+            return package_meta
+
+        self.register_and_load_subpackages(
+            package_meta=package_meta,
+            subdirs=subdirs,
+            ignore_rotten_modules=ignore_rotten_modules,
+            load_classes=load_classes)
+
+        return package_meta
+
+    def register_and_load_modules(self, package_meta, modules, load_classes=True, ignore_rotten_modules=False):
         for module in modules:
             module_meta = self.register_module(package_meta, module_name=module)
             try:
@@ -317,24 +400,20 @@ class Squyrrel(metaclass=Singleton):
                 if not ignore_rotten_modules:
                     raise
 
-        if not load_subpackages:
-            return
-        for dir in sub_dirs:
+    def register_and_load_subpackages(self, package_meta, subdirs, ignore_rotten_modules=False, load_classes=True):
+        for dir in subdirs:
             self.debug('Inspecting subdir {} ..'.format(dir))
             relative_dir_path = os.path.join(package_meta.relative_path, dir)
             subpackage_meta = self.register_package(relative_dir_path)
-            if subpackage_meta.status == 'excluded_by_filter':
+            if subpackage_meta.status == 'excluded by filter':
                 continue
             subpackage_meta = self.load_package(subpackage_meta,
                 ignore_rotten_modules=ignore_rotten_modules,
                 load_classes=load_classes,
-                load_subpackages=load_subpackages)
+                load_subpackages=True)
             if subpackage_meta.has_init:
                 self.debug('Add subpackage {} to package {}'.format(subpackage_meta.name, package_meta.name))
                 package_meta.add_subpackage(subpackage_meta)
-
-        package_meta.loaded = True
-        return package_meta
 
     def find_subpackage(self, name):
         return None

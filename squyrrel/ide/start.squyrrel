@@ -1,0 +1,3 @@
+version = "0.1.0"
+shell.println f"Start Squyrrel CLI (version={version})"
+s.report

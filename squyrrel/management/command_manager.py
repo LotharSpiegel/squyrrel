@@ -1,3 +1,4 @@
+import re
 import sys
 import traceback
 
@@ -31,6 +32,7 @@ class CommandManager:
         if key in self.commands.keys():
             raise Exception(f'There is already a command on key <{key}>')
         self.commands[key] = cmd_cls_meta
+        print('register_command:', key)
 
     def convert_prefix_and_name_to_command_key(self, prefix, name):
         return f'{prefix or __NO_PREFIX__}.{name}'
@@ -47,6 +49,28 @@ class CommandManager:
     # def fetch_command(self, command_key, **kwargs):
     #     return self.get_command_class(command_key)(**kwargs)
 
+    def parse_user_input(self, user_input):
+        try:
+            command_key, user_input = user_input.split(maxsplit=1)
+        except ValueError:
+            command_key = user_input
+            argv = None
+            #raise ArgumentParserException(message=f'Could not parse command line=<{user_input}>')
+        else:
+
+            # format strings or strings (both inside "") or words
+            regex = r'f".+?"|".+?"|[\w-]+'
+            argv = re.findall(regex, user_input)
+            print('user_inputs=', argv)
+
+        # pattern = re.compile(r'f".+?"')
+        # for arg in argv:
+        #     if pattern.fullmatch(arg) is not None:
+        #         print(f'found:<{arg}>')
+
+        #print(f'parse_user_input: command_key={command_key}, argv={str(argv)}')
+        return command_key, argv
+
     def get_command_class(self, command_key):
         prefix, name = self.convert_command_key_to_prefix_and_name(command_key)
         if prefix is None:
@@ -62,18 +86,14 @@ class CommandManager:
     #     command = self.fetch_command(command_key)
     #     return command.execute(*args, **kwargs)
 
-    def parse_user_input(self, user_input):
-        user_inputs = user_input.split()
-        command_key = user_inputs[0]
-        argv = user_inputs[1:]
-        return command_key, argv
-
-    def execute_command(self, command, argv, prog_name=None):
+    def execute_command(self, command, argv, command_key=None, prog_name=None):
         """The entries in kwargs will be added as attributes to the instantiated command object"""
         try:
             return command.execute_from_argv(prog_name, argv)
         except Exception as exc:
             # exc_type, exc_value, exc_traceback = sys.exc_info()
+            if command_key is None:
+                command_key = str(command)
             squyrrel_debug_signal.emit(f'Error on executing command <{command_key}>', tags='error')
             # stacktrace...
             trace = traceback.format_exc()

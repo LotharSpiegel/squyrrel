@@ -17,15 +17,19 @@ def execute_cmd_from_shell(squyrrel, cmd_line):
         print('execute_cmd_from_shell, command_key=', command_key)
         cmd_cls = cmd_mgr.get_command_class(command_key)
         cmd = cmd_cls(**inject_dependencies_into_cdm(squyrrel, cmd_cls))
-        output = cmd_mgr.execute_command(cmd, argv, prog_name="Squyrrel")
+        output = cmd_mgr.execute_command(cmd, argv, command_key=command_key, prog_name="Squyrrel")
     except ArgumentParserException as exc:
-        output = f'Error calling command <{exc.command.name}> ({exc.command.help}). Did you forget arguments?'
+        if hasattr(exc, 'command') and exc.command is not None:
+            output = f'Error calling command <{exc.command.name}> ({exc.command.help}). Did you forget arguments?'
+        else:
+            output = exc.message
         cmd_window.text.new_line()
         cmd_window.text.append(output, tags='error')
     except Exception as exc:
         output = str(exc)
         cmd_window.text.new_line()
         cmd_window.text.append(output, tags='error')
+        raise exc
     else:
         if isinstance(output, str):
             cmd_window.text.append(output)

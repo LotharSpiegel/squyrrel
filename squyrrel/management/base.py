@@ -12,7 +12,6 @@ from .constants import __NO_PREFIX__
 from .exceptions import *
 
 
-
 class CommandParser(ArgumentParser):
     pass
 

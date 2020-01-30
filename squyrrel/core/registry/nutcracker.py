@@ -177,7 +177,7 @@ Packages not loaded (because they were filtered): {', '.join(filtered_packages)}
 
     def get_full_package_path(self, relative_path):
         paths_tried = []
-        for path in sys.path:
+        for path in sys.path: #TODO: self.paths
             check_path = os.path.join(path, relative_path)
             paths_tried.append(check_path)
             if os.path.exists(check_path):
@@ -185,6 +185,8 @@ Packages not loaded (because they were filtered): {', '.join(filtered_packages)}
         paths = '\n'.join(paths_tried)
         self.debug('Did not find package <{relative_path}>. Tried the following paths: \n{paths}'.format(
             relative_path=relative_path, paths=paths))
+        print('sys.path:')
+        print(sys.path)
         return None
 
     def find_package_by_name(self, name):
@@ -226,12 +228,18 @@ Packages not loaded (because they were filtered): {', '.join(filtered_packages)}
 
         # if module_meta is None:
         #     raise ModuleNotRegisteredException('Error while loading module: Module {} not registered yet'.format(module_name))
-
+        # sys.path.append('c:\\users\\lothar\\passion\\math')
         try:
             # TODO: enable relative import (pass package='example' to import_module...)
-            imported_module = importlib.import_module(module_meta.import_string)
+            imported_module = importlib.import_module(module_meta.import_string)#, package=package.import_string)
         except ModuleNotFoundError:
             module_meta.status = 'not found'
+            print('package:', package.import_string)
+            print('module:', module_meta.import_string)
+
+            # imported_module = importlib.import_module('.'+module_name, package=package.import_string)
+
+
             raise
         except Exception as exc:
             exc_type, exc_value, exc_traceback = sys.exc_info()

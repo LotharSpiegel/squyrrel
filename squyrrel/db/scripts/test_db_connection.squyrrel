@@ -1,0 +1,2 @@
+s.load-package('db')
+sqlite.connect test.db

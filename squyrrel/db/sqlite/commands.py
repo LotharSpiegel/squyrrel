@@ -1,4 +1,4 @@
-from .base import BaseCommand
+from squyrrel.management.base import BaseCommand
 
 
 class SqliteCommand(BaseCommand):
@@ -12,4 +12,4 @@ class SqliteConnectCommand(SqliteCommand):
         parser.add_argument('file', help='Path of the db file')
 
     def handle(self, *args, **options):
-        pass
+        return 'test successful'

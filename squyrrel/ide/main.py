@@ -1,7 +1,10 @@
+import sys
+import pprint
 import os
+import re
 
 from squyrrel import Squyrrel
-from squyrrel.management.command_manager import CommandManager
+# from squyrrel.management.command_manager import CommandManager
 from windows import cmd_window_factory, log_window_factory
 from squyrrel.core.registry.signals import (squyrrel_debug_signal, squyrrel_error_signal,
     class_loaded_signal, command_loaded_signal)
@@ -17,11 +20,13 @@ class App:
         try:
             self.init_vars()
             self.load_settings()
-            self.init_cmd_mgr()
             self.awake_squyrrel()
+            self.init_workers()
             self.load_dependencies()
             self.build_gui()
             self.connect_signals()
+
+            self.run_scripts()
         except:
             self.write_log()
             raise
@@ -39,11 +44,9 @@ class App:
         self.config['root_path'] = os.getcwd()
         self.config['log_file'] = 'log.txt'
 
-    def init_cmd_mgr(self):
-        self.cmd_mgr = CommandManager()
-
     def awake_squyrrel(self):
         self.squyrrel = Squyrrel() # root_path=self.config['root_path']
+        print(sys.path)
 
     def load_dependencies(self):
         # Squyrrel.load_package(PackageMeta(package_name=squyrrel, package_path=c:\users\lothar\passion\squyrrel\squyrrel, relative_path=squyrrel, import_string=squyrrel))
@@ -51,6 +54,16 @@ class App:
         self.squyrrel.register_and_load_package('squyrrel/ide')
         class_meta = self.squyrrel.find_class_meta_by_name(class_name='App', package_name='ide', module_name='main')
         class_meta.add_instance(self)
+
+    def init_workers(self):
+        cmd_mgr_cls_meta = self.squyrrel.find_class_meta_by_name('CommandManager', package_name='management', module_name='command_manager')
+        self.cmd_mgr = self.squyrrel.create_instance(cmd_mgr_cls_meta)
+        for stamp in command_loaded_signal.clear_cache():
+            # print(str(stamp.kwargs['class_meta']))
+            self.cmd_mgr.on_command_loaded(*stamp.args, **stamp.kwargs)
+
+        script_reader_cls_meta = self.squyrrel.find_class_meta_by_name('ScriptReader', package_name='management', module_name='script_reader')
+        self.script_reader = self.squyrrel.create_instance(script_reader_cls_meta)
 
     def write_log(self):
         with open(self.config['log_file'], 'w') as file:
@@ -67,12 +80,15 @@ class App:
 
     def connect_signals(self):
         squyrrel_debug_signal.connect(self.debug)
-        class_loaded_signal.connect(self.debug)
+        class_loaded_signal.connect(self.class_loaded)
         command_loaded_signal.connect(self.command_loaded)
         self.cmd_window.on_return_signal.connect(on_return)
 
     def debug(self, msg, tags=None):
         self.log_window.text.println(msg, tags=tags)
+
+    def class_loaded(self, class_meta):
+        self.debug(f'Loaded class {str(class_meta)}')
 
     def write_in_shell(self, text, tags=None):
         self.cmd_window.text.append(text, tags=tags)
@@ -82,16 +98,46 @@ class App:
         self.write_in_shell(text=cmd_line)
         execute_cmd_from_shell(squyrrel=self.squyrrel, cmd_line=cmd_line)
 
+    def execute_script(self, path):
+        self.write_in_shell(f'Executing script <{path}>..')
+        self.vars = {}
+        with open(path, 'r') as file:
+            self.script_reader.read_script(file.read())
+
     def start(self):
-        self.write_in_shell('Start Squyrrel CLI (version=0.1.0)')
-        self.ghost_cmd(cmd_line='s.report')
         self.main_window.mainloop()
 
-    def command_loaded(self, msg):
+    def command_loaded(self, *args, **kwargs):
         self.log_window.text.println('\n\nCOMMAND LOADED\n\n')
 
+    def run_scripts(self):
+        # self.execute_script(path='start.squyrrel')
+        # self.execute_script(path='math.squyrrel')
+        # self.squyrrel.add_relative_path('c:/users/lothar/passion')
+
+        self.squyrrel.add_absolute_path('c:\\users\\lothar\\passion')
+        pprint.pprint(sys.path)
+
+        # self.squyrrel.register_and_load_package('mathscript')
 
 def main():
+
+    # import importlib
+    # # import sys
+    # # import pprint
+    # #sys.path.append('c:/users/lothar/passion\\math')
+    # sys.path.append('c:\\users\\lothar\\passion\\math')
+    # pprint.pprint(sys.path)
+    # # imported_module = importlib.import_module('.regtest', package='squyrrel.management')
+    # mod = importlib.import_module('executor', package='math')
+    # # print(mod.__file__)
+
+
+    #sys.path.append('c:\\users\\lothar\\passion\\math')
+            #import math
+            #imported_module = importlib.import_module('executor', package='....math')
+
+
     app = App()
     app.start()
 

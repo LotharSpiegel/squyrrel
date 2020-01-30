@@ -1,6 +1,7 @@
 
 
 class NodeVisitor:
+
     def visit(self, node, *args, **kwargs):
         #print(self.__class__.__name__)
         cls_ = type(node)

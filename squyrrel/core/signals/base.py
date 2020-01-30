@@ -47,6 +47,7 @@ class Signal:
                 slot(*args, **kwargs)
             except TypeError:
                 print('Warning: TypeError...')
+                raise Exception(f'Slot and {str(self)} have not matching args and kwars')
 
         for child in self.children:
             # args, kwargs = self.deform_child_args(*args, **kwargs)
@@ -77,6 +78,9 @@ class Signal:
         new_signal = Signal(**kwargs)
         self.add_child(new_signal)
         return new_signal
+
+    def __str__(self):
+        return f'Signal <{self.name}>'
 
 
 class SignalFreeze:

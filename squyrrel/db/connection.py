@@ -7,7 +7,7 @@ class SqlDatabaseConnection:
         self.c = None
         self._cursor = None
 
-    def cursor(self, *args, **kwargs):
+    def create_cursor(self, *args, **kwargs):
         self._cursor = self.c.cursor(*args, **kwargs)
         return self._cursor
 
@@ -15,9 +15,23 @@ class SqlDatabaseConnection:
         raise NotImplementedError
 
     def execute(self, sql, cursor=None, params=None):
-        cursor = cursor or self.cursor()
-        if params is not None:
-            cursor.execute(sql, params)
+        if cursor is not None:
+            self._cursor = cursor
         else:
-            cursor.execute(sql)
+            self.create_cursor()
+        if params is not None:
+            self._cursor.execute(sql, params)
+        else:
+            self._cursor.execute(sql)
 
+    def fetchall(self):
+        if self._cursor is None:
+            raise Exception('Cursor is None')
+        data = self._cursor.fetchall()
+        return data
+
+    def fetchone(self):
+        if self._cursor is None:
+            raise Exception('Cursor is None')
+        data = self._cursor.fetchone()
+        return data

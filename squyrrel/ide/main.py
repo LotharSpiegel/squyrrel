@@ -27,6 +27,7 @@ class App:
             self.connect_signals()
 
             self.run_scripts()
+            self.test_db()
         except:
             self.write_log()
             raise
@@ -111,14 +112,31 @@ class App:
         self.log_window.text.println('\n\nCOMMAND LOADED\n\n')
 
     def run_scripts(self):
+        pass
         # self.execute_script(path='start.squyrrel')
         # self.execute_script(path='math.squyrrel')
         # self.squyrrel.add_relative_path('c:/users/lothar/passion')
 
-        self.squyrrel.add_absolute_path('c:\\users\\lothar\\passion')
-        pprint.pprint(sys.path)
+        #self.squyrrel.add_absolute_path('c:\\users\\lothar\\passion')
+        #pprint.pprint(sys.path)
 
         # self.squyrrel.register_and_load_package('mathscript')
+
+    def test_db(self):
+        self.squyrrel.register_and_load_package('squyrrel/db')
+        sqlite_connection_meta = self.squyrrel.find_class_meta_by_name('SqliteConnection', package_name='sqlite', module_name='connection')
+        self.db = self.squyrrel.create_instance(sqlite_connection_meta)
+        self.db.connect(filename='kivur_27_12_2019.db')
+
+        sql = 'select * from directors limit 10'
+        self.execute_query(sql)
+
+    def execute_query(self, sql, params=None):
+        self.db.execute(sql=sql, params=params)
+        data = self.db.fetchall()
+        for director in data:
+            self.debug(director)
+        return data
 
 def main():
 

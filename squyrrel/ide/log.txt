@@ -1,6 +1,6 @@
+After init hook for Squyrrel: IConfigRegistry.connect_signals
 After init hook for Squyrrel: IConfigRegistry.install_logging
 Setup logging of Squyrrel methods..
-After init hook for Squyrrel: IConfigRegistry.connect_signals
 Squyrrel.load_squyrrel_package()
 	Squyrrel.register_package('squyrrel')
 		Register package <squyrrel>..
@@ -1412,35 +1412,35 @@ Squyrrel.find_class_meta_by_name('CommandManager', package_name='management', mo
 	Squyrrel.find_package_by_name('management')
 		-> (Squyrrel.find_package_by_name) ->: PackageMeta(package_name=management, package_path=c:\users\lothar\passion\squyrrel\squyrrel\management, relative_path=squyrrel\management, import_string=squyrrel.management)
 
-	-> (Squyrrel.find_class_meta_by_name) ->: <squyrrel.core.registry.meta.ClassMeta object at 0x020D0610>
+	-> (Squyrrel.find_class_meta_by_name) ->: <squyrrel.core.registry.meta.ClassMeta object at 0x020ED710>
 
-Squyrrel.create_instance(<squyrrel.core.registry.meta.ClassMeta object at 0x020D0610>)
+Squyrrel.create_instance(<squyrrel.core.registry.meta.ClassMeta object at 0x020ED710>)
 	
 Create_instance of class <CommandManager>
-	Squyrrel.get_class_config(class_meta=<squyrrel.core.registry.meta.ClassMeta object at 0x020D0610>)
+	Squyrrel.get_class_config(class_meta=<squyrrel.core.registry.meta.ClassMeta object at 0x020ED710>)
 		-> (Squyrrel.get_class_config) ->: None
 
 	Squyrrel.apply_init_kwargs_hook(None, config_cls=None)
 		-> (Squyrrel.apply_init_kwargs_hook) ->: None
 
-	-> (Squyrrel.create_instance) ->: <squyrrel.management.command_manager.CommandManager object at 0x02108BB0>
+	-> (Squyrrel.create_instance) ->: <squyrrel.management.command_manager.CommandManager object at 0x02108CB0>
 
 Squyrrel.find_class_meta_by_name('ScriptReader', package_name='management', module_name='script_reader')
 	Squyrrel.find_package_by_name('management')
 		-> (Squyrrel.find_package_by_name) ->: PackageMeta(package_name=management, package_path=c:\users\lothar\passion\squyrrel\squyrrel\management, relative_path=squyrrel\management, import_string=squyrrel.management)
 
-	-> (Squyrrel.find_class_meta_by_name) ->: <squyrrel.core.registry.meta.ClassMeta object at 0x020F3EB0>
+	-> (Squyrrel.find_class_meta_by_name) ->: <squyrrel.core.registry.meta.ClassMeta object at 0x020F4FB0>
 
-Squyrrel.create_instance(<squyrrel.core.registry.meta.ClassMeta object at 0x020F3EB0>)
+Squyrrel.create_instance(<squyrrel.core.registry.meta.ClassMeta object at 0x020F4FB0>)
 	
 Create_instance of class <ScriptReader>
-	Squyrrel.get_class_config(class_meta=<squyrrel.core.registry.meta.ClassMeta object at 0x020F3EB0>)
+	Squyrrel.get_class_config(class_meta=<squyrrel.core.registry.meta.ClassMeta object at 0x020F4FB0>)
 		-> (Squyrrel.get_class_config) ->: None
 
 	Squyrrel.apply_init_kwargs_hook(None, config_cls=None)
 		-> (Squyrrel.apply_init_kwargs_hook) ->: None
 
-	-> (Squyrrel.create_instance) ->: <squyrrel.management.script_reader.ScriptReader object at 0x02108DB0>
+	-> (Squyrrel.create_instance) ->: <squyrrel.management.script_reader.ScriptReader object at 0x02108EB0>
 
 Squyrrel.register_and_load_package('squyrrel/gui')
 	Squyrrel.register_package('squyrrel/gui')
@@ -2113,15 +2113,15 @@ Squyrrel.find_class_meta_by_name(class_name='App', package_name='ide', module_na
 	Squyrrel.find_package_by_name('ide')
 		-> (Squyrrel.find_package_by_name) ->: PackageMeta(package_name=ide, package_path=c:\users\lothar\passion\squyrrel\squyrrel\ide, relative_path=squyrrel\ide, import_string=squyrrel.ide)
 
-	-> (Squyrrel.find_class_meta_by_name) ->: <squyrrel.core.registry.meta.ClassMeta object at 0x021BEF30>
+	-> (Squyrrel.find_class_meta_by_name) ->: <squyrrel.core.registry.meta.ClassMeta object at 0x022F7B90>
 
 Squyrrel.get_package('ide')
 	-> (Squyrrel.get_package) ->: PackageMeta(package_name=ide, package_path=c:\users\lothar\passion\squyrrel\squyrrel\ide, relative_path=squyrrel\ide, import_string=squyrrel.ide)
 
-Squyrrel.create_instance(<squyrrel.core.registry.meta.ClassMeta object at 0x022E28B0>, {'init_args': [None], 'init_kwargs': None, 'after_init_kwargs': {'window_title': 'Squyrrel CLI'}})
+Squyrrel.create_instance(<squyrrel.core.registry.meta.ClassMeta object at 0x02304A10>, {'init_args': [None], 'init_kwargs': None, 'after_init_kwargs': {'window_title': 'Squyrrel CLI'}})
 	
 Create_instance of class <ShellWindow>
-	Squyrrel.get_class_config(class_meta=<squyrrel.core.registry.meta.ClassMeta object at 0x022E28B0>)
+	Squyrrel.get_class_config(class_meta=<squyrrel.core.registry.meta.ClassMeta object at 0x02304A10>)
 		-> (Squyrrel.get_class_config) ->: <class 'squyrrel.ide.shell_window.ShellWindowConfig'>
 
 	Squyrrel.apply_init_kwargs_hook(None, config_cls=<class 'squyrrel.ide.shell_window.ShellWindowConfig'>)
@@ -2130,10 +2130,10 @@ Create_instance of class <ShellWindow>
 	Squyrrel.get_package('gui')
 		-> (Squyrrel.get_package) ->: PackageMeta(package_name=gui, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui, relative_path=squyrrel\gui, import_string=squyrrel.gui)
 
-	Squyrrel.create_instance(<squyrrel.core.registry.meta.ClassMeta object at 0x0213B950>, {'init_args': [<squyrrel.ide.shell_window.ShellWindow object .>], 'init_kwargs': None, 'after_init_kwargs': None})
+	Squyrrel.create_instance(<squyrrel.core.registry.meta.ClassMeta object at 0x0213AA50>, {'init_args': [<squyrrel.ide.shell_window.ShellWindow object .>], 'init_kwargs': None, 'after_init_kwargs': None})
 		
 Create_instance of class <SmartText>
-		Squyrrel.get_class_config(class_meta=<squyrrel.core.registry.meta.ClassMeta object at 0x0213B950>)
+		Squyrrel.get_class_config(class_meta=<squyrrel.core.registry.meta.ClassMeta object at 0x0213AA50>)
 			-> (Squyrrel.get_class_config) ->: <class 'squyrrel.gui.widgets.smarttext_defaultconfig.SmartTextDefaultConfig'>
 
 		Squyrrel.apply_init_kwargs_hook(None, config_cls=<class 'squyrrel.gui.widgets.smarttext_defaultconfig.SmartTextDefaultConfig'>)
@@ -2197,10 +2197,10 @@ Create_instance of class <SmartText>
 Squyrrel.get_package('ide')
 	-> (Squyrrel.get_package) ->: PackageMeta(package_name=ide, package_path=c:\users\lothar\passion\squyrrel\squyrrel\ide, relative_path=squyrrel\ide, import_string=squyrrel.ide)
 
-Squyrrel.create_instance(<squyrrel.core.registry.meta.ClassMeta object at 0x021BE610>, {'init_args': [<squyrrel.ide.shell_window.ShellWindow object .>], 'init_kwargs': None, 'after_init_kwargs': {'window_title': 'Squyrrel Log'}})
+Squyrrel.create_instance(<squyrrel.core.registry.meta.ClassMeta object at 0x021BE710>, {'init_args': [<squyrrel.ide.shell_window.ShellWindow object .>], 'init_kwargs': None, 'after_init_kwargs': {'window_title': 'Squyrrel Log'}})
 	
 Create_instance of class <LogWindow>
-	Squyrrel.get_class_config(class_meta=<squyrrel.core.registry.meta.ClassMeta object at 0x021BE610>)
+	Squyrrel.get_class_config(class_meta=<squyrrel.core.registry.meta.ClassMeta object at 0x021BE710>)
 		-> (Squyrrel.get_class_config) ->: <class 'squyrrel.ide.log_window.LogWindowConfig'>
 
 	Squyrrel.apply_init_kwargs_hook(None, config_cls=<class 'squyrrel.ide.log_window.LogWindowConfig'>)
@@ -2209,10 +2209,10 @@ Create_instance of class <LogWindow>
 	Squyrrel.get_package('gui')
 		-> (Squyrrel.get_package) ->: PackageMeta(package_name=gui, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui, relative_path=squyrrel\gui, import_string=squyrrel.gui)
 
-	Squyrrel.create_instance(<squyrrel.core.registry.meta.ClassMeta object at 0x0213B950>, {'init_args': [<squyrrel.ide.log_window.LogWindow object .!logwindow>], 'init_kwargs': None, 'after_init_kwargs': None})
+	Squyrrel.create_instance(<squyrrel.core.registry.meta.ClassMeta object at 0x0213AA50>, {'init_args': [<squyrrel.ide.log_window.LogWindow object .!logwindow>], 'init_kwargs': None, 'after_init_kwargs': None})
 		
 Create_instance of class <SmartText>
-		Squyrrel.get_class_config(class_meta=<squyrrel.core.registry.meta.ClassMeta object at 0x0213B950>)
+		Squyrrel.get_class_config(class_meta=<squyrrel.core.registry.meta.ClassMeta object at 0x0213AA50>)
 			-> (Squyrrel.get_class_config) ->: <class 'squyrrel.gui.widgets.smarttext_defaultconfig.SmartTextDefaultConfig'>
 
 		Squyrrel.apply_init_kwargs_hook(None, config_cls=<class 'squyrrel.gui.widgets.smarttext_defaultconfig.SmartTextDefaultConfig'>)
@@ -2273,88 +2273,299 @@ Create_instance of class <SmartText>
 
 	-> (Squyrrel.create_instance) ->: <squyrrel.ide.log_window.LogWindow object .!logwindow>
 
-Squyrrel.add_absolute_path('c:\\users\\lothar\\passion')
-	-> (Squyrrel.add_absolute_path) ->: 'c:\\users\\lothar\\passion'
+Squyrrel.register_and_load_package('squyrrel/db')
+	Squyrrel.register_package('squyrrel/db')
+		Register package <squyrrel/db>..
+		Squyrrel.get_full_package_path('squyrrel/db')
+			-> (Squyrrel.get_full_package_path) ->: 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel/db'
 
-Squyrrel.register_and_load_package('mathscript')
-	Squyrrel.register_package('mathscript')
-		Register package <mathscript>..
-		Squyrrel.get_full_package_path('mathscript')
-			-> (Squyrrel.get_full_package_path) ->: 'c:\\users\\lothar\\passion\\mathscript'
+		Squyrrel.package_already_registered(package_name='db')
+			-> (Squyrrel.package_already_registered) ->: True
 
-		Squyrrel.package_already_registered(package_name='mathscript')
-			-> (Squyrrel.package_already_registered) ->: False
+		-> (Squyrrel.register_package) ->: PackageMeta(package_name=db, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db, relative_path=squyrrel\db, import_string=squyrrel.db)
 
-		Squyrrel._register_package_filter('mathscript')
-			-> (Squyrrel._register_package_filter) ->: True
-
-		Successfully registered package/dir mathscript
-		Full path: c:\users\lothar\passion\mathscript
-		-> (Squyrrel.register_package) ->: PackageMeta(package_name=mathscript, package_path=c:\users\lothar\passion\mathscript, relative_path=mathscript, import_string=mathscript)
-
-	Squyrrel.load_package(PackageMeta(package_name=mathscript, package_path=c:\users\lothar\passion\mathscript, relative_path=mathscript, import_string=mathscript))
-		Load package <PackageMeta(package_name=mathscript, package_path=c:\users\lothar\passion\mathscript, relative_path=mathscript, import_string=mathscript)>...
-		Squyrrel.package_already_loaded(package_meta=PackageMeta(package_name=mathscript, package_path=c:\users\lothar\passion\mathscript, relative_path=mathscript, import_string=mathscript))
+	Squyrrel.load_package(PackageMeta(package_name=db, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db, relative_path=squyrrel\db, import_string=squyrrel.db))
+		Load package <PackageMeta(package_name=db, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db, relative_path=squyrrel\db, import_string=squyrrel.db)>...
+		Squyrrel.package_already_loaded(package_meta=PackageMeta(package_name=db, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db, relative_path=squyrrel\db, import_string=squyrrel.db))
 			-> (Squyrrel.package_already_loaded) ->: False
 
-		Squyrrel.inspect_directory(PackageMeta(package_name=mathscript, package_path=c:\users\lothar\passion\mathscript, relative_path=mathscript, import_string=mathscript))
-			-> (Squyrrel.inspect_directory) ->: (['commands', 'executor', 'ms', 'setup', 'tokenizer', '__init__'], ['testscripts', '__pycache__'])
+		Squyrrel.inspect_directory(PackageMeta(package_name=db, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db, relative_path=squyrrel\db, import_string=squyrrel.db))
+			-> (Squyrrel.inspect_directory) ->: (['connection', '__init__'], ['scripts', 'sqlite', '__pycache__'])
 
 		..is package (contains __init__.py): True
-		Squyrrel._load_package_filter(PackageMeta(package_name=mathscript, package_path=c:\users\lothar\passion\mathscript, relative_path=mathscript, import_string=mathscript))
+		Squyrrel._load_package_filter(PackageMeta(package_name=db, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db, relative_path=squyrrel\db, import_string=squyrrel.db))
 			-> (Squyrrel._load_package_filter) ->: True
 
-		Squyrrel.register_and_load_modules(package_meta=PackageMeta(package_name=mathscript, package_path=c:\users\lothar\passion\mathscript, relative_path=mathscript, import_string=mathscript), modules=['commands', 'executor', 'ms', 'setup', 'tokenizer', '__init__'], ignore_rotten_modules=False, load_classes=True)
-			Squyrrel.register_module(PackageMeta(package_name=mathscript, package_path=c:\users\lothar\passion\mathscript, relative_path=mathscript, import_string=mathscript), module_name='commands')
-				Register module <commands>..
-				-> (Squyrrel.register_module) ->: ModuleMeta(package=mathscript, module_name=commands)
+		Squyrrel.register_and_load_modules(package_meta=PackageMeta(package_name=db, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db, relative_path=squyrrel\db, import_string=squyrrel.db), modules=['connection', '__init__'], ignore_rotten_modules=False, load_classes=True)
+			Squyrrel.register_module(PackageMeta(package_name=db, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db, relative_path=squyrrel\db, import_string=squyrrel.db), module_name='connection')
+				Register module <connection>..
+				-> (Squyrrel.register_module) ->: ModuleMeta(package=db, module_name=connection)
 
-			Squyrrel.load_module(PackageMeta(package_name=mathscript, package_path=c:\users\lothar\passion\mathscript, relative_path=mathscript, import_string=mathscript), module_name='commands', load_classes=True)
-				Load module <mathscript.commands>
-				Squyrrel.load_module_classes(module_meta=ModuleMeta(package=mathscript, module_name=commands), imported_module=<module 'mathscript.commands' from 'c:\\users\\lothar\\passion\\mathscript\\commands.py'>)
-					load classes of module mathscript.commands..
-					Squyrrel.load_class(ModuleMeta(package=mathscript, module_name=commands), 'ExecuteMathScriptCommand', <class 'mathscript.commands.ExecuteMathScriptCommand'>)
-						add class ExecuteMathScriptCommand
+			Squyrrel.load_module(PackageMeta(package_name=db, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db, relative_path=squyrrel\db, import_string=squyrrel.db), module_name='connection', load_classes=True)
+				Load module <squyrrel.db.connection>
+				Squyrrel.load_module_classes(module_meta=ModuleMeta(package=db, module_name=connection), imported_module=<module 'squyrrel.db.connection' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\db\\connection.py'>)
+					load classes of module squyrrel.db.connection..
+					Squyrrel.load_class(ModuleMeta(package=db, module_name=connection), 'SqlDatabaseConnection', <class 'squyrrel.db.connection.SqlDatabaseConnection'>)
+						add class SqlDatabaseConnection
 						-> (Squyrrel.load_class) ->: None
 
-					loaded 1 classes in module module mathscript.commands
+					loaded 1 classes in module module squyrrel.db.connection
 					-> (Squyrrel.load_module_classes) ->: None
 
 				-> (Squyrrel.load_module) ->: None
 
-			Squyrrel.register_module(PackageMeta(package_name=mathscript, package_path=c:\users\lothar\passion\mathscript, relative_path=mathscript, import_string=mathscript), module_name='executor')
-				Register module <executor>..
-				-> (Squyrrel.register_module) ->: ModuleMeta(package=mathscript, module_name=executor)
+			Squyrrel.register_module(PackageMeta(package_name=db, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db, relative_path=squyrrel\db, import_string=squyrrel.db), module_name='__init__')
+				Register module <__init__>..
+				-> (Squyrrel.register_module) ->: ModuleMeta(package=db, module_name=__init__)
 
-			Squyrrel.load_module(PackageMeta(package_name=mathscript, package_path=c:\users\lothar\passion\mathscript, relative_path=mathscript, import_string=mathscript), module_name='executor', load_classes=True)
-				Load module <mathscript.executor>
-				Squyrrel.load_module_classes(module_meta=ModuleMeta(package=mathscript, module_name=executor), imported_module=<module 'mathscript.executor' from 'c:\\users\\lothar\\passion\\mathscript\\executor.py'>)
-					load classes of module mathscript.executor..
-					Squyrrel.load_class(ModuleMeta(package=mathscript, module_name=executor), 'ScriptExecutor', <class 'mathscript.executor.ScriptExecutor'>)
-						add class ScriptExecutor
-						-> (Squyrrel.load_class) ->: None
-
-					loaded 1 classes in module module mathscript.executor
+			Squyrrel.load_module(PackageMeta(package_name=db, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db, relative_path=squyrrel\db, import_string=squyrrel.db), module_name='__init__', load_classes=True)
+				Load module <squyrrel.db.__init__>
+				Squyrrel.load_module_classes(module_meta=ModuleMeta(package=db, module_name=__init__), imported_module=<module 'squyrrel.db.__init__' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\db\\__init__.py'>)
+					load classes of module squyrrel.db.__init__..
+					loaded 0 classes in module module squyrrel.db.__init__
 					-> (Squyrrel.load_module_classes) ->: None
 
 				-> (Squyrrel.load_module) ->: None
 
-			Squyrrel.register_module(PackageMeta(package_name=mathscript, package_path=c:\users\lothar\passion\mathscript, relative_path=mathscript, import_string=mathscript), module_name='ms')
-				Register module <ms>..
-				-> (Squyrrel.register_module) ->: ModuleMeta(package=mathscript, module_name=ms)
+			-> (Squyrrel.register_and_load_modules) ->: None
 
-			Squyrrel.load_module(PackageMeta(package_name=mathscript, package_path=c:\users\lothar\passion\mathscript, relative_path=mathscript, import_string=mathscript), module_name='ms', load_classes=True)
-				Load module <mathscript.ms>
-				Squyrrel.load_module_classes(module_meta=ModuleMeta(package=mathscript, module_name=ms), imported_module=<module 'mathscript.ms' from 'c:\\users\\lothar\\passion\\mathscript\\ms.py'>)
-					load classes of module mathscript.ms..
-					loaded 0 classes in module module mathscript.ms
-					-> (Squyrrel.load_module_classes) ->: None
+		Squyrrel.register_and_load_subpackages(package_meta=PackageMeta(package_name=db, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db, relative_path=squyrrel\db, import_string=squyrrel.db), subdirs=['scripts', 'sqlite', '__pycache__'], ignore_rotten_modules=False, load_classes=True)
+			Inspecting subdir scripts ..
+			Squyrrel.register_package('squyrrel\\db\\scripts')
+				Register package <squyrrel\db\scripts>..
+				Squyrrel.get_full_package_path('squyrrel\\db\\scripts')
+					-> (Squyrrel.get_full_package_path) ->: 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\db\\scripts'
 
-				-> (Squyrrel.load_module) ->: None
+				Squyrrel.package_already_registered(package_name='scripts')
+					-> (Squyrrel.package_already_registered) ->: False
 
-			Squyrrel.register_module(PackageMeta(package_name=mathscript, package_path=c:\users\lothar\passion\mathscript, relative_path=mathscript, import_string=mathscript), module_name='setup')
-				Register module <setup>..
-				-> (Squyrrel.register_module) ->: ModuleMeta(package=mathscript, module_name=setup)
+				Squyrrel._register_package_filter('scripts')
+					-> (Squyrrel._register_package_filter) ->: True
 
-			Squyrrel.load_module(PackageMeta(package_name=mathscript, package_path=c:\users\lothar\passion\mathscript, relative_path=mathscript, import_string=mathscript), module_name='setup', load_classes=True)
-				Load module <mathscript.setup>
+				Successfully registered package/dir scripts
+				Full path: c:\users\lothar\passion\squyrrel\squyrrel\db\scripts
+				-> (Squyrrel.register_package) ->: PackageMeta(package_name=scripts, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\scripts, relative_path=squyrrel\db\scripts, import_string=squyrrel.db.scripts)
+
+			Squyrrel.load_package(PackageMeta(package_name=scripts, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\scripts, relative_path=squyrrel\db\scripts, import_string=squyrrel.db.scripts), ignore_rotten_modules=False, load_classes=True, load_subpackages=True)
+				Load package <PackageMeta(package_name=scripts, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\scripts, relative_path=squyrrel\db\scripts, import_string=squyrrel.db.scripts)>...
+				Squyrrel.package_already_loaded(package_meta=PackageMeta(package_name=scripts, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\scripts, relative_path=squyrrel\db\scripts, import_string=squyrrel.db.scripts))
+					-> (Squyrrel.package_already_loaded) ->: False
+
+				Squyrrel.inspect_directory(PackageMeta(package_name=scripts, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\scripts, relative_path=squyrrel\db\scripts, import_string=squyrrel.db.scripts))
+					-> (Squyrrel.inspect_directory) ->: ([], [])
+
+				..is package (contains __init__.py): False
+				Squyrrel._load_package_filter(PackageMeta(package_name=scripts, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\scripts, relative_path=squyrrel\db\scripts, import_string=squyrrel.db.scripts))
+					-> (Squyrrel._load_package_filter) ->: True
+
+				Squyrrel.register_and_load_modules(package_meta=PackageMeta(package_name=scripts, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\scripts, relative_path=squyrrel\db\scripts, import_string=squyrrel.db.scripts), modules=[], ignore_rotten_modules=False, load_classes=True)
+					-> (Squyrrel.register_and_load_modules) ->: None
+
+				Squyrrel.register_and_load_subpackages(package_meta=PackageMeta(package_name=scripts, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\scripts, relative_path=squyrrel\db\scripts, import_string=squyrrel.db.scripts), subdirs=[], ignore_rotten_modules=False, load_classes=True)
+					-> (Squyrrel.register_and_load_subpackages) ->: None
+
+				-> (Squyrrel.load_package) ->: PackageMeta(package_name=scripts, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\scripts, relative_path=squyrrel\db\scripts, import_string=squyrrel.db.scripts)
+
+			Inspecting subdir sqlite ..
+			Squyrrel.register_package('squyrrel\\db\\sqlite')
+				Register package <squyrrel\db\sqlite>..
+				Squyrrel.get_full_package_path('squyrrel\\db\\sqlite')
+					-> (Squyrrel.get_full_package_path) ->: 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\db\\sqlite'
+
+				Squyrrel.package_already_registered(package_name='sqlite')
+					-> (Squyrrel.package_already_registered) ->: False
+
+				Squyrrel._register_package_filter('sqlite')
+					-> (Squyrrel._register_package_filter) ->: True
+
+				Successfully registered package/dir sqlite
+				Full path: c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite
+				-> (Squyrrel.register_package) ->: PackageMeta(package_name=sqlite, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite, relative_path=squyrrel\db\sqlite, import_string=squyrrel.db.sqlite)
+
+			Squyrrel.load_package(PackageMeta(package_name=sqlite, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite, relative_path=squyrrel\db\sqlite, import_string=squyrrel.db.sqlite), ignore_rotten_modules=False, load_classes=True, load_subpackages=True)
+				Load package <PackageMeta(package_name=sqlite, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite, relative_path=squyrrel\db\sqlite, import_string=squyrrel.db.sqlite)>...
+				Squyrrel.package_already_loaded(package_meta=PackageMeta(package_name=sqlite, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite, relative_path=squyrrel\db\sqlite, import_string=squyrrel.db.sqlite))
+					-> (Squyrrel.package_already_loaded) ->: False
+
+				Squyrrel.inspect_directory(PackageMeta(package_name=sqlite, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite, relative_path=squyrrel\db\sqlite, import_string=squyrrel.db.sqlite))
+					-> (Squyrrel.inspect_directory) ->: (['commands', 'config', 'connection', '__init__'], ['__pycache__'])
+
+				..is package (contains __init__.py): True
+				Squyrrel._load_package_filter(PackageMeta(package_name=sqlite, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite, relative_path=squyrrel\db\sqlite, import_string=squyrrel.db.sqlite))
+					-> (Squyrrel._load_package_filter) ->: True
+
+				Squyrrel.register_and_load_modules(package_meta=PackageMeta(package_name=sqlite, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite, relative_path=squyrrel\db\sqlite, import_string=squyrrel.db.sqlite), modules=['commands', 'config', 'connection', '__init__'], ignore_rotten_modules=False, load_classes=True)
+					Squyrrel.register_module(PackageMeta(package_name=sqlite, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite, relative_path=squyrrel\db\sqlite, import_string=squyrrel.db.sqlite), module_name='commands')
+						Register module <commands>..
+						-> (Squyrrel.register_module) ->: ModuleMeta(package=sqlite, module_name=commands)
+
+					Squyrrel.load_module(PackageMeta(package_name=sqlite, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite, relative_path=squyrrel\db\sqlite, import_string=squyrrel.db.sqlite), module_name='commands', load_classes=True)
+						Load module <squyrrel.db.sqlite.commands>
+						Squyrrel.load_module_classes(module_meta=ModuleMeta(package=sqlite, module_name=commands), imported_module=<module 'squyrrel.db.sqlite.commands' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\db\\sqlite\\commands.py'>)
+							load classes of module squyrrel.db.sqlite.commands..
+							Squyrrel.load_class(ModuleMeta(package=sqlite, module_name=commands), 'SqliteCommand', <class 'squyrrel.db.sqlite.commands.SqliteCommand'>)
+								add class SqliteCommand
+								-> (Squyrrel.load_class) ->: None
+
+							Squyrrel.load_class(ModuleMeta(package=sqlite, module_name=commands), 'SqliteConnectCommand', <class 'squyrrel.db.sqlite.commands.SqliteConnectCommand'>)
+								add class SqliteConnectCommand
+								-> (Squyrrel.load_class) ->: None
+
+							loaded 2 classes in module module squyrrel.db.sqlite.commands
+							-> (Squyrrel.load_module_classes) ->: None
+
+						-> (Squyrrel.load_module) ->: None
+
+					Squyrrel.register_module(PackageMeta(package_name=sqlite, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite, relative_path=squyrrel\db\sqlite, import_string=squyrrel.db.sqlite), module_name='config')
+						Register module <config>..
+						-> (Squyrrel.register_module) ->: ModuleMeta(package=sqlite, module_name=config)
+
+					Squyrrel.load_module(PackageMeta(package_name=sqlite, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite, relative_path=squyrrel\db\sqlite, import_string=squyrrel.db.sqlite), module_name='config', load_classes=True)
+						Load module <squyrrel.db.sqlite.config>
+						Squyrrel.load_module_classes(module_meta=ModuleMeta(package=sqlite, module_name=config), imported_module=<module 'squyrrel.db.sqlite.config' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\db\\sqlite\\config.py'>)
+							load classes of module squyrrel.db.sqlite.config..
+							Squyrrel.load_class(ModuleMeta(package=sqlite, module_name=config), 'SqliteConnectionConfig', <class 'squyrrel.db.sqlite.config.SqliteConnectionConfig'>)
+								add class SqliteConnectionConfig
+								-> (Squyrrel.load_class) ->: None
+
+							loaded 1 classes in module module squyrrel.db.sqlite.config
+							-> (Squyrrel.load_module_classes) ->: None
+
+						-> (Squyrrel.load_module) ->: None
+
+					Squyrrel.register_module(PackageMeta(package_name=sqlite, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite, relative_path=squyrrel\db\sqlite, import_string=squyrrel.db.sqlite), module_name='connection')
+						Register module <connection>..
+						-> (Squyrrel.register_module) ->: ModuleMeta(package=sqlite, module_name=connection)
+
+					Squyrrel.load_module(PackageMeta(package_name=sqlite, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite, relative_path=squyrrel\db\sqlite, import_string=squyrrel.db.sqlite), module_name='connection', load_classes=True)
+						Load module <squyrrel.db.sqlite.connection>
+						Squyrrel.load_module_classes(module_meta=ModuleMeta(package=sqlite, module_name=connection), imported_module=<module 'squyrrel.db.sqlite.connection' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\db\\sqlite\\connection.py'>)
+							load classes of module squyrrel.db.sqlite.connection..
+							Squyrrel.load_class(ModuleMeta(package=sqlite, module_name=connection), 'SqliteConnection', <class 'squyrrel.db.sqlite.connection.SqliteConnection'>)
+								add class SqliteConnection
+								-> (Squyrrel.load_class) ->: None
+
+							loaded 1 classes in module module squyrrel.db.sqlite.connection
+							-> (Squyrrel.load_module_classes) ->: None
+
+						-> (Squyrrel.load_module) ->: None
+
+					Squyrrel.register_module(PackageMeta(package_name=sqlite, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite, relative_path=squyrrel\db\sqlite, import_string=squyrrel.db.sqlite), module_name='__init__')
+						Register module <__init__>..
+						-> (Squyrrel.register_module) ->: ModuleMeta(package=sqlite, module_name=__init__)
+
+					Squyrrel.load_module(PackageMeta(package_name=sqlite, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite, relative_path=squyrrel\db\sqlite, import_string=squyrrel.db.sqlite), module_name='__init__', load_classes=True)
+						Load module <squyrrel.db.sqlite.__init__>
+						Squyrrel.load_module_classes(module_meta=ModuleMeta(package=sqlite, module_name=__init__), imported_module=<module 'squyrrel.db.sqlite.__init__' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\db\\sqlite\\__init__.py'>)
+							load classes of module squyrrel.db.sqlite.__init__..
+							loaded 0 classes in module module squyrrel.db.sqlite.__init__
+							-> (Squyrrel.load_module_classes) ->: None
+
+						-> (Squyrrel.load_module) ->: None
+
+					-> (Squyrrel.register_and_load_modules) ->: None
+
+				Squyrrel.register_and_load_subpackages(package_meta=PackageMeta(package_name=sqlite, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite, relative_path=squyrrel\db\sqlite, import_string=squyrrel.db.sqlite), subdirs=['__pycache__'], ignore_rotten_modules=False, load_classes=True)
+					Inspecting subdir __pycache__ ..
+					Squyrrel.register_package('squyrrel\\db\\sqlite\\__pycache__')
+						Register package <squyrrel\db\sqlite\__pycache__>..
+						Squyrrel.get_full_package_path('squyrrel\\db\\sqlite\\__pycache__')
+							-> (Squyrrel.get_full_package_path) ->: 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\db\\sqlite\\__pycache__'
+
+						Squyrrel._register_package_filter('__pycache__')
+							-> (Squyrrel._register_package_filter) ->: True
+
+						Successfully registered package/dir __pycache__
+						Full path: c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite\__pycache__
+						-> (Squyrrel.register_package) ->: PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite\__pycache__, relative_path=squyrrel\db\sqlite\__pycache__, import_string=squyrrel.db.sqlite.__pycache__)
+
+					Squyrrel.load_package(PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite\__pycache__, relative_path=squyrrel\db\sqlite\__pycache__, import_string=squyrrel.db.sqlite.__pycache__), ignore_rotten_modules=False, load_classes=True, load_subpackages=True)
+						Load package <PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite\__pycache__, relative_path=squyrrel\db\sqlite\__pycache__, import_string=squyrrel.db.sqlite.__pycache__)>...
+						Squyrrel.package_already_loaded(package_meta=PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite\__pycache__, relative_path=squyrrel\db\sqlite\__pycache__, import_string=squyrrel.db.sqlite.__pycache__))
+							-> (Squyrrel.package_already_loaded) ->: False
+
+						Squyrrel.inspect_directory(PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite\__pycache__, relative_path=squyrrel\db\sqlite\__pycache__, import_string=squyrrel.db.sqlite.__pycache__))
+							-> (Squyrrel.inspect_directory) ->: ([], [])
+
+						..is package (contains __init__.py): False
+						Squyrrel._load_package_filter(PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite\__pycache__, relative_path=squyrrel\db\sqlite\__pycache__, import_string=squyrrel.db.sqlite.__pycache__))
+							-> (Squyrrel._load_package_filter) ->: True
+
+						Squyrrel.register_and_load_modules(package_meta=PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite\__pycache__, relative_path=squyrrel\db\sqlite\__pycache__, import_string=squyrrel.db.sqlite.__pycache__), modules=[], ignore_rotten_modules=False, load_classes=True)
+							-> (Squyrrel.register_and_load_modules) ->: None
+
+						Squyrrel.register_and_load_subpackages(package_meta=PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite\__pycache__, relative_path=squyrrel\db\sqlite\__pycache__, import_string=squyrrel.db.sqlite.__pycache__), subdirs=[], ignore_rotten_modules=False, load_classes=True)
+							-> (Squyrrel.register_and_load_subpackages) ->: None
+
+						-> (Squyrrel.load_package) ->: PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite\__pycache__, relative_path=squyrrel\db\sqlite\__pycache__, import_string=squyrrel.db.sqlite.__pycache__)
+
+					-> (Squyrrel.register_and_load_subpackages) ->: None
+
+				-> (Squyrrel.load_package) ->: PackageMeta(package_name=sqlite, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite, relative_path=squyrrel\db\sqlite, import_string=squyrrel.db.sqlite)
+
+			Add subpackage sqlite to package db
+			Inspecting subdir __pycache__ ..
+			Squyrrel.register_package('squyrrel\\db\\__pycache__')
+				Register package <squyrrel\db\__pycache__>..
+				Squyrrel.get_full_package_path('squyrrel\\db\\__pycache__')
+					-> (Squyrrel.get_full_package_path) ->: 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\db\\__pycache__'
+
+				Squyrrel._register_package_filter('__pycache__')
+					-> (Squyrrel._register_package_filter) ->: True
+
+				Successfully registered package/dir __pycache__
+				Full path: c:\users\lothar\passion\squyrrel\squyrrel\db\__pycache__
+				-> (Squyrrel.register_package) ->: PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\__pycache__, relative_path=squyrrel\db\__pycache__, import_string=squyrrel.db.__pycache__)
+
+			Squyrrel.load_package(PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\__pycache__, relative_path=squyrrel\db\__pycache__, import_string=squyrrel.db.__pycache__), ignore_rotten_modules=False, load_classes=True, load_subpackages=True)
+				Load package <PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\__pycache__, relative_path=squyrrel\db\__pycache__, import_string=squyrrel.db.__pycache__)>...
+				Squyrrel.package_already_loaded(package_meta=PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\__pycache__, relative_path=squyrrel\db\__pycache__, import_string=squyrrel.db.__pycache__))
+					-> (Squyrrel.package_already_loaded) ->: False
+
+				Squyrrel.inspect_directory(PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\__pycache__, relative_path=squyrrel\db\__pycache__, import_string=squyrrel.db.__pycache__))
+					-> (Squyrrel.inspect_directory) ->: ([], [])
+
+				..is package (contains __init__.py): False
+				Squyrrel._load_package_filter(PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\__pycache__, relative_path=squyrrel\db\__pycache__, import_string=squyrrel.db.__pycache__))
+					-> (Squyrrel._load_package_filter) ->: True
+
+				Squyrrel.register_and_load_modules(package_meta=PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\__pycache__, relative_path=squyrrel\db\__pycache__, import_string=squyrrel.db.__pycache__), modules=[], ignore_rotten_modules=False, load_classes=True)
+					-> (Squyrrel.register_and_load_modules) ->: None
+
+				Squyrrel.register_and_load_subpackages(package_meta=PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\__pycache__, relative_path=squyrrel\db\__pycache__, import_string=squyrrel.db.__pycache__), subdirs=[], ignore_rotten_modules=False, load_classes=True)
+					-> (Squyrrel.register_and_load_subpackages) ->: None
+
+				-> (Squyrrel.load_package) ->: PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\__pycache__, relative_path=squyrrel\db\__pycache__, import_string=squyrrel.db.__pycache__)
+
+			-> (Squyrrel.register_and_load_subpackages) ->: None
+
+		-> (Squyrrel.load_package) ->: PackageMeta(package_name=db, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db, relative_path=squyrrel\db, import_string=squyrrel.db)
+
+	-> (Squyrrel.register_and_load_package) ->: PackageMeta(package_name=db, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db, relative_path=squyrrel\db, import_string=squyrrel.db)
+
+Squyrrel.find_class_meta_by_name('SqliteConnection', package_name='sqlite', module_name='connection')
+	Squyrrel.find_package_by_name('sqlite')
+		-> (Squyrrel.find_package_by_name) ->: PackageMeta(package_name=sqlite, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite, relative_path=squyrrel\db\sqlite, import_string=squyrrel.db.sqlite)
+
+	-> (Squyrrel.find_class_meta_by_name) ->: <squyrrel.core.registry.meta.ClassMeta object at 0x02418350>
+
+Squyrrel.create_instance(<squyrrel.core.registry.meta.ClassMeta object at 0x02418350>)
+	
+Create_instance of class <SqliteConnection>
+	Squyrrel.get_class_config(class_meta=<squyrrel.core.registry.meta.ClassMeta object at 0x02418350>)
+		-> (Squyrrel.get_class_config) ->: <class 'squyrrel.db.sqlite.config.SqliteConnectionConfig'>
+
+	Squyrrel.apply_init_kwargs_hook(None, config_cls=<class 'squyrrel.db.sqlite.config.SqliteConnectionConfig'>)
+		-> (Squyrrel.apply_init_kwargs_hook) ->: None
+
+	config class: SqliteConnectionConfig
+	Squyrrel.config_instance(instance=<squyrrel.db.sqlite.connection.SqliteConnection object at 0x0241E2B0>, cls=<class 'squyrrel.db.sqlite.connection.SqliteConnection'>, config_cls=<class 'squyrrel.db.sqlite.config.SqliteConnectionConfig'>, params={})
+		After init hook for SqliteConnection: IConfigRegistry.install_logging
+		Setup logging of SqliteConnection methods..
+		-> (Squyrrel.config_instance) ->: None
+
+	-> (Squyrrel.create_instance) ->: <squyrrel.db.sqlite.connection.SqliteConnection object at 0x0241E2B0>
+
+SqliteConnection.connect(filename='kivur_27_12_2019.db')
+	-> (SqliteConnection.connect) ->: None
+

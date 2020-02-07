@@ -17,7 +17,7 @@ class NodeVisitor:
             return visitor(node, *args, **kwargs)
         else:
             print(f'no visit_ found for {cls_.__name__}')
-            return str(node)
+            return repr(node)
             #return self.generic_visit(node, *args, **kwargs)
 
     def generic_visit(self, node, *args, **kwargs):

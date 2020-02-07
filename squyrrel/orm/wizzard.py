@@ -15,8 +15,6 @@ class QueryWizzard:
     def execute_query(self, sql, params=None):
         self.last_sql_query = sql
         self.db.execute(sql=sql, params=params)
-        data = self.db.fetchall()
-        return data
 
     def on_model_loaded(self, *args, **kwargs):
         new_model_class_meta = kwargs.get('class_meta') or args[0]
@@ -44,11 +42,49 @@ class QueryWizzard:
                 raise Exception(f'Orm: did not find model {model}')
         return model
 
-    def get_all(self, model, page_size=None, page_number=None):
-        select_fields = []
+    def build_select_fields(self, model, select_fields):
+        if select_fields is None:
+            select_fields = []
+            for field_name, field in model.fields():
+                select_fields.append(field_name)
+        return select_fields
+
+    def get(self, model, select_fields=None, filter_condition=None):
+
         model = self.get_model(model)
-        for field_name, field in model.fields().items():
-            select_fields.append(field_name)
+        select_fields = self.build_select_fields(model, select_fields)
+
+        print('model:', model)
+        print('select_fields:', select_fields)
+        print('filter_condition:', filter_condition)
+
+        query = Query(
+            select_clause=SelectClause(*select_fields),
+            from_clause=FromClause(model.table_name),
+            where_clause=WhereClause(filter_condition),
+            pagination=None
+        )
+
+        sql = self.builder.build(query)
+        print(sql)
+
+        try:
+            self.execute_query(sql)
+        except Exception:
+            raise Exception(f'Error during execution of query: \n{sql}')
+
+        data = self.db.fetchone()
+
+        if data is None:
+            return None
+
+        return self.build_entity(model, data, select_fields)
+
+    def get_all(self, model, select_fields=None, page_size=None, page_number=None):
+
+        model = self.get_model(model)
+        select_fields = self.build_select_fields(model, select_fields)
+
         if page_number is None:
             pagination = None
         else:
@@ -61,13 +97,16 @@ class QueryWizzard:
         )
 
         sql = self.builder.build(query)
-        # sql = f'select {select_expr} from {model.table_name} {pagination}'
+        print(sql)
 
         try:
-            res = self.execute_query(sql)
+            self.execute_query(sql)
         except Exception:
             raise Exception(f'Error during execution of query: \n{sql}')
 
+        res = self.db.fetchall()
+        if not res:
+            return []
         entities = []
         for data in res:
             entities.append(self.build_entity(model, data, select_fields))

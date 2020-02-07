@@ -28,7 +28,6 @@ class Query:
             if 'indent' in options:
                 self.indent = options[indent]
 
-
     def get_clauses(self):
         clauses = [self.select_clause, self.from_clause]
         for clause in (self.where_clause,

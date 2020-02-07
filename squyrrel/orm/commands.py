@@ -1,4 +1,5 @@
 from squyrrel.management.base import BaseCommand
+from squyrrel.sql.expressions import Equals, NumericalLiteral, ColumnReference
 
 
 class OrmCommand(BaseCommand):
@@ -29,4 +30,33 @@ class GetAllCommand(OrmCommand):
         page_size = kwargs.get('page_size', 20)
         page_number = kwargs.get('page_number', None)
         res = self._wizz.get_all(model, page_size=page_size, page_number=page_number)
+        print(res)
+
+
+class GetCommand(OrmCommand):
+    name = 'get'
+
+    def add_arguments(self, parser):
+        parser.add_argument('model', type=str, help='Model for which to get object (db table rows)')
+
+    def handle(self, *args, **kwargs):
+        model = kwargs.pop('model')
+        # todo: build/parse filter_condition
+        res = self._wizz.get(model, filter_condition=None)
+        print(res)
+
+
+class GetByIdCommand(OrmCommand):
+    name = 'get_by_id'
+
+    def add_arguments(self, parser):
+        parser.add_argument('model', type=str, help='Model for which to get object by id (db table rows)')
+        parser.add_argument('id', type=str)
+
+    def handle(self, *args, **kwargs):
+        model = kwargs.pop('model')
+        id_ = kwargs.pop('id')
+        model = self._wizz.get_model(model)
+        filter_condition = Equals(ColumnReference(model.id_field_name()), NumericalLiteral(id_))
+        res = self._wizz.get(model, filter_condition=filter_condition)
         print(res)

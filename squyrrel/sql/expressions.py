@@ -45,6 +45,7 @@ Mathematical operators:
 
 
 class ValueExpression:
+
     def __init__(self, value):
         self.value = value
 
@@ -71,8 +72,33 @@ class DateLiteral(StringLiteral):
 
 
 class NumericalLiteral(Literal):
-    pass
 
+    def __init__(self, value):
+        if isinstance(value, str):
+            if NumericalLiteral.is_int(value):
+                self.value = int(value)
+            elif NumericalLiteral.is_float(value):
+                self.value = float(value)
+            else:
+                self.value = value
+        else:
+            self.value = value
+
+    @staticmethod
+    def is_float(value):
+        try:
+            float(value)
+        except ValueError:
+            return False
+        return True
+
+    @staticmethod
+    def is_int(value):
+        try:
+            int(value)
+        except ValueError:
+            return False
+        return True
 
 
 class ColumnReference:

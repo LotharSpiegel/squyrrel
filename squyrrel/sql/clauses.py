@@ -18,7 +18,7 @@ class WhereClause:
         self.condition = condition
 
     def __repr__(self):
-        return f'WHERE {str(self.condition)}'
+        return f'WHERE {repr(self.condition)}'
 
 
 class OrderByClause:

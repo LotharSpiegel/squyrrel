@@ -11,6 +11,9 @@
     "line_numbers_sel_bg": "gray37",
     "cursor_bg": "white",
     "tags": {
+        "success": {
+            "foreground": "green"
+        },
         "error": {
             "foreground": "red"
         },

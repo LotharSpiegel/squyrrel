@@ -12,6 +12,7 @@ class Query:
                 group_by_clause=None,
                 having_clause=None,
                 order_by_clause=None,
+                pagination=None,
                 options=None):
 
         self.select_clause = select_clause
@@ -20,6 +21,7 @@ class Query:
         self.group_by_clause = group_by_clause
         self.having_clause = having_clause
         self.order_by_clause = order_by_clause
+        self.pagination = pagination
 
         self.indent = ' ' * 4
         if options is not None:
@@ -32,7 +34,8 @@ class Query:
         for clause in (self.where_clause,
                        self.group_by_clause,
                        self.having_clause,
-                       self.order_by_clause):
+                       self.order_by_clause,
+                       self.pagination):
             if clause is not None:
                 clauses.append(clause)
         return clauses

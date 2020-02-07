@@ -1,5 +1,5 @@
 
-from gui import gui_factory
+from .gui import gui_factory
 from squyrrel.gui.windows.base import TextMainWindow
 from squyrrel.core.signals import Signal
 from squyrrel.core.config.base import IConfig

@@ -431,8 +431,10 @@ Packages not loaded (because they were filtered): {', '.join(filtered_packages)}
             init_kwargs_methods = config_cls.get_hook_methods(IConfig.HOOK_INIT_KWARGS)
             for method in init_kwargs_methods:
                 init_kwargs = method(init_kwargs or {})
+        return init_kwargs
 
     def create_instance(self, class_meta, params=None, add_object=True):
+        # todo: replace params by **params
         self.debug(f'\nCreate_instance of class <{class_meta.class_name}>')
         config_cls = self.get_class_config(class_meta=class_meta)
 
@@ -476,3 +478,7 @@ Packages not loaded (because they were filtered): {', '.join(filtered_packages)}
         """Returns singleton ConfigRegistry() which handles association of
         classes and config class"""
         return ConfigRegistry()
+
+    def load_orm_packages(self):
+        for package in ('sql', 'db', 'orm'):
+            self.register_and_load_package(package)

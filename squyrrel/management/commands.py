@@ -64,6 +64,7 @@ class ClassInfoCommand(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('name', type=str, help='Name of the class')
+        # todo: add arg module
         #parser.add_argument('-n', '--name', help='Name of the class')
         # parser.add_argument('-m', '--module', help='Module name', default=None)
 

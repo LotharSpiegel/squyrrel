@@ -1,5 +1,5 @@
 
-from gui import gui_factory
+from .gui import gui_factory
 from squyrrel.gui.windows.base import TextWindow
 from squyrrel.core.config.base import IConfig
 from squyrrel.core.config.decorators import hook

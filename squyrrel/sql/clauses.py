@@ -51,3 +51,18 @@ class SelectClause:
 
     def __repr__(self):
         return f'SELECT {self.items_tostring()}'
+
+
+class Pagination:
+
+    def __init__(self, page_size, page_number=None):
+        self.page_size = page_size
+        if page_number is None:
+            self.offset = None
+        else:
+            self.offset = (page_number - 1) * page_size
+
+    def __repr__(self):
+        if self.offset is None:
+            return f'LIMIT {self.page_size}'
+        return f'LIMIT {self.page_size} OFFSET {self.offset}'

@@ -30,7 +30,9 @@ class CommandManager:
             return
         key = self.convert_prefix_and_name_to_command_key(prefix=prefix, name=name)
         if key in self.commands.keys():
-            raise Exception(f'There is already a command on key <{key}>')
+            # raise Exception(f'There is already a command on key <{key}>')
+            print(f'There is already a command on key <{key}>')
+            return
         self.commands[key] = cmd_cls_meta
         print('register_command:', key)
 

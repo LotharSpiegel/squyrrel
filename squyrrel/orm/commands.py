@@ -1,5 +1,6 @@
 from squyrrel.management.base import BaseCommand
-from squyrrel.sql.expressions import Equals, NumericalLiteral, ColumnReference
+from squyrrel.sql.expressions import Equals, NumericalLiteral
+from squyrrel.sql.references import ColumnReference
 
 
 class OrmCommand(BaseCommand):

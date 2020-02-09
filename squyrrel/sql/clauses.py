@@ -1,5 +1,6 @@
 
 
+
 class FromClause:
     """FROM table_reference
     where table_reference can be: a table name,
@@ -56,11 +57,11 @@ class SelectClause:
 class Pagination:
 
     def __init__(self, page_size, page_number=None):
-        self.page_size = page_size
+        self.page_size = int(page_size)
         if page_number is None:
             self.offset = None
         else:
-            self.offset = (page_number - 1) * page_size
+            self.offset = (int(page_number) - 1) * self.page_size
 
     def __repr__(self):
         if self.offset is None:

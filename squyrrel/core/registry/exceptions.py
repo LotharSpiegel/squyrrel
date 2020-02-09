@@ -18,3 +18,7 @@ class ModuleRottenException(Exception):
 
 class PackageNotFoundException(Exception):
     pass
+
+
+class ObjectNotFoundError(Exception):
+    pass

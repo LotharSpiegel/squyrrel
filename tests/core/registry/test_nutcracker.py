@@ -78,38 +78,38 @@ class TestSquyrrel:
     # def test_load_module_not_found_raise_exception(self):
     #     package = self.squyrrel.register_package(relative_path='test_package')
     #     with pytest.raises(ModuleNotFoundException):
-    #         self.squyrrel.load_module(package, module_name='non_existing_module')
+    #         self.squyrrel.load_module(package=package, module_name='non_existing_module')
 
     def test_load_module_not_registered_raise_exception(self):
         package = self.squyrrel.register_package(relative_path='test_package')
         package.add_module('not_registered_module', status='foo')
 
         with pytest.raises(ModuleNotRegisteredException):
-            self.squyrrel.load_module(package, module_name='not_registered_module')
+            self.squyrrel.load_module(package=package, module_name='not_registered_module')
 
     def test_load_module_raise_module_not_found_error(self):
         package = self.squyrrel.register_package(relative_path='test_package')
         self.squyrrel.register_module(package, module_name='non_existing_module')
         with pytest.raises(ModuleNotFoundError):
-            self.squyrrel.load_module(package, module_name='non_existing_module')
+            self.squyrrel.load_module(package=package, module_name='non_existing_module')
 
     def test_load_rotten_module_raise_error(self):
         package = self.squyrrel.register_package(relative_path='test_package')
         self.squyrrel.register_module(package, module_name='rotten_module')
         with pytest.raises(ModuleRottenException):
-            self.squyrrel.load_module(package, module_name='rotten_module')
+            self.squyrrel.load_module(package=package, module_name='rotten_module')
 
     def test_load_module(self):
         package = self.squyrrel.register_package(relative_path='test_package')
         self.squyrrel.register_module(package, 'module1')
-        self.squyrrel.load_module(package, 'module1', load_classes=False)
+        self.squyrrel.load_module(package=package, 'module1', load_classes=False)
         assert package['module1'].loaded == True
         assert package['module1'].classes_loaded == False
 
     def test_load_classes(self):
         package = self.squyrrel.register_package(relative_path='test_package')
         self.squyrrel.register_module(package, 'module1')
-        imported_module = self.squyrrel.load_module(package, 'module1')
+        imported_module = self.squyrrel.load_module(package=package, 'module1')
         self.squyrrel.load_module_classes(package['module1'], imported_module=imported_module)
         assert package['module1'].classes_loaded == True
         assert package['module1'].num_classes == 2

@@ -13,7 +13,7 @@ import sys
 
 from squyrrel.core.registry.exceptions import *
 from squyrrel.core.registry.exception_handler import ExceptionHandler
-from squyrrel.core.registry.meta import PackageMeta
+from squyrrel.core.registry.meta import PackageMeta, ClassMeta
 from squyrrel.core.registry.signals import (squyrrel_debug_signal, squyrrel_error_signal,
     class_loaded_signal)
 from squyrrel.core.utils.singleton import Singleton
@@ -36,6 +36,8 @@ class Squyrrel(metaclass=Singleton):
         self.initialize(root_path=root_path, config_class=config_class)
 
         self.load_squyrrel_package()
+
+        print(f'Squyrrel ({id(self)}) awakened')
 
     def initialize(self, root_path=None, config_class=None):
         self.packages = {}
@@ -196,6 +198,12 @@ Packages not loaded (because they were filtered): {', '.join(filtered_packages)}
                 return package_meta
         raise PackageNotFoundException(name)
 
+    def get_registered_package(self, name):
+        try:
+            return self.find_package_by_name(name)
+        except PackageNotFoundException:
+            return self.register_package(name)
+
     def inspect_directory(self, package_meta):
         modules = []
         for root, sub_dirs, files in os.walk(package_meta.path):
@@ -219,10 +227,17 @@ Packages not loaded (because they were filtered): {', '.join(filtered_packages)}
                 package_name=package.name))
         return package.add_module(module_name=module_name)
 
-    def load_module(self, package, module_name, load_classes=True):
+    def load_module(self, module_name, package=None, load_classes=True):
+
         module_registered = False
 
-        module_meta = package.find_module(module_name, status='registered')
+        if package is None:
+            module_meta = ModuleMeta(package=None, module_name=module_name)
+        else:
+            if package.status == 'registered':
+                module_meta = package.add_module(module_name=module_name)
+            else:
+                module_meta = package.find_module(module_name, status='registered')
 
         self.debug(f'Load module <{module_meta.import_string}>')
 
@@ -355,18 +370,15 @@ Packages not loaded (because they were filtered): {', '.join(filtered_packages)}
         return [package for package in self.packages if package.loaded]
         return self._loaded_packages
 
-    def package_already_loaded(self, package_meta):
-        return False
-
     def load_package(self, package_meta, ignore_rotten_modules=False,
                            load_classes=True, load_subpackages=True,
                            load_package_filter=None, raise_when_already_loaded=False):
         self.debug('Load package <{package}>...'.format(package=repr(package_meta)))
 
-        if self.package_already_loaded(package_meta=package_meta):
+        if package_meta.loaded:
             if raise_when_already_loaded:
                 raise Exception(f'Package <{str(package_meta)}> is already loaded!')
-            return
+            return package_meta
 
         modules, subdirs = self.inspect_directory(package_meta)
         self.debug(f'..is package (contains __init__.py): {package_meta.has_init}')
@@ -403,7 +415,7 @@ Packages not loaded (because they were filtered): {', '.join(filtered_packages)}
         for module in modules:
             module_meta = self.register_module(package_meta, module_name=module)
             try:
-                self.load_module(package_meta, module_name=module, load_classes=load_classes)
+                self.load_module(package=package_meta, module_name=module, load_classes=load_classes)
             except ModuleRottenException:
                 if not ignore_rotten_modules:
                     raise
@@ -456,18 +468,22 @@ Packages not loaded (because they were filtered): {', '.join(filtered_packages)}
 
         return instance
 
-    def get_object(self, class_name, package_name=None, module_name=None, **kwargs):
+    def get_object(self, class_name_or_meta, package_name=None, module_name=None,
+                    create_instance_when_not_found=True, params=None):
         # todo: refine searching criteria
-        if class_name == 'Squyrrel':
-            return self
+        print('get_object:', class_name_or_meta)
 
-        print('get_object, class_name=', class_name)
-
-        class_meta = self.find_class_meta_by_name(class_name, package_name=package_name, module_name=module_name)
+        if isinstance(class_name_or_meta, ClassMeta):
+            class_meta = class_name_or_meta
+        else:
+            class_meta = self.find_class_meta_by_name(class_name, package_name=package_name, module_name=module_name)
         try:
             return class_meta.get_first_instance()
         except IndexError:
-            raise Exception(f'No object of class <{str(class_meta)}> stored!')
+            if create_instance_when_not_found:
+                return self.create_instance(class_meta, params=params, add_object=True)
+            else:
+                raise ObjectNotFoundError(f'No object of class <{str(class_meta)}> stored!')
 
     def get_class_config(self, class_meta):
         class_name = class_meta.class_name

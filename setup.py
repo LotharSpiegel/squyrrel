@@ -12,10 +12,10 @@ setup(
 
     # Versions should comply with PEP 440:
     # https://www.python.org/dev/peps/pep-0440/
-    version='0.1.2',
+    version='0.1.3',
     download_url='https://github.com/LotharSpiegel/squyrrel/archive/v0.1.1.tar.gz',
 
-    description='Python library for scanning and lazy importing of classes, modules and packages',  # Optional
+    description='Python library for scanning and lazy importing of classes, modules and packages. Including sql parser, builder and an Orm.',
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/LotharSpiegel/squyrrel',
@@ -47,6 +47,7 @@ setup(
         # 'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
 
         'Operating System :: OS Independent',
     ],

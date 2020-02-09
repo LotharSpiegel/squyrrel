@@ -101,49 +101,6 @@ class NumericalLiteral(Literal):
         return True
 
 
-class ColumnReference:
-    """
-    Typically, a column reference looks like:
-        table_name.column_name or even just
-        column_name
-
-    Note, that instead of the table_name, we can use an alias (defined in a from clause)
-        t.column_name
-
-    Further, the table_name can be qualified by a schema_name
-
-
-    """
-
-    def __init__(self, name, table=None):
-        """
-        table can be simply a table name (table reference including schema name) or a Table object
-        """
-
-        self.table = table
-        self.name = name
-
-    def __repr__(self):
-        """Here, we use str(self.table) rather than repr(self.table)
-        to make it possible to pass table and column as str object instead
-        of TableReference or ColumnReference objects"""
-        if self.table is not None:
-            return f'{str(self.table)}.{str(self.name)}'
-        return self.name
-
-
-class TableReference:
-
-    def __init__(self, name, schema_name=None):
-        self.name = name
-        self.schema_name = schema_name
-
-    def __repr__(self):
-        if self.schema_name is not None:
-            return f'{str(self.schema_name)}.{str(self.name)}'
-        return self.name
-
-
 class Predicate:
     pass
 

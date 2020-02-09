@@ -26,6 +26,9 @@ class Field:
             setattr(field_clone, attr, getattr(self, attr))
         return field_clone
 
+    def __str__(self):
+        return str(self._value) if self._value is not None else ''
+
 
 class IntegerField(Field):
     pass
@@ -42,8 +45,40 @@ class ForeignKey:
         self.foreign_field = foreign_field
 
 
-class ManyToOne:
+class Relation:
 
-    def __init__(self, model, lazy_load=True):
-        self.model = model
+    def __init__(self, foreign_model):
+        self.foreign_model = foreign_model
+
+
+class ManyToOne(Relation):
+
+    def __init__(self, foreign_model, foreign_key_field, foreign_model_key_field=None, lazy_load=True):
+        super().__init__(foreign_model=foreign_model)
+        self.foreign_key_field = foreign_key_field
+        if foreign_model_key_field is None:
+            self.foreign_model_key_field = self.foreign_key_field
+        else:
+            self.foreign_model_key_field = foreign_model_key_field
         self.lazy_load = lazy_load
+        self._entity = None
+
+    def clone(self):
+        kwargs = {
+            'foreign_model': self.foreign_model,
+            'foreign_key_field': self.foreign_key_field,
+            'foreign_model_key_field': self.foreign_model_key_field,
+            'lazy_load': self.lazy_load
+        }
+        return self.__class__(**kwargs)
+
+    @property
+    def entity(self):
+        return self._entity
+
+    @entity.setter
+    def entity(self, entity):
+        self._entity = entity
+
+    def __str__(self):
+        return str(self._entity)

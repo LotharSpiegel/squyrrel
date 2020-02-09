@@ -1,4 +1,4 @@
-from squyrrel.orm.field import Field
+from squyrrel.orm.field import Field, Relation
 
 
 class Model:
@@ -6,9 +6,12 @@ class Model:
     table_name = None
 
     @classmethod
+    def attributes(cls):
+        return {k: v for k, v in cls.__dict__.items() if not k.startswith('__')}
+
+    @classmethod
     def fields_dict(cls):
-        attributes = {k: v for k, v in cls.__dict__.items() if not k.startswith('__')}
-        return {k: v for k, v in attributes.items() if isinstance(v, Field)}
+        return {k: v for k, v in cls.attributes().items() if isinstance(v, Field)}
 
     @classmethod
     def fields(cls):
@@ -20,6 +23,14 @@ class Model:
             if field.primary_key:
                 return field_name
         raise Exception('Model has no primary_key field')
+
+    @classmethod
+    def relations_dict(cls):
+        return {k: v for k, v in cls.attributes().items() if isinstance(v, Relation)}
+
+    @classmethod
+    def relations(cls):
+        return cls.relations_dict().items()
 
     def instance_fields_dict(self):
         fields = {}
@@ -35,6 +46,10 @@ class Model:
             instance_field = class_field.clone()
             instance_field.value = kwargs.get(field_name, None)
             setattr(self, field_name, instance_field)
+        for relation_name, relation in self.__class__.relations():
+            instance_relation = relation.clone()
+            instance_relation.entity = kwargs.get(relation_name, None)
+            setattr(self, relation_name, instance_relation)
 
     def __str__(self):
         props = {}

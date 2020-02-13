@@ -1,9 +1,10 @@
-from squyrrel.orm.field import Field, Relation
+from squyrrel.orm.field import Field, Relation, ManyToOne, ManyToMany, OneToMany
 
 
 class Model:
 
     table_name = None
+    default_ordering = None
 
     @classmethod
     def attributes(cls):
@@ -32,6 +33,30 @@ class Model:
     def relations(cls):
         return cls.relations_dict().items()
 
+    @classmethod
+    def many_to_one_dict(cls):
+        return {k: v for k, v in cls.attributes().items() if isinstance(v, ManyToOne)}
+
+    @classmethod
+    def many_to_one_relations(cls):
+        return cls.many_to_one_dict().items()
+
+    @classmethod
+    def one_to_many_dict(cls):
+        return {k: v for k, v in cls.attributes().items() if isinstance(v, OneToMany)}
+
+    @classmethod
+    def one_to_many_relations(cls):
+        return cls.one_to_many_dict().items()
+
+    @classmethod
+    def many_to_many_dict(cls):
+        return {k: v for k, v in cls.attributes().items() if isinstance(v, ManyToMany)}
+
+    @classmethod
+    def many_to_many_relations(cls):
+        return cls.many_to_many_dict().items()
+
     def instance_fields_dict(self):
         fields = {}
         for field_name in self.__class__.fields_dict().keys():
@@ -46,10 +71,17 @@ class Model:
             instance_field = class_field.clone()
             instance_field.value = kwargs.get(field_name, None)
             setattr(self, field_name, instance_field)
-        for relation_name, relation in self.__class__.relations():
+        for relation_name, relation in self.__class__.many_to_one_relations():
             instance_relation = relation.clone()
             instance_relation.entity = kwargs.get(relation_name, None)
             setattr(self, relation_name, instance_relation)
+        for relation_name, relation in self.__class__.one_to_many_relations():
+            instance_relation = relation.clone()
+            if instance_relation.aggregation is None:
+                pass # set entities
+            else:
+                instance_relation.aggregation_value = kwargs.get(relation_name, None)
+                setattr(self, relation_name, instance_relation)
 
     def __str__(self):
         props = {}

@@ -15,21 +15,36 @@ class ColumnReference:
 
     """
 
-    def __init__(self, name, table=None):
+    def __init__(self, name, table=None, alias=None):
         """
         table can be simply a table name (table reference including schema name) or a Table object
         """
-
-        self.table = table
         self.name = name
+        self.table = table
+        self.alias = alias
+
+    def table_name(self):
+        if self.table is not None:
+            return f'{str(self.table)}.{str(self.name)}'
+        return self.name
+
+    def __eq__(self, other):
+        if isinstance(other, ColumnReference):
+            return self.name == other.name and self.table == other.table
+        if isinstance(other, str):
+            return self.name == other
+        return False
 
     def __repr__(self):
         """Here, we use str(self.table) rather than repr(self.table)
         to make it possible to pass table and column as str object instead
         of TableReference or ColumnReference objects"""
-        if self.table is not None:
-            return f'{str(self.table)}.{str(self.name)}'
-        return self.name
+        if self.alias:
+            return f'{self.table_name()} AS {self.alias}'
+        return self.table_name()
+
+    def __str__(self):
+        return self.__repr__()
 
 
 class TableReference:

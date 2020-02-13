@@ -23,7 +23,13 @@ class WhereClause:
 
 
 class OrderByClause:
-    pass
+    def __init__(self, expr, ascending):
+        self.expr = expr
+        self.ascending = ascending
+
+    def __repr__(self):
+        asc = 'ASC' if self.ascending else 'DESC'
+        return f'ORDER BY {repr(self.expr)} {asc}'
 
 
 class HavingClause:
@@ -47,11 +53,29 @@ class SelectClause:
         return repr(item)
 
     def items_tostring(self):
-
         return ', '.join([self.item_to_string(item) for item in self.items])
 
     def __repr__(self):
         return f'SELECT {self.items_tostring()}'
+
+
+class GroupByClause:
+    def __init__(self, *args):
+        """every arg can be any of the following:
+        a column name, a ColumnReference object or a Literal object
+        """
+        self.items = args
+
+    def item_to_string(self, item):
+        if isinstance(item, str):
+            return str(item)
+        return repr(item)
+
+    def items_tostring(self):
+        return ', '.join([self.item_to_string(item) for item in self.items])
+
+    def __repr__(self):
+        return f'GROUP BY {self.items_tostring()}'
 
 
 class Pagination:

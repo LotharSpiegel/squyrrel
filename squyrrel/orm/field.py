@@ -53,13 +53,15 @@ class Relation:
 
 class ManyToOne(Relation):
 
-    def __init__(self, foreign_model, foreign_key_field, foreign_model_key_field=None, lazy_load=True):
+    def __init__(self, foreign_model, foreign_key_field,
+                foreign_model_key_field=None, update_search_column=None, lazy_load=True):
         super().__init__(foreign_model=foreign_model)
         self.foreign_key_field = foreign_key_field
         if foreign_model_key_field is None:
             self.foreign_model_key_field = self.foreign_key_field
         else:
             self.foreign_model_key_field = foreign_model_key_field
+        self.update_search_column = update_search_column
         self.lazy_load = lazy_load
         self._entity = None
 
@@ -68,6 +70,7 @@ class ManyToOne(Relation):
             'foreign_model': self.foreign_model,
             'foreign_key_field': self.foreign_key_field,
             'foreign_model_key_field': self.foreign_model_key_field,
+            'update_search_column': self.update_search_column,
             'lazy_load': self.lazy_load
         }
         return self.__class__(**kwargs)
@@ -80,6 +83,9 @@ class ManyToOne(Relation):
     def entity(self, entity):
         self._entity = entity
 
+    def __getattr__(self, name):
+        return getattr(self.entity, name)
+
     def __str__(self):
         return str(self._entity)
 
@@ -87,13 +93,13 @@ class ManyToOne(Relation):
 class ManyToMany(Relation):
     """docstring for ManyToMany"""
 
-    # todo: entities
-
-    def __init__(self, foreign_model, junction_table,  foreign_key_field, lazy_load=True):
+    def __init__(self, foreign_model, junction_table,
+                foreign_key_field, lazy_load=True):
         super().__init__(foreign_model=foreign_model)
         self.foreign_key_field = foreign_key_field
         self.junction_table = junction_table
         self.lazy_load = lazy_load
+        self._entities = None
 
     def clone(self):
         kwargs = {
@@ -104,7 +110,18 @@ class ManyToMany(Relation):
         }
         return self.__class__(**kwargs)
 
-    # todo: add property entities
+    @property
+    def entities(self):
+        return self._entities
+
+    @entities.setter
+    def entities(self, entities):
+        self._entities = entities
+
+    def __iter__(self):
+        if self.entities is None:
+            return iter([])
+        return iter(self.entities)
 
 
 class OneToMany(Relation):

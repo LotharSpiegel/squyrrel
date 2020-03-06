@@ -261,7 +261,7 @@ Packages not loaded (because they were filtered): {', '.join(filtered_packages)}
             module_meta.exception = (exc_type, exc_value, exc_traceback)
             self.module_import_exception_handler.handle(module_meta, exc_type, exc_value, exc_traceback)
             module_meta.status = 'rotten'
-            raise ModuleRottenException from exc
+            raise ModuleRottenException(f'Module {str(module_meta)} contains errors') from exc
 
         if load_classes:
             self.load_module_classes(module_meta=module_meta, imported_module=imported_module)

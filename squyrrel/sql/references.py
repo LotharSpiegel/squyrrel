@@ -28,6 +28,10 @@ class ColumnReference:
             return f'{str(self.table)}.{str(self.name)}'
         return self.name
 
+    @property
+    def params(self):
+        return []
+
     def __eq__(self, other):
         if isinstance(other, ColumnReference):
             return self.name == other.name and self.table == other.table

@@ -5,6 +5,11 @@ class Model:
 
     table_name = None
     default_ordering = None
+    fulltext_search_columns = None
+
+    @classmethod
+    def name(cls):
+        return cls.__name__
 
     @classmethod
     def attributes(cls):
@@ -20,6 +25,7 @@ class Model:
 
     @classmethod
     def id_field_name(cls):
+        # todo: handle more different cases
         for field_name, field in cls.fields():
             if field.primary_key:
                 return field_name
@@ -57,14 +63,20 @@ class Model:
     def many_to_many_relations(cls):
         return cls.many_to_many_dict().items()
 
-    def instance_fields_dict(self):
-        fields = {}
-        for field_name in self.__class__.fields_dict().keys():
-            fields[field_name] = getattr(self, field_name)
-        return fields
+    @classmethod
+    def get_field(cls, field_name):
+        return cls.fields_dict().get(field_name)
 
-    def instance_fields(self):
-        return self.instance_fields_dict().items()
+    @classmethod
+    def get_relation(cls, relation_name):
+        return cls.relations_dict().get(relation_name)
+
+    @classmethod
+    def get_relation_by_fk_id_column(cls, fk_id_column):
+        for relation_name, relation in cls.relations_dict().items():
+            if relation.foreign_key_field == fk_id_column:
+                return relation_name, relation
+        return None
 
     def __init__(self, **kwargs):
         for field_name, class_field in self.__class__.fields():
@@ -82,6 +94,36 @@ class Model:
             else:
                 instance_relation.aggregation_value = kwargs.get(relation_name, None)
                 setattr(self, relation_name, instance_relation)
+
+    def instance_fields_dict(self):
+        fields = {}
+        for field_name in self.__class__.fields_dict().keys():
+            fields[field_name] = getattr(self, field_name)
+        return fields
+
+    @property
+    def model(self):
+        return self.__class__
+
+    def instance_fields(self):
+        return self.instance_fields_dict().items()
+
+    def id_field(self):
+        return getattr(self, self.model.id_field_name())
+
+    @property
+    def id(self):
+        return self.id_field().value
+
+    def as_json(self):
+        json_dict = {}
+        for field_name, field in self.instance_fields():
+            json_dict[field_name] = field.value
+        return json_dict
+
+    @property
+    def data(self):
+        return self.as_json()
 
     def __str__(self):
         props = {}

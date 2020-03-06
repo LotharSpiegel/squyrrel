@@ -24,6 +24,12 @@ class SqlDatabaseConnection:
         else:
             self._cursor.execute(sql)
 
+    def commit(self):
+        self.c.commit()
+
+    def rollback(self):
+        self.c.rollback()
+
     def fetchall(self):
         if self._cursor is None:
             raise Exception('Cursor is None')

@@ -41,6 +41,7 @@ Mathematical operators:
 
 """
 
+from squyrrel.sql.references import ColumnReference
 
 
 
@@ -54,6 +55,19 @@ class ValueExpression:
 
     def __str__(self):
         return str(self.value)
+
+
+class Parameter(ValueExpression):
+
+    @property
+    def params(self):
+        return [self.value]
+
+    def __repr__(self):
+        return '?'
+
+    def __str__(self):
+        return self.__repr__
 
 
 class Literal(ValueExpression):
@@ -131,11 +145,31 @@ class ComparisionOperator(Predicate):
         self.lhs = lhs
         self.rhs = rhs
 
+    @property
+    def params(self):
+        return self.lhs.params + self.rhs.params
+
 
 class Equals(ComparisionOperator):
 
+    @classmethod
+    def id_as_parameter(cls, model, id):
+        return cls(lhs=ColumnReference(model.id_field_name(), table=model.table_name),
+                   rhs=Parameter(id))
+
+    @classmethod
+    def column_as_parameter(cls, model, column, value):
+        return cls(lhs=ColumnReference(column, table=model.table_name),
+                   rhs=Parameter(value))
+
     def __repr__(self):
         return f'{repr(self.lhs)} = {repr(self.rhs)}'
+
+
+class Like(ComparisionOperator):
+
+    def __repr__(self):
+        return f'{repr(self.lhs)} LIKE {repr(self.rhs)}'
 
 
 class GreaterThanOrEquals(ComparisionOperator):
@@ -148,29 +182,46 @@ class BooleanOperator(Predicate):
     pass
 
 
-class And(BooleanOperator):
+class BooleanBinaryOperator(BooleanOperator):
+
+    operator_name = None
+
     def __init__(self, lhs, rhs):
         if not isinstance(lhs, Predicate) or not isinstance(rhs, Predicate):
-            raise Exception('Both sides of the AND operator must be of type Predicate')
+            raise Exception(f'Both sides of the {self.__class__.operator_name} operator must be of type Predicate')
         self.lhs = lhs
         self.rhs = rhs
 
     def __repr__(self):
-        return f'{repr(self.lhs)} AND {repr(self.rhs)}'
+        return f'{repr(self.lhs)} {self.operator_name} {repr(self.rhs)}'
+
+    @property
+    def params(self):
+        return self.lhs.params + self.rhs.params
+
+    @classmethod
+    def concat(cls, conditions):
+        """ Builder method to build conditions[0] OR conditions[1] OR ...
+        analogously for AND, ..."""
+        concated_condition = conditions[0]
+        for condition in conditions[1:]:
+            concated_condition = cls(concated_condition, condition)
+        return concated_condition
 
 
-class Or(BooleanOperator):
-    def __init__(self, lhs, rhs):
-        if not isinstance(lhs, Predicate) or not isinstance(rhs, Predicate):
-            raise Exception('Both sides of the OR operator must be of type Predicate')
-        self.lhs = lhs
-        self.rhs = rhs
+class And(BooleanBinaryOperator):
 
-    def __repr__(self):
-        return f'{repr(self.lhs)} OR {repr(self.rhs)}'
+    operator_name = 'AND'
+
+
+class Or(BooleanBinaryOperator):
+
+    operator_name = 'OR'
+
 
 
 class Not(BooleanOperator):
+
     def __init__(self, predicate):
         if not isinstance(predicate, Predicate):
             raise Exception('NOT can only be applied to a Predicate')
@@ -178,4 +229,8 @@ class Not(BooleanOperator):
 
     def __repr__(self):
         return f'NOT {repr(self.predicate)}'
+
+    @property
+    def params(self):
+        return self.predicate.params
 

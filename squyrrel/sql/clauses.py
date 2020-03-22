@@ -1,6 +1,7 @@
 from squyrrel.sql.expressions import (StringLiteral, NumericalLiteral,
     Equals, Parameter)
 from squyrrel.sql.references import ColumnReference
+from squyrrel.sql.table import TableName
 
 
 class FromClause:
@@ -10,10 +11,16 @@ class FromClause:
     Instead of a table name,there can be a comma separated list of multiple tabl (interpreted as cross join)
     """
     def __init__(self, table_reference):
-        self.table_reference = table_reference
+        if isinstance(table_reference, str):
+            self.table_reference = TableName(name=table_reference)
+        else:
+            self.table_reference = table_reference
+
+    def join(self, *args, **kwargs):
+        self.table_reference = self.table_reference.join(*args, **kwargs)
 
     def __repr__(self):
-        return f'FROM {str(self.table_reference)}'
+        return f'FROM {repr(self.table_reference)}'
 
 
 class WhereClause:
@@ -30,13 +37,19 @@ class WhereClause:
 
 
 class OrderByClause:
-    def __init__(self, expr, ascending):
-        self.expr = expr
-        self.ascending = ascending
+    def __init__(self, columns, ascending=None):
+        self.columns = columns
+        self.ascending = ascending or {}
+
+    def get_column_repr(self, column):
+        asc = self.ascending.get(column, True)
+        direction = 'ASC' if asc else 'DESC'
+        return f'{repr(column)} {direction}'
 
     def __repr__(self):
-        asc = 'ASC' if self.ascending else 'DESC'
-        return f'ORDER BY {repr(self.expr)} {asc}'
+        sort_specs = [self.get_column_repr(column) for column in self.columns]
+        sort_specs = ', '.join(sort_specs)
+        return f'ORDER BY {sort_specs}'
 
 
 class HavingClause:
@@ -65,6 +78,16 @@ class SelectClause:
     def __repr__(self):
         return f'SELECT {self.items_tostring()}'
 
+    @classmethod
+    def build(cls, *args):
+        # todo: clear up this checking mess
+        if not args:
+            raise Exception('Empty Select Clause!')
+        for arg in args:
+            if not arg:
+                raise Exception('Empty Select Clause!')
+        return SelectClause(*args)
+
 
 class GroupByClause:
     def __init__(self, *args):
@@ -90,12 +113,12 @@ def get_clauses(self):
 
 class Pagination:
 
-    def __init__(self, page_size, page_number=None):
+    def __init__(self, page_size, active_page=None):
         self.page_size = int(page_size)
-        if page_number is None:
+        if active_page is None:
             self.offset = None
         else:
-            self.offset = (int(page_number) - 1) * self.page_size
+            self.offset = (int(active_page) - 1) * self.page_size
 
     def __repr__(self):
         if self.offset is None:

@@ -29,8 +29,8 @@ class GetAllCommand(OrmCommand):
     def handle(self, *args, **kwargs):
         model = kwargs['model']
         page_size = kwargs.get('page_size', 20)
-        page_number = kwargs.get('page_number', None)
-        res = self._wizz.get_all(model, page_size=page_size, page_number=page_number)
+        active_page = kwargs.get('active_page', None)
+        res = self._wizz.get_all(model, page_size=page_size, active_page=active_page)
         print(res)
 
 

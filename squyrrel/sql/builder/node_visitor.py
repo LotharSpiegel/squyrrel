@@ -16,8 +16,11 @@ class NodeVisitor:
         if visitor:
             return visitor(node, *args, **kwargs)
         else:
-            print(f'no visit_ found for {cls_.__name__}')
-            return repr(node)
+            # print(f'no visit_ found for {cls_.__name__}')
+            try:
+                return repr(node)
+            except TypeError:
+                raise Exception(f'Node {node.__class__.__name__}.__repr__ did not return str!')
             #return self.generic_visit(node, *args, **kwargs)
 
     def generic_visit(self, node, *args, **kwargs):

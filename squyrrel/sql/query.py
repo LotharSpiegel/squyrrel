@@ -6,6 +6,7 @@ from squyrrel.sql.clauses import (UpdateClause, WhereClause, SetClause,
     InsertClause, ValuesClause, DeleteClause)
 from squyrrel.sql.expressions import (StringLiteral, NumericalLiteral,
     Equals, Parameter)
+from squyrrel.sql.table import TableName
 
 
 class Query:
@@ -51,6 +52,11 @@ class Query:
     def clauses_to_strings(self):
         return [repr(clause) for clause in self.get_clauses()]
 
+    @property
+    def params(self):
+        # todo: add params of all clauses together
+        return self.where_clause.params if self.where_clause else []
+
     def __repr__(self):
         clauses = self.clauses_to_strings()
         clause_separation = '\n' + self.indent
@@ -61,6 +67,81 @@ class Query:
             if self.alias is not None:
                 output += f' AS {self.alias}'
         return output
+
+
+
+class ColumnDefinition:
+
+    def __init__(self,
+                name,
+                data_type,
+                primary_key=False,
+                not_null=False):
+        self.name = name
+        self.data_type = data_type
+        self.primary_key = primary_key
+        self.not_null = not_null
+
+    def __repr__(self):
+        output = f'{self.name} {self.data_type}'
+        if self.primary_key:
+            output += ' PRIMARY KEY'
+        if self.not_null:
+            output += ' NOT NULL'
+        return output
+
+
+class CreateTableClause:
+
+    def __init__(self, table_name, if_not_exists=False):
+        self.table = TableName(name=table_name)
+        self.if_not_exists = if_not_exists
+
+    def __repr__(self):
+        if_not_exists_str = ' IF NOT EXISTS' if self.if_not_exists else ''
+        return f'CREATE TABLE{if_not_exists_str} {repr(self.table)}'
+
+
+class CreateTableQuery:
+    """
+    CREATE TABLE [IF NOT EXISTS] table_name (
+        col1 data_type PRIMARY KEY,
+        col2 data_type NOT NULL,
+        ...
+    );
+    """
+
+    def __init__(self, create_clause, column_definitions):
+        self.create_clause = create_clause
+        self.column_definitions = column_definitions
+
+    def __repr__(self):
+        clause_separation = '\n'
+        output = repr(self.create_clause) + ' ('
+        output += clause_separation
+        col_outputs = []
+        for col in self.column_definitions:
+            col_outputs.append(repr(col))
+        output += (','+clause_separation).join(col_outputs)
+        output += ');'
+        return output
+
+    @property
+    def params(self):
+        return None
+
+    @classmethod
+    def build(cls, table, columns, if_not_exists=False):
+        create_clause = CreateTableClause(table, if_not_exists=if_not_exists)
+        column_definitions = []
+        for column_name, column_kwargs in columns.items():
+            column_definitions.append(ColumnDefinition(
+                name=column_name,
+                data_type=column_kwargs['data_type'],
+                primary_key=column_kwargs.get('primary_key', False),
+                not_null=column_kwargs.get('not_null', False)
+            ))
+        return cls(create_clause, column_definitions=column_definitions)
 
 
 class InsertQuery:

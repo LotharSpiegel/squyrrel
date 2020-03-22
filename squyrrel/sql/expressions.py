@@ -42,7 +42,7 @@ Mathematical operators:
 """
 
 from squyrrel.sql.references import ColumnReference
-
+from squyrrel.sql.utils import sanitize_column_reference
 
 
 class ValueExpression:
@@ -63,6 +63,11 @@ class Parameter(ValueExpression):
     def params(self):
         return [self.value]
 
+    @property
+    def columns(self):
+        return []
+
+
     def __repr__(self):
         return '?'
 
@@ -71,14 +76,25 @@ class Parameter(ValueExpression):
 
 
 class Literal(ValueExpression):
-    pass
+
+    @property
+    def params(self):
+        return []
+
+    @property
+    def columns(self):
+        return []
+
 
 
 ScalarExpression=ValueExpression
 
 
 class StringLiteral(Literal):
-    pass
+
+    @classmethod
+    def empty(cls):
+        return StringLiteral('')
 
 
 class DateLiteral(StringLiteral):
@@ -149,6 +165,10 @@ class ComparisionOperator(Predicate):
     def params(self):
         return self.lhs.params + self.rhs.params
 
+    @property
+    def columns(self):
+        return self.lhs.columns + self.rhs.columns
+
 
 class Equals(ComparisionOperator):
 
@@ -158,8 +178,9 @@ class Equals(ComparisionOperator):
                    rhs=Parameter(id))
 
     @classmethod
-    def column_as_parameter(cls, model, column, value):
-        return cls(lhs=ColumnReference(column, table=model.table_name),
+    def column_as_parameter(cls, column_reference, value):
+        column_reference = sanitize_column_reference(column_reference)
+        return cls(lhs=column_reference,
                    rhs=Parameter(value))
 
     def __repr__(self):
@@ -167,6 +188,12 @@ class Equals(ComparisionOperator):
 
 
 class Like(ComparisionOperator):
+
+    @classmethod
+    def column_as_parameter(cls, column_reference, search_value):
+        column_reference = sanitize_column_reference(column_reference)
+        return cls(lhs=column_reference,
+                   rhs=Parameter(f'%{search_value}%'))
 
     def __repr__(self):
         return f'{repr(self.lhs)} LIKE {repr(self.rhs)}'
@@ -193,11 +220,15 @@ class BooleanBinaryOperator(BooleanOperator):
         self.rhs = rhs
 
     def __repr__(self):
-        return f'{repr(self.lhs)} {self.operator_name} {repr(self.rhs)}'
+        return f'({repr(self.lhs)} {self.operator_name} {repr(self.rhs)})'
 
     @property
     def params(self):
         return self.lhs.params + self.rhs.params
+
+    @property
+    def columns(self):
+        return self.lhs.columns + self.rhs.columns
 
     @classmethod
     def concat(cls, conditions):
@@ -234,3 +265,6 @@ class Not(BooleanOperator):
     def params(self):
         return self.predicate.params
 
+    @property
+    def columns(self):
+        return self.predicate.columns

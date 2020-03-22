@@ -12,7 +12,7 @@ setup(
 
     # Versions should comply with PEP 440:
     # https://www.python.org/dev/peps/pep-0440/
-    version='0.1.3',
+    version='0.2.1',
     download_url='https://github.com/LotharSpiegel/squyrrel/archive/v0.1.1.tar.gz',
 
     description='Python library for scanning and lazy importing of classes, modules and packages. Including sql parser, builder and an Orm.',

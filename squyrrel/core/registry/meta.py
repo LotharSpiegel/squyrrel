@@ -60,7 +60,9 @@ class PackageMeta:
         for subpackage in self.subpackages:
             if subpackage.name == package_name:
                 return subpackage
-        raise PackageNotFoundException(f'Did not find subpackage with name <{package_name}>!')
+        sub_packages = ', '.join([sub_package.name for sub_package in self.subpackages])
+        msg = f'Did not find subpackage with name <{package_name}>! Subpackages: {sub_packages}'
+        raise PackageNotFoundException(msg)
 
     @property
     def num_modules(self):

@@ -5,7 +5,7 @@ from squyrrel.management.exceptions import ArgumentParserException
 def inject_dependencies_into_cdm(squyrrel, cmd_cls):
     cmd_dict = {}
     for obj_name, obj_cls_name in cmd_cls.__inject__.items():
-        cmd_dict[obj_name] = squyrrel.get_object(class_name=obj_cls_name)
+        cmd_dict[obj_name] = squyrrel.get_object(class_name_or_meta=obj_cls_name)
     return cmd_dict
 
 def execute_cmd_from_shell(squyrrel, cmd_line):

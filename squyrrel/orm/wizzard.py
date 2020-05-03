@@ -52,7 +52,7 @@ class QueryWizzard:
                 self.execute_query(query)
         except Exception as exc:
             self.rollback()
-            raise self.sql_exc(sql, exc) from exc
+            raise exc
         else:
             self.commit()
             print('successfully committed all queries in transaction')
@@ -91,7 +91,8 @@ class QueryWizzard:
         return None
 
     def sql_exc(self, sql, exc):
-        return Exception(f'Error during execution of query: \n{sql}\nSql Exc.: {str(exc)}')
+        error_category = 'Sql Error'
+        return SqlException(f'Error during execution of query: \n{sql}\n{error_category}: {str(exc)}')
 
     def build_select_fields(self, model, select_fields=None):
         if select_fields is None:

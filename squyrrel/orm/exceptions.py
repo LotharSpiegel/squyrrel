@@ -32,3 +32,7 @@ class RelationNotFoundException(Exception):
         super().__init__(msg)
         self.fk_id_column = fk_id_column
         self.foreign_model = foreign_model
+
+
+class SqlException(Exception):
+    pass

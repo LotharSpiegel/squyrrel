@@ -37,7 +37,7 @@ class Squyrrel(metaclass=Singleton):
 
         self.load_squyrrel_package()
 
-        print(f'Squyrrel ({id(self)}) awakened')
+        self.debug(f'Squyrrel ({id(self)}) awakened')
 
     def initialize(self, root_path=None, config_class=None):
         self.packages = {}
@@ -354,7 +354,6 @@ Packages not loaded (because they were filtered): {', '.join(filtered_packages)}
             register_package_filter = self._register_package_filter
         if not register_package_filter(package_name):
             self.debug(f'Package {package_name} did not pass register filter')
-            print(f'Package {package_name} did not pass register filter')
             package_meta.status = 'excluded by filter'
             return package_meta
 
@@ -373,7 +372,8 @@ Packages not loaded (because they were filtered): {', '.join(filtered_packages)}
     def load_package(self, package_meta, ignore_rotten_modules=False,
                            load_classes=True, load_subpackages=True,
                            load_package_filter=None, raise_when_already_loaded=False):
-        self.debug('Load package <{package}>...'.format(package=repr(package_meta)))
+        msg = 'Load package <{package}>...'.format(package=repr(package_meta))
+        self.debug(msg)
 
         if package_meta.loaded:
             if raise_when_already_loaded:
@@ -387,7 +387,6 @@ Packages not loaded (because they were filtered): {', '.join(filtered_packages)}
             load_package_filter = self._load_package_filter
         if not load_package_filter(package_meta):
             self.debug(f'Package {str(package_meta)} did not pass loading filter')
-            print(f'Package {str(package_meta)} did not pass loading filter')
             package_meta.status = 'excluded by filter'
             return package_meta
 
@@ -471,12 +470,16 @@ Packages not loaded (because they were filtered): {', '.join(filtered_packages)}
     def get_object(self, class_name_or_meta, package_name=None, module_name=None,
                     create_instance_when_not_found=True, params=None):
         # todo: refine searching criteria
-        print('get_object:', class_name_or_meta)
+        self.debug('get_object:' + class_name_or_meta)
 
         if isinstance(class_name_or_meta, ClassMeta):
             class_meta = class_name_or_meta
         else:
-            class_meta = self.find_class_meta_by_name(class_name, package_name=package_name, module_name=module_name)
+            class_meta = self.find_class_meta_by_name(
+                class_name_or_meta,
+                package_name=package_name,
+                module_name=module_name
+            )
         try:
             return class_meta.get_first_instance()
         except IndexError:

@@ -1,6 +1,6 @@
-After init hook for Squyrrel: IConfigRegistry.connect_signals
 After init hook for Squyrrel: IConfigRegistry.install_logging
 Setup logging of Squyrrel methods..
+After init hook for Squyrrel: IConfigRegistry.connect_signals
 Squyrrel.load_squyrrel_package()
 	Squyrrel.register_package('squyrrel')
 		Register package <squyrrel>..
@@ -19,11 +19,8 @@ Squyrrel.load_squyrrel_package()
 
 	Squyrrel.load_package(PackageMeta(package_name=squyrrel, package_path=c:\users\lothar\passion\squyrrel\squyrrel, relative_path=squyrrel, import_string=squyrrel))
 		Load package <PackageMeta(package_name=squyrrel, package_path=c:\users\lothar\passion\squyrrel\squyrrel, relative_path=squyrrel, import_string=squyrrel)>...
-		Squyrrel.package_already_loaded(package_meta=PackageMeta(package_name=squyrrel, package_path=c:\users\lothar\passion\squyrrel\squyrrel, relative_path=squyrrel, import_string=squyrrel))
-			-> (Squyrrel.package_already_loaded) ->: False
-
 		Squyrrel.inspect_directory(PackageMeta(package_name=squyrrel, package_path=c:\users\lothar\passion\squyrrel\squyrrel, relative_path=squyrrel, import_string=squyrrel))
-			-> (Squyrrel.inspect_directory) ->: (['conftest', 'manage', '__init__'], ['core', 'db', 'gui', 'ide', 'management', 'sql', '__pycache__'])
+			-> (Squyrrel.inspect_directory) ->: (['conftest', 'manage', '__init__'], ['core', 'db', 'gui', 'ide', 'management', 'orm', 'sql', '__pycache__'])
 
 		..is package (contains __init__.py): True
 		Squyrrel._load_package_filter(PackageMeta(package_name=squyrrel, package_path=c:\users\lothar\passion\squyrrel\squyrrel, relative_path=squyrrel, import_string=squyrrel))
@@ -34,7 +31,7 @@ Squyrrel.load_squyrrel_package()
 				Register module <conftest>..
 				-> (Squyrrel.register_module) ->: ModuleMeta(package=squyrrel, module_name=conftest)
 
-			Squyrrel.load_module(PackageMeta(package_name=squyrrel, package_path=c:\users\lothar\passion\squyrrel\squyrrel, relative_path=squyrrel, import_string=squyrrel), module_name='conftest', load_classes=True)
+			Squyrrel.load_module(package=PackageMeta(package_name=squyrrel, package_path=c:\users\lothar\passion\squyrrel\squyrrel, relative_path=squyrrel, import_string=squyrrel), module_name='conftest', load_classes=True)
 				Load module <squyrrel.conftest>
 				Squyrrel.load_module_classes(module_meta=ModuleMeta(package=squyrrel, module_name=conftest), imported_module=<module 'squyrrel.conftest' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\conftest.py'>)
 					load classes of module squyrrel.conftest..
@@ -47,7 +44,7 @@ Squyrrel.load_squyrrel_package()
 				Register module <manage>..
 				-> (Squyrrel.register_module) ->: ModuleMeta(package=squyrrel, module_name=manage)
 
-			Squyrrel.load_module(PackageMeta(package_name=squyrrel, package_path=c:\users\lothar\passion\squyrrel\squyrrel, relative_path=squyrrel, import_string=squyrrel), module_name='manage', load_classes=True)
+			Squyrrel.load_module(package=PackageMeta(package_name=squyrrel, package_path=c:\users\lothar\passion\squyrrel\squyrrel, relative_path=squyrrel, import_string=squyrrel), module_name='manage', load_classes=True)
 				Load module <squyrrel.manage>
 				Squyrrel.load_module_classes(module_meta=ModuleMeta(package=squyrrel, module_name=manage), imported_module=<module 'squyrrel.manage' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\manage.py'>)
 					load classes of module squyrrel.manage..
@@ -60,7 +57,7 @@ Squyrrel.load_squyrrel_package()
 				Register module <__init__>..
 				-> (Squyrrel.register_module) ->: ModuleMeta(package=squyrrel, module_name=__init__)
 
-			Squyrrel.load_module(PackageMeta(package_name=squyrrel, package_path=c:\users\lothar\passion\squyrrel\squyrrel, relative_path=squyrrel, import_string=squyrrel), module_name='__init__', load_classes=True)
+			Squyrrel.load_module(package=PackageMeta(package_name=squyrrel, package_path=c:\users\lothar\passion\squyrrel\squyrrel, relative_path=squyrrel, import_string=squyrrel), module_name='__init__', load_classes=True)
 				Load module <squyrrel.__init__>
 				Squyrrel.load_module_classes(module_meta=ModuleMeta(package=squyrrel, module_name=__init__), imported_module=<module 'squyrrel.__init__' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\__init__.py'>)
 					load classes of module squyrrel.__init__..
@@ -71,7 +68,7 @@ Squyrrel.load_squyrrel_package()
 
 			-> (Squyrrel.register_and_load_modules) ->: None
 
-		Squyrrel.register_and_load_subpackages(package_meta=PackageMeta(package_name=squyrrel, package_path=c:\users\lothar\passion\squyrrel\squyrrel, relative_path=squyrrel, import_string=squyrrel), subdirs=['core', 'db', 'gui', 'ide', 'management', 'sql', '__pycache__'], ignore_rotten_modules=False, load_classes=True)
+		Squyrrel.register_and_load_subpackages(package_meta=PackageMeta(package_name=squyrrel, package_path=c:\users\lothar\passion\squyrrel\squyrrel, relative_path=squyrrel, import_string=squyrrel), subdirs=['core', 'db', 'gui', 'ide', 'management', 'orm', 'sql', '__pycache__'], ignore_rotten_modules=False, load_classes=True)
 			Inspecting subdir core ..
 			Squyrrel.register_package('squyrrel\\core')
 				Register package <squyrrel\core>..
@@ -90,9 +87,6 @@ Squyrrel.load_squyrrel_package()
 
 			Squyrrel.load_package(PackageMeta(package_name=core, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core, relative_path=squyrrel\core, import_string=squyrrel.core), ignore_rotten_modules=False, load_classes=True, load_subpackages=True)
 				Load package <PackageMeta(package_name=core, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core, relative_path=squyrrel\core, import_string=squyrrel.core)>...
-				Squyrrel.package_already_loaded(package_meta=PackageMeta(package_name=core, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core, relative_path=squyrrel\core, import_string=squyrrel.core))
-					-> (Squyrrel.package_already_loaded) ->: False
-
 				Squyrrel.inspect_directory(PackageMeta(package_name=core, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core, relative_path=squyrrel\core, import_string=squyrrel.core))
 					-> (Squyrrel.inspect_directory) ->: (['__init__'], ['config', 'context', 'logging', 'registry', 'signals', 'utils', '__pycache__'])
 
@@ -105,7 +99,7 @@ Squyrrel.load_squyrrel_package()
 						Register module <__init__>..
 						-> (Squyrrel.register_module) ->: ModuleMeta(package=core, module_name=__init__)
 
-					Squyrrel.load_module(PackageMeta(package_name=core, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core, relative_path=squyrrel\core, import_string=squyrrel.core), module_name='__init__', load_classes=True)
+					Squyrrel.load_module(package=PackageMeta(package_name=core, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core, relative_path=squyrrel\core, import_string=squyrrel.core), module_name='__init__', load_classes=True)
 						Load module <squyrrel.core.__init__>
 						Squyrrel.load_module_classes(module_meta=ModuleMeta(package=core, module_name=__init__), imported_module=<module 'squyrrel.core.__init__' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\core\\__init__.py'>)
 							load classes of module squyrrel.core.__init__..
@@ -135,9 +129,6 @@ Squyrrel.load_squyrrel_package()
 
 					Squyrrel.load_package(PackageMeta(package_name=config, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\config, relative_path=squyrrel\core\config, import_string=squyrrel.core.config), ignore_rotten_modules=False, load_classes=True, load_subpackages=True)
 						Load package <PackageMeta(package_name=config, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\config, relative_path=squyrrel\core\config, import_string=squyrrel.core.config)>...
-						Squyrrel.package_already_loaded(package_meta=PackageMeta(package_name=config, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\config, relative_path=squyrrel\core\config, import_string=squyrrel.core.config))
-							-> (Squyrrel.package_already_loaded) ->: False
-
 						Squyrrel.inspect_directory(PackageMeta(package_name=config, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\config, relative_path=squyrrel\core\config, import_string=squyrrel.core.config))
 							-> (Squyrrel.inspect_directory) ->: (['base', 'decorators', '__init__'], ['__pycache__'])
 
@@ -150,7 +141,7 @@ Squyrrel.load_squyrrel_package()
 								Register module <base>..
 								-> (Squyrrel.register_module) ->: ModuleMeta(package=config, module_name=base)
 
-							Squyrrel.load_module(PackageMeta(package_name=config, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\config, relative_path=squyrrel\core\config, import_string=squyrrel.core.config), module_name='base', load_classes=True)
+							Squyrrel.load_module(package=PackageMeta(package_name=config, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\config, relative_path=squyrrel\core\config, import_string=squyrrel.core.config), module_name='base', load_classes=True)
 								Load module <squyrrel.core.config.base>
 								Squyrrel.load_module_classes(module_meta=ModuleMeta(package=config, module_name=base), imported_module=<module 'squyrrel.core.config.base' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\core\\config\\base.py'>)
 									load classes of module squyrrel.core.config.base..
@@ -175,7 +166,7 @@ Squyrrel.load_squyrrel_package()
 								Register module <decorators>..
 								-> (Squyrrel.register_module) ->: ModuleMeta(package=config, module_name=decorators)
 
-							Squyrrel.load_module(PackageMeta(package_name=config, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\config, relative_path=squyrrel\core\config, import_string=squyrrel.core.config), module_name='decorators', load_classes=True)
+							Squyrrel.load_module(package=PackageMeta(package_name=config, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\config, relative_path=squyrrel\core\config, import_string=squyrrel.core.config), module_name='decorators', load_classes=True)
 								Load module <squyrrel.core.config.decorators>
 								Squyrrel.load_module_classes(module_meta=ModuleMeta(package=config, module_name=decorators), imported_module=<module 'squyrrel.core.config.decorators' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\core\\config\\decorators.py'>)
 									load classes of module squyrrel.core.config.decorators..
@@ -192,7 +183,7 @@ Squyrrel.load_squyrrel_package()
 								Register module <__init__>..
 								-> (Squyrrel.register_module) ->: ModuleMeta(package=config, module_name=__init__)
 
-							Squyrrel.load_module(PackageMeta(package_name=config, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\config, relative_path=squyrrel\core\config, import_string=squyrrel.core.config), module_name='__init__', load_classes=True)
+							Squyrrel.load_module(package=PackageMeta(package_name=config, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\config, relative_path=squyrrel\core\config, import_string=squyrrel.core.config), module_name='__init__', load_classes=True)
 								Load module <squyrrel.core.config.__init__>
 								Squyrrel.load_module_classes(module_meta=ModuleMeta(package=config, module_name=__init__), imported_module=<module 'squyrrel.core.config.__init__' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\core\\config\\__init__.py'>)
 									load classes of module squyrrel.core.config.__init__..
@@ -219,9 +210,6 @@ Squyrrel.load_squyrrel_package()
 
 							Squyrrel.load_package(PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\config\__pycache__, relative_path=squyrrel\core\config\__pycache__, import_string=squyrrel.core.config.__pycache__), ignore_rotten_modules=False, load_classes=True, load_subpackages=True)
 								Load package <PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\config\__pycache__, relative_path=squyrrel\core\config\__pycache__, import_string=squyrrel.core.config.__pycache__)>...
-								Squyrrel.package_already_loaded(package_meta=PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\config\__pycache__, relative_path=squyrrel\core\config\__pycache__, import_string=squyrrel.core.config.__pycache__))
-									-> (Squyrrel.package_already_loaded) ->: False
-
 								Squyrrel.inspect_directory(PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\config\__pycache__, relative_path=squyrrel\core\config\__pycache__, import_string=squyrrel.core.config.__pycache__))
 									-> (Squyrrel.inspect_directory) ->: ([], [])
 
@@ -260,9 +248,6 @@ Squyrrel.load_squyrrel_package()
 
 					Squyrrel.load_package(PackageMeta(package_name=context, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\context, relative_path=squyrrel\core\context, import_string=squyrrel.core.context), ignore_rotten_modules=False, load_classes=True, load_subpackages=True)
 						Load package <PackageMeta(package_name=context, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\context, relative_path=squyrrel\core\context, import_string=squyrrel.core.context)>...
-						Squyrrel.package_already_loaded(package_meta=PackageMeta(package_name=context, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\context, relative_path=squyrrel\core\context, import_string=squyrrel.core.context))
-							-> (Squyrrel.package_already_loaded) ->: False
-
 						Squyrrel.inspect_directory(PackageMeta(package_name=context, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\context, relative_path=squyrrel\core\context, import_string=squyrrel.core.context))
 							-> (Squyrrel.inspect_directory) ->: (['__init__'], ['__pycache__'])
 
@@ -275,7 +260,7 @@ Squyrrel.load_squyrrel_package()
 								Register module <__init__>..
 								-> (Squyrrel.register_module) ->: ModuleMeta(package=context, module_name=__init__)
 
-							Squyrrel.load_module(PackageMeta(package_name=context, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\context, relative_path=squyrrel\core\context, import_string=squyrrel.core.context), module_name='__init__', load_classes=True)
+							Squyrrel.load_module(package=PackageMeta(package_name=context, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\context, relative_path=squyrrel\core\context, import_string=squyrrel.core.context), module_name='__init__', load_classes=True)
 								Load module <squyrrel.core.context.__init__>
 								Squyrrel.load_module_classes(module_meta=ModuleMeta(package=context, module_name=__init__), imported_module=<module 'squyrrel.core.context.__init__' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\core\\context\\__init__.py'>)
 									load classes of module squyrrel.core.context.__init__..
@@ -310,9 +295,6 @@ Squyrrel.load_squyrrel_package()
 
 							Squyrrel.load_package(PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\context\__pycache__, relative_path=squyrrel\core\context\__pycache__, import_string=squyrrel.core.context.__pycache__), ignore_rotten_modules=False, load_classes=True, load_subpackages=True)
 								Load package <PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\context\__pycache__, relative_path=squyrrel\core\context\__pycache__, import_string=squyrrel.core.context.__pycache__)>...
-								Squyrrel.package_already_loaded(package_meta=PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\context\__pycache__, relative_path=squyrrel\core\context\__pycache__, import_string=squyrrel.core.context.__pycache__))
-									-> (Squyrrel.package_already_loaded) ->: False
-
 								Squyrrel.inspect_directory(PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\context\__pycache__, relative_path=squyrrel\core\context\__pycache__, import_string=squyrrel.core.context.__pycache__))
 									-> (Squyrrel.inspect_directory) ->: ([], [])
 
@@ -351,9 +333,6 @@ Squyrrel.load_squyrrel_package()
 
 					Squyrrel.load_package(PackageMeta(package_name=logging, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\logging, relative_path=squyrrel\core\logging, import_string=squyrrel.core.logging), ignore_rotten_modules=False, load_classes=True, load_subpackages=True)
 						Load package <PackageMeta(package_name=logging, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\logging, relative_path=squyrrel\core\logging, import_string=squyrrel.core.logging)>...
-						Squyrrel.package_already_loaded(package_meta=PackageMeta(package_name=logging, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\logging, relative_path=squyrrel\core\logging, import_string=squyrrel.core.logging))
-							-> (Squyrrel.package_already_loaded) ->: False
-
 						Squyrrel.inspect_directory(PackageMeta(package_name=logging, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\logging, relative_path=squyrrel\core\logging, import_string=squyrrel.core.logging))
 							-> (Squyrrel.inspect_directory) ->: (['logger', 'signals', 'utils', '__init__'], ['__pycache__'])
 
@@ -366,7 +345,7 @@ Squyrrel.load_squyrrel_package()
 								Register module <logger>..
 								-> (Squyrrel.register_module) ->: ModuleMeta(package=logging, module_name=logger)
 
-							Squyrrel.load_module(PackageMeta(package_name=logging, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\logging, relative_path=squyrrel\core\logging, import_string=squyrrel.core.logging), module_name='logger', load_classes=True)
+							Squyrrel.load_module(package=PackageMeta(package_name=logging, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\logging, relative_path=squyrrel\core\logging, import_string=squyrrel.core.logging), module_name='logger', load_classes=True)
 								Load module <squyrrel.core.logging.logger>
 								Squyrrel.load_module_classes(module_meta=ModuleMeta(package=logging, module_name=logger), imported_module=<module 'squyrrel.core.logging.logger' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\core\\logging\\logger.py'>)
 									load classes of module squyrrel.core.logging.logger..
@@ -379,7 +358,7 @@ Squyrrel.load_squyrrel_package()
 								Register module <signals>..
 								-> (Squyrrel.register_module) ->: ModuleMeta(package=logging, module_name=signals)
 
-							Squyrrel.load_module(PackageMeta(package_name=logging, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\logging, relative_path=squyrrel\core\logging, import_string=squyrrel.core.logging), module_name='signals', load_classes=True)
+							Squyrrel.load_module(package=PackageMeta(package_name=logging, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\logging, relative_path=squyrrel\core\logging, import_string=squyrrel.core.logging), module_name='signals', load_classes=True)
 								Load module <squyrrel.core.logging.signals>
 								Squyrrel.load_module_classes(module_meta=ModuleMeta(package=logging, module_name=signals), imported_module=<module 'squyrrel.core.logging.signals' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\core\\logging\\signals.py'>)
 									load classes of module squyrrel.core.logging.signals..
@@ -392,7 +371,7 @@ Squyrrel.load_squyrrel_package()
 								Register module <utils>..
 								-> (Squyrrel.register_module) ->: ModuleMeta(package=logging, module_name=utils)
 
-							Squyrrel.load_module(PackageMeta(package_name=logging, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\logging, relative_path=squyrrel\core\logging, import_string=squyrrel.core.logging), module_name='utils', load_classes=True)
+							Squyrrel.load_module(package=PackageMeta(package_name=logging, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\logging, relative_path=squyrrel\core\logging, import_string=squyrrel.core.logging), module_name='utils', load_classes=True)
 								Load module <squyrrel.core.logging.utils>
 								Squyrrel.load_module_classes(module_meta=ModuleMeta(package=logging, module_name=utils), imported_module=<module 'squyrrel.core.logging.utils' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\core\\logging\\utils.py'>)
 									load classes of module squyrrel.core.logging.utils..
@@ -405,7 +384,7 @@ Squyrrel.load_squyrrel_package()
 								Register module <__init__>..
 								-> (Squyrrel.register_module) ->: ModuleMeta(package=logging, module_name=__init__)
 
-							Squyrrel.load_module(PackageMeta(package_name=logging, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\logging, relative_path=squyrrel\core\logging, import_string=squyrrel.core.logging), module_name='__init__', load_classes=True)
+							Squyrrel.load_module(package=PackageMeta(package_name=logging, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\logging, relative_path=squyrrel\core\logging, import_string=squyrrel.core.logging), module_name='__init__', load_classes=True)
 								Load module <squyrrel.core.logging.__init__>
 								Squyrrel.load_module_classes(module_meta=ModuleMeta(package=logging, module_name=__init__), imported_module=<module 'squyrrel.core.logging.__init__' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\core\\logging\\__init__.py'>)
 									load classes of module squyrrel.core.logging.__init__..
@@ -432,9 +411,6 @@ Squyrrel.load_squyrrel_package()
 
 							Squyrrel.load_package(PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\logging\__pycache__, relative_path=squyrrel\core\logging\__pycache__, import_string=squyrrel.core.logging.__pycache__), ignore_rotten_modules=False, load_classes=True, load_subpackages=True)
 								Load package <PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\logging\__pycache__, relative_path=squyrrel\core\logging\__pycache__, import_string=squyrrel.core.logging.__pycache__)>...
-								Squyrrel.package_already_loaded(package_meta=PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\logging\__pycache__, relative_path=squyrrel\core\logging\__pycache__, import_string=squyrrel.core.logging.__pycache__))
-									-> (Squyrrel.package_already_loaded) ->: False
-
 								Squyrrel.inspect_directory(PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\logging\__pycache__, relative_path=squyrrel\core\logging\__pycache__, import_string=squyrrel.core.logging.__pycache__))
 									-> (Squyrrel.inspect_directory) ->: ([], [])
 
@@ -473,9 +449,6 @@ Squyrrel.load_squyrrel_package()
 
 					Squyrrel.load_package(PackageMeta(package_name=registry, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\registry, relative_path=squyrrel\core\registry, import_string=squyrrel.core.registry), ignore_rotten_modules=False, load_classes=True, load_subpackages=True)
 						Load package <PackageMeta(package_name=registry, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\registry, relative_path=squyrrel\core\registry, import_string=squyrrel.core.registry)>...
-						Squyrrel.package_already_loaded(package_meta=PackageMeta(package_name=registry, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\registry, relative_path=squyrrel\core\registry, import_string=squyrrel.core.registry))
-							-> (Squyrrel.package_already_loaded) ->: False
-
 						Squyrrel.inspect_directory(PackageMeta(package_name=registry, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\registry, relative_path=squyrrel\core\registry, import_string=squyrrel.core.registry))
 							-> (Squyrrel.inspect_directory) ->: (['config', 'exceptions', 'exception_handler', 'logging', 'meta', 'nutcracker', 'signals', '__init__'], ['__pycache__'])
 
@@ -488,7 +461,7 @@ Squyrrel.load_squyrrel_package()
 								Register module <config>..
 								-> (Squyrrel.register_module) ->: ModuleMeta(package=registry, module_name=config)
 
-							Squyrrel.load_module(PackageMeta(package_name=registry, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\registry, relative_path=squyrrel\core\registry, import_string=squyrrel.core.registry), module_name='config', load_classes=True)
+							Squyrrel.load_module(package=PackageMeta(package_name=registry, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\registry, relative_path=squyrrel\core\registry, import_string=squyrrel.core.registry), module_name='config', load_classes=True)
 								Load module <squyrrel.core.registry.config>
 								Squyrrel.load_module_classes(module_meta=ModuleMeta(package=registry, module_name=config), imported_module=<module 'squyrrel.core.registry.config' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\core\\registry\\config.py'>)
 									load classes of module squyrrel.core.registry.config..
@@ -505,7 +478,7 @@ Squyrrel.load_squyrrel_package()
 								Register module <exceptions>..
 								-> (Squyrrel.register_module) ->: ModuleMeta(package=registry, module_name=exceptions)
 
-							Squyrrel.load_module(PackageMeta(package_name=registry, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\registry, relative_path=squyrrel\core\registry, import_string=squyrrel.core.registry), module_name='exceptions', load_classes=True)
+							Squyrrel.load_module(package=PackageMeta(package_name=registry, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\registry, relative_path=squyrrel\core\registry, import_string=squyrrel.core.registry), module_name='exceptions', load_classes=True)
 								Load module <squyrrel.core.registry.exceptions>
 								Squyrrel.load_module_classes(module_meta=ModuleMeta(package=registry, module_name=exceptions), imported_module=<module 'squyrrel.core.registry.exceptions' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\core\\registry\\exceptions.py'>)
 									load classes of module squyrrel.core.registry.exceptions..
@@ -525,11 +498,15 @@ Squyrrel.load_squyrrel_package()
 										add class ModuleRottenException
 										-> (Squyrrel.load_class) ->: None
 
+									Squyrrel.load_class(ModuleMeta(package=registry, module_name=exceptions), 'ObjectNotFoundError', <class 'squyrrel.core.registry.exceptions.ObjectNotFoundError'>)
+										add class ObjectNotFoundError
+										-> (Squyrrel.load_class) ->: None
+
 									Squyrrel.load_class(ModuleMeta(package=registry, module_name=exceptions), 'PackageNotFoundException', <class 'squyrrel.core.registry.exceptions.PackageNotFoundException'>)
 										add class PackageNotFoundException
 										-> (Squyrrel.load_class) ->: None
 
-									loaded 5 classes in module module squyrrel.core.registry.exceptions
+									loaded 6 classes in module module squyrrel.core.registry.exceptions
 									-> (Squyrrel.load_module_classes) ->: None
 
 								-> (Squyrrel.load_module) ->: None
@@ -538,7 +515,7 @@ Squyrrel.load_squyrrel_package()
 								Register module <exception_handler>..
 								-> (Squyrrel.register_module) ->: ModuleMeta(package=registry, module_name=exception_handler)
 
-							Squyrrel.load_module(PackageMeta(package_name=registry, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\registry, relative_path=squyrrel\core\registry, import_string=squyrrel.core.registry), module_name='exception_handler', load_classes=True)
+							Squyrrel.load_module(package=PackageMeta(package_name=registry, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\registry, relative_path=squyrrel\core\registry, import_string=squyrrel.core.registry), module_name='exception_handler', load_classes=True)
 								Load module <squyrrel.core.registry.exception_handler>
 								Squyrrel.load_module_classes(module_meta=ModuleMeta(package=registry, module_name=exception_handler), imported_module=<module 'squyrrel.core.registry.exception_handler' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\core\\registry\\exception_handler.py'>)
 									load classes of module squyrrel.core.registry.exception_handler..
@@ -559,7 +536,7 @@ Squyrrel.load_squyrrel_package()
 								Register module <logging>..
 								-> (Squyrrel.register_module) ->: ModuleMeta(package=registry, module_name=logging)
 
-							Squyrrel.load_module(PackageMeta(package_name=registry, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\registry, relative_path=squyrrel\core\registry, import_string=squyrrel.core.registry), module_name='logging', load_classes=True)
+							Squyrrel.load_module(package=PackageMeta(package_name=registry, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\registry, relative_path=squyrrel\core\registry, import_string=squyrrel.core.registry), module_name='logging', load_classes=True)
 								Load module <squyrrel.core.registry.logging>
 								Squyrrel.load_module_classes(module_meta=ModuleMeta(package=registry, module_name=logging), imported_module=<module 'squyrrel.core.registry.logging' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\core\\registry\\logging.py'>)
 									load classes of module squyrrel.core.registry.logging..
@@ -572,7 +549,7 @@ Squyrrel.load_squyrrel_package()
 								Register module <meta>..
 								-> (Squyrrel.register_module) ->: ModuleMeta(package=registry, module_name=meta)
 
-							Squyrrel.load_module(PackageMeta(package_name=registry, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\registry, relative_path=squyrrel\core\registry, import_string=squyrrel.core.registry), module_name='meta', load_classes=True)
+							Squyrrel.load_module(package=PackageMeta(package_name=registry, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\registry, relative_path=squyrrel\core\registry, import_string=squyrrel.core.registry), module_name='meta', load_classes=True)
 								Load module <squyrrel.core.registry.meta>
 								Squyrrel.load_module_classes(module_meta=ModuleMeta(package=registry, module_name=meta), imported_module=<module 'squyrrel.core.registry.meta' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\core\\registry\\meta.py'>)
 									load classes of module squyrrel.core.registry.meta..
@@ -601,7 +578,7 @@ Squyrrel.load_squyrrel_package()
 								Register module <nutcracker>..
 								-> (Squyrrel.register_module) ->: ModuleMeta(package=registry, module_name=nutcracker)
 
-							Squyrrel.load_module(PackageMeta(package_name=registry, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\registry, relative_path=squyrrel\core\registry, import_string=squyrrel.core.registry), module_name='nutcracker', load_classes=True)
+							Squyrrel.load_module(package=PackageMeta(package_name=registry, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\registry, relative_path=squyrrel\core\registry, import_string=squyrrel.core.registry), module_name='nutcracker', load_classes=True)
 								Load module <squyrrel.core.registry.nutcracker>
 								Squyrrel.load_module_classes(module_meta=ModuleMeta(package=registry, module_name=nutcracker), imported_module=<module 'squyrrel.core.registry.nutcracker' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\core\\registry\\nutcracker.py'>)
 									load classes of module squyrrel.core.registry.nutcracker..
@@ -618,7 +595,7 @@ Squyrrel.load_squyrrel_package()
 								Register module <signals>..
 								-> (Squyrrel.register_module) ->: ModuleMeta(package=registry, module_name=signals)
 
-							Squyrrel.load_module(PackageMeta(package_name=registry, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\registry, relative_path=squyrrel\core\registry, import_string=squyrrel.core.registry), module_name='signals', load_classes=True)
+							Squyrrel.load_module(package=PackageMeta(package_name=registry, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\registry, relative_path=squyrrel\core\registry, import_string=squyrrel.core.registry), module_name='signals', load_classes=True)
 								Load module <squyrrel.core.registry.signals>
 								Squyrrel.load_module_classes(module_meta=ModuleMeta(package=registry, module_name=signals), imported_module=<module 'squyrrel.core.registry.signals' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\core\\registry\\signals.py'>)
 									load classes of module squyrrel.core.registry.signals..
@@ -631,7 +608,7 @@ Squyrrel.load_squyrrel_package()
 								Register module <__init__>..
 								-> (Squyrrel.register_module) ->: ModuleMeta(package=registry, module_name=__init__)
 
-							Squyrrel.load_module(PackageMeta(package_name=registry, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\registry, relative_path=squyrrel\core\registry, import_string=squyrrel.core.registry), module_name='__init__', load_classes=True)
+							Squyrrel.load_module(package=PackageMeta(package_name=registry, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\registry, relative_path=squyrrel\core\registry, import_string=squyrrel.core.registry), module_name='__init__', load_classes=True)
 								Load module <squyrrel.core.registry.__init__>
 								Squyrrel.load_module_classes(module_meta=ModuleMeta(package=registry, module_name=__init__), imported_module=<module 'squyrrel.core.registry.__init__' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\core\\registry\\__init__.py'>)
 									load classes of module squyrrel.core.registry.__init__..
@@ -658,9 +635,6 @@ Squyrrel.load_squyrrel_package()
 
 							Squyrrel.load_package(PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\registry\__pycache__, relative_path=squyrrel\core\registry\__pycache__, import_string=squyrrel.core.registry.__pycache__), ignore_rotten_modules=False, load_classes=True, load_subpackages=True)
 								Load package <PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\registry\__pycache__, relative_path=squyrrel\core\registry\__pycache__, import_string=squyrrel.core.registry.__pycache__)>...
-								Squyrrel.package_already_loaded(package_meta=PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\registry\__pycache__, relative_path=squyrrel\core\registry\__pycache__, import_string=squyrrel.core.registry.__pycache__))
-									-> (Squyrrel.package_already_loaded) ->: False
-
 								Squyrrel.inspect_directory(PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\registry\__pycache__, relative_path=squyrrel\core\registry\__pycache__, import_string=squyrrel.core.registry.__pycache__))
 									-> (Squyrrel.inspect_directory) ->: ([], [])
 
@@ -699,9 +673,6 @@ Squyrrel.load_squyrrel_package()
 
 					Squyrrel.load_package(PackageMeta(package_name=signals, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\signals, relative_path=squyrrel\core\signals, import_string=squyrrel.core.signals), ignore_rotten_modules=False, load_classes=True, load_subpackages=True)
 						Load package <PackageMeta(package_name=signals, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\signals, relative_path=squyrrel\core\signals, import_string=squyrrel.core.signals)>...
-						Squyrrel.package_already_loaded(package_meta=PackageMeta(package_name=signals, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\signals, relative_path=squyrrel\core\signals, import_string=squyrrel.core.signals))
-							-> (Squyrrel.package_already_loaded) ->: False
-
 						Squyrrel.inspect_directory(PackageMeta(package_name=signals, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\signals, relative_path=squyrrel\core\signals, import_string=squyrrel.core.signals))
 							-> (Squyrrel.inspect_directory) ->: (['base', '__init__'], ['__pycache__'])
 
@@ -714,7 +685,7 @@ Squyrrel.load_squyrrel_package()
 								Register module <base>..
 								-> (Squyrrel.register_module) ->: ModuleMeta(package=signals, module_name=base)
 
-							Squyrrel.load_module(PackageMeta(package_name=signals, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\signals, relative_path=squyrrel\core\signals, import_string=squyrrel.core.signals), module_name='base', load_classes=True)
+							Squyrrel.load_module(package=PackageMeta(package_name=signals, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\signals, relative_path=squyrrel\core\signals, import_string=squyrrel.core.signals), module_name='base', load_classes=True)
 								Load module <squyrrel.core.signals.base>
 								Squyrrel.load_module_classes(module_meta=ModuleMeta(package=signals, module_name=base), imported_module=<module 'squyrrel.core.signals.base' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\core\\signals\\base.py'>)
 									load classes of module squyrrel.core.signals.base..
@@ -739,7 +710,7 @@ Squyrrel.load_squyrrel_package()
 								Register module <__init__>..
 								-> (Squyrrel.register_module) ->: ModuleMeta(package=signals, module_name=__init__)
 
-							Squyrrel.load_module(PackageMeta(package_name=signals, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\signals, relative_path=squyrrel\core\signals, import_string=squyrrel.core.signals), module_name='__init__', load_classes=True)
+							Squyrrel.load_module(package=PackageMeta(package_name=signals, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\signals, relative_path=squyrrel\core\signals, import_string=squyrrel.core.signals), module_name='__init__', load_classes=True)
 								Load module <squyrrel.core.signals.__init__>
 								Squyrrel.load_module_classes(module_meta=ModuleMeta(package=signals, module_name=__init__), imported_module=<module 'squyrrel.core.signals.__init__' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\core\\signals\\__init__.py'>)
 									load classes of module squyrrel.core.signals.__init__..
@@ -766,9 +737,6 @@ Squyrrel.load_squyrrel_package()
 
 							Squyrrel.load_package(PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\signals\__pycache__, relative_path=squyrrel\core\signals\__pycache__, import_string=squyrrel.core.signals.__pycache__), ignore_rotten_modules=False, load_classes=True, load_subpackages=True)
 								Load package <PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\signals\__pycache__, relative_path=squyrrel\core\signals\__pycache__, import_string=squyrrel.core.signals.__pycache__)>...
-								Squyrrel.package_already_loaded(package_meta=PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\signals\__pycache__, relative_path=squyrrel\core\signals\__pycache__, import_string=squyrrel.core.signals.__pycache__))
-									-> (Squyrrel.package_already_loaded) ->: False
-
 								Squyrrel.inspect_directory(PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\signals\__pycache__, relative_path=squyrrel\core\signals\__pycache__, import_string=squyrrel.core.signals.__pycache__))
 									-> (Squyrrel.inspect_directory) ->: ([], [])
 
@@ -807,9 +775,6 @@ Squyrrel.load_squyrrel_package()
 
 					Squyrrel.load_package(PackageMeta(package_name=utils, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\utils, relative_path=squyrrel\core\utils, import_string=squyrrel.core.utils), ignore_rotten_modules=False, load_classes=True, load_subpackages=True)
 						Load package <PackageMeta(package_name=utils, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\utils, relative_path=squyrrel\core\utils, import_string=squyrrel.core.utils)>...
-						Squyrrel.package_already_loaded(package_meta=PackageMeta(package_name=utils, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\utils, relative_path=squyrrel\core\utils, import_string=squyrrel.core.utils))
-							-> (Squyrrel.package_already_loaded) ->: False
-
 						Squyrrel.inspect_directory(PackageMeta(package_name=utils, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\utils, relative_path=squyrrel\core\utils, import_string=squyrrel.core.utils))
 							-> (Squyrrel.inspect_directory) ->: (['paths', 'singleton', '__init__'], ['__pycache__'])
 
@@ -822,7 +787,7 @@ Squyrrel.load_squyrrel_package()
 								Register module <paths>..
 								-> (Squyrrel.register_module) ->: ModuleMeta(package=utils, module_name=paths)
 
-							Squyrrel.load_module(PackageMeta(package_name=utils, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\utils, relative_path=squyrrel\core\utils, import_string=squyrrel.core.utils), module_name='paths', load_classes=True)
+							Squyrrel.load_module(package=PackageMeta(package_name=utils, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\utils, relative_path=squyrrel\core\utils, import_string=squyrrel.core.utils), module_name='paths', load_classes=True)
 								Load module <squyrrel.core.utils.paths>
 								Squyrrel.load_module_classes(module_meta=ModuleMeta(package=utils, module_name=paths), imported_module=<module 'squyrrel.core.utils.paths' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\core\\utils\\paths.py'>)
 									load classes of module squyrrel.core.utils.paths..
@@ -835,7 +800,7 @@ Squyrrel.load_squyrrel_package()
 								Register module <singleton>..
 								-> (Squyrrel.register_module) ->: ModuleMeta(package=utils, module_name=singleton)
 
-							Squyrrel.load_module(PackageMeta(package_name=utils, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\utils, relative_path=squyrrel\core\utils, import_string=squyrrel.core.utils), module_name='singleton', load_classes=True)
+							Squyrrel.load_module(package=PackageMeta(package_name=utils, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\utils, relative_path=squyrrel\core\utils, import_string=squyrrel.core.utils), module_name='singleton', load_classes=True)
 								Load module <squyrrel.core.utils.singleton>
 								Squyrrel.load_module_classes(module_meta=ModuleMeta(package=utils, module_name=singleton), imported_module=<module 'squyrrel.core.utils.singleton' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\core\\utils\\singleton.py'>)
 									load classes of module squyrrel.core.utils.singleton..
@@ -852,7 +817,7 @@ Squyrrel.load_squyrrel_package()
 								Register module <__init__>..
 								-> (Squyrrel.register_module) ->: ModuleMeta(package=utils, module_name=__init__)
 
-							Squyrrel.load_module(PackageMeta(package_name=utils, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\utils, relative_path=squyrrel\core\utils, import_string=squyrrel.core.utils), module_name='__init__', load_classes=True)
+							Squyrrel.load_module(package=PackageMeta(package_name=utils, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\utils, relative_path=squyrrel\core\utils, import_string=squyrrel.core.utils), module_name='__init__', load_classes=True)
 								Load module <squyrrel.core.utils.__init__>
 								Squyrrel.load_module_classes(module_meta=ModuleMeta(package=utils, module_name=__init__), imported_module=<module 'squyrrel.core.utils.__init__' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\core\\utils\\__init__.py'>)
 									load classes of module squyrrel.core.utils.__init__..
@@ -879,9 +844,6 @@ Squyrrel.load_squyrrel_package()
 
 							Squyrrel.load_package(PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\utils\__pycache__, relative_path=squyrrel\core\utils\__pycache__, import_string=squyrrel.core.utils.__pycache__), ignore_rotten_modules=False, load_classes=True, load_subpackages=True)
 								Load package <PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\utils\__pycache__, relative_path=squyrrel\core\utils\__pycache__, import_string=squyrrel.core.utils.__pycache__)>...
-								Squyrrel.package_already_loaded(package_meta=PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\utils\__pycache__, relative_path=squyrrel\core\utils\__pycache__, import_string=squyrrel.core.utils.__pycache__))
-									-> (Squyrrel.package_already_loaded) ->: False
-
 								Squyrrel.inspect_directory(PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\utils\__pycache__, relative_path=squyrrel\core\utils\__pycache__, import_string=squyrrel.core.utils.__pycache__))
 									-> (Squyrrel.inspect_directory) ->: ([], [])
 
@@ -917,9 +879,6 @@ Squyrrel.load_squyrrel_package()
 
 					Squyrrel.load_package(PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\__pycache__, relative_path=squyrrel\core\__pycache__, import_string=squyrrel.core.__pycache__), ignore_rotten_modules=False, load_classes=True, load_subpackages=True)
 						Load package <PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\__pycache__, relative_path=squyrrel\core\__pycache__, import_string=squyrrel.core.__pycache__)>...
-						Squyrrel.package_already_loaded(package_meta=PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\__pycache__, relative_path=squyrrel\core\__pycache__, import_string=squyrrel.core.__pycache__))
-							-> (Squyrrel.package_already_loaded) ->: False
-
 						Squyrrel.inspect_directory(PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\core\__pycache__, relative_path=squyrrel\core\__pycache__, import_string=squyrrel.core.__pycache__))
 							-> (Squyrrel.inspect_directory) ->: ([], [])
 
@@ -958,1614 +917,76 @@ Squyrrel.load_squyrrel_package()
 
 			Squyrrel.load_package(PackageMeta(package_name=db, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db, relative_path=squyrrel\db, import_string=squyrrel.db), ignore_rotten_modules=False, load_classes=True, load_subpackages=True)
 				Load package <PackageMeta(package_name=db, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db, relative_path=squyrrel\db, import_string=squyrrel.db)>...
-				Squyrrel.package_already_loaded(package_meta=PackageMeta(package_name=db, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db, relative_path=squyrrel\db, import_string=squyrrel.db))
-					-> (Squyrrel.package_already_loaded) ->: False
-
 				Squyrrel.inspect_directory(PackageMeta(package_name=db, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db, relative_path=squyrrel\db, import_string=squyrrel.db))
-					-> (Squyrrel.inspect_directory) ->: (['connection', '__init__'], ['scripts', 'sqlite', '__pycache__'])
+					-> (Squyrrel.inspect_directory) ->: (['connection', '__init__'], ['postgres', 'scripts', 'sqlite', '__pycache__'])
 
 				..is package (contains __init__.py): True
 				Squyrrel._load_package_filter(PackageMeta(package_name=db, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db, relative_path=squyrrel\db, import_string=squyrrel.db))
-					-> (Squyrrel._load_package_filter) ->: False
-
-				Package db did not pass loading filter
-				-> (Squyrrel.load_package) ->: PackageMeta(package_name=db, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db, relative_path=squyrrel\db, import_string=squyrrel.db)
-
-			Add subpackage db to package squyrrel
-			Inspecting subdir gui ..
-			Squyrrel.register_package('squyrrel\\gui')
-				Register package <squyrrel\gui>..
-				Squyrrel.get_full_package_path('squyrrel\\gui')
-					-> (Squyrrel.get_full_package_path) ->: 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\gui'
-
-				Squyrrel.package_already_registered(package_name='gui')
-					-> (Squyrrel.package_already_registered) ->: False
-
-				Squyrrel._register_package_filter('gui')
-					-> (Squyrrel._register_package_filter) ->: True
-
-				Successfully registered package/dir gui
-				Full path: c:\users\lothar\passion\squyrrel\squyrrel\gui
-				-> (Squyrrel.register_package) ->: PackageMeta(package_name=gui, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui, relative_path=squyrrel\gui, import_string=squyrrel.gui)
-
-			Squyrrel.load_package(PackageMeta(package_name=gui, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui, relative_path=squyrrel\gui, import_string=squyrrel.gui), ignore_rotten_modules=False, load_classes=True, load_subpackages=True)
-				Load package <PackageMeta(package_name=gui, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui, relative_path=squyrrel\gui, import_string=squyrrel.gui)>...
-				Squyrrel.package_already_loaded(package_meta=PackageMeta(package_name=gui, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui, relative_path=squyrrel\gui, import_string=squyrrel.gui))
-					-> (Squyrrel.package_already_loaded) ->: False
-
-				Squyrrel.inspect_directory(PackageMeta(package_name=gui, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui, relative_path=squyrrel\gui, import_string=squyrrel.gui))
-					-> (Squyrrel.inspect_directory) ->: (['signals', '__init__'], ['decorators', 'widgets', 'windows', '__pycache__'])
-
-				..is package (contains __init__.py): True
-				Squyrrel._load_package_filter(PackageMeta(package_name=gui, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui, relative_path=squyrrel\gui, import_string=squyrrel.gui))
-					-> (Squyrrel._load_package_filter) ->: False
-
-				Package gui did not pass loading filter
-				-> (Squyrrel.load_package) ->: PackageMeta(package_name=gui, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui, relative_path=squyrrel\gui, import_string=squyrrel.gui)
-
-			Add subpackage gui to package squyrrel
-			Inspecting subdir ide ..
-			Squyrrel.register_package('squyrrel\\ide')
-				Register package <squyrrel\ide>..
-				Squyrrel.get_full_package_path('squyrrel\\ide')
-					-> (Squyrrel.get_full_package_path) ->: 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\ide'
-
-				Squyrrel.package_already_registered(package_name='ide')
-					-> (Squyrrel.package_already_registered) ->: False
-
-				Squyrrel._register_package_filter('ide')
-					-> (Squyrrel._register_package_filter) ->: True
-
-				Successfully registered package/dir ide
-				Full path: c:\users\lothar\passion\squyrrel\squyrrel\ide
-				-> (Squyrrel.register_package) ->: PackageMeta(package_name=ide, package_path=c:\users\lothar\passion\squyrrel\squyrrel\ide, relative_path=squyrrel\ide, import_string=squyrrel.ide)
-
-			Squyrrel.load_package(PackageMeta(package_name=ide, package_path=c:\users\lothar\passion\squyrrel\squyrrel\ide, relative_path=squyrrel\ide, import_string=squyrrel.ide), ignore_rotten_modules=False, load_classes=True, load_subpackages=True)
-				Load package <PackageMeta(package_name=ide, package_path=c:\users\lothar\passion\squyrrel\squyrrel\ide, relative_path=squyrrel\ide, import_string=squyrrel.ide)>...
-				Squyrrel.package_already_loaded(package_meta=PackageMeta(package_name=ide, package_path=c:\users\lothar\passion\squyrrel\squyrrel\ide, relative_path=squyrrel\ide, import_string=squyrrel.ide))
-					-> (Squyrrel.package_already_loaded) ->: False
-
-				Squyrrel.inspect_directory(PackageMeta(package_name=ide, package_path=c:\users\lothar\passion\squyrrel\squyrrel\ide, relative_path=squyrrel\ide, import_string=squyrrel.ide))
-					-> (Squyrrel.inspect_directory) ->: (['commands', 'gui', 'log_window', 'main', 'shell', 'shell_window', 'windows', '__init__'], ['__pycache__'])
-
-				..is package (contains __init__.py): True
-				Squyrrel._load_package_filter(PackageMeta(package_name=ide, package_path=c:\users\lothar\passion\squyrrel\squyrrel\ide, relative_path=squyrrel\ide, import_string=squyrrel.ide))
-					-> (Squyrrel._load_package_filter) ->: False
-
-				Package ide did not pass loading filter
-				-> (Squyrrel.load_package) ->: PackageMeta(package_name=ide, package_path=c:\users\lothar\passion\squyrrel\squyrrel\ide, relative_path=squyrrel\ide, import_string=squyrrel.ide)
-
-			Add subpackage ide to package squyrrel
-			Inspecting subdir management ..
-			Squyrrel.register_package('squyrrel\\management')
-				Register package <squyrrel\management>..
-				Squyrrel.get_full_package_path('squyrrel\\management')
-					-> (Squyrrel.get_full_package_path) ->: 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\management'
-
-				Squyrrel.package_already_registered(package_name='management')
-					-> (Squyrrel.package_already_registered) ->: False
-
-				Squyrrel._register_package_filter('management')
-					-> (Squyrrel._register_package_filter) ->: True
-
-				Successfully registered package/dir management
-				Full path: c:\users\lothar\passion\squyrrel\squyrrel\management
-				-> (Squyrrel.register_package) ->: PackageMeta(package_name=management, package_path=c:\users\lothar\passion\squyrrel\squyrrel\management, relative_path=squyrrel\management, import_string=squyrrel.management)
-
-			Squyrrel.load_package(PackageMeta(package_name=management, package_path=c:\users\lothar\passion\squyrrel\squyrrel\management, relative_path=squyrrel\management, import_string=squyrrel.management), ignore_rotten_modules=False, load_classes=True, load_subpackages=True)
-				Load package <PackageMeta(package_name=management, package_path=c:\users\lothar\passion\squyrrel\squyrrel\management, relative_path=squyrrel\management, import_string=squyrrel.management)>...
-				Squyrrel.package_already_loaded(package_meta=PackageMeta(package_name=management, package_path=c:\users\lothar\passion\squyrrel\squyrrel\management, relative_path=squyrrel\management, import_string=squyrrel.management))
-					-> (Squyrrel.package_already_loaded) ->: False
-
-				Squyrrel.inspect_directory(PackageMeta(package_name=management, package_path=c:\users\lothar\passion\squyrrel\squyrrel\management, relative_path=squyrrel\management, import_string=squyrrel.management))
-					-> (Squyrrel.inspect_directory) ->: (['base', 'commands', 'command_manager', 'constants', 'context', 'exceptions', 'regtest', 'script_reader', 'signals', 'squyrrel_commands', '__init__'], ['__pycache__'])
-
-				..is package (contains __init__.py): True
-				Squyrrel._load_package_filter(PackageMeta(package_name=management, package_path=c:\users\lothar\passion\squyrrel\squyrrel\management, relative_path=squyrrel\management, import_string=squyrrel.management))
 					-> (Squyrrel._load_package_filter) ->: True
 
-				Squyrrel.register_and_load_modules(package_meta=PackageMeta(package_name=management, package_path=c:\users\lothar\passion\squyrrel\squyrrel\management, relative_path=squyrrel\management, import_string=squyrrel.management), modules=['base', 'commands', 'command_manager', 'constants', 'context', 'exceptions', 'regtest', 'script_reader', 'signals', 'squyrrel_commands', '__init__'], ignore_rotten_modules=False, load_classes=True)
-					Squyrrel.register_module(PackageMeta(package_name=management, package_path=c:\users\lothar\passion\squyrrel\squyrrel\management, relative_path=squyrrel\management, import_string=squyrrel.management), module_name='base')
-						Register module <base>..
-						-> (Squyrrel.register_module) ->: ModuleMeta(package=management, module_name=base)
+				Squyrrel.register_and_load_modules(package_meta=PackageMeta(package_name=db, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db, relative_path=squyrrel\db, import_string=squyrrel.db), modules=['connection', '__init__'], ignore_rotten_modules=False, load_classes=True)
+					Squyrrel.register_module(PackageMeta(package_name=db, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db, relative_path=squyrrel\db, import_string=squyrrel.db), module_name='connection')
+						Register module <connection>..
+						-> (Squyrrel.register_module) ->: ModuleMeta(package=db, module_name=connection)
 
-					Squyrrel.load_module(PackageMeta(package_name=management, package_path=c:\users\lothar\passion\squyrrel\squyrrel\management, relative_path=squyrrel\management, import_string=squyrrel.management), module_name='base', load_classes=True)
-						Load module <squyrrel.management.base>
-						Squyrrel.load_module_classes(module_meta=ModuleMeta(package=management, module_name=base), imported_module=<module 'squyrrel.management.base' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\management\\base.py'>)
-							load classes of module squyrrel.management.base..
-							Squyrrel.load_class(ModuleMeta(package=management, module_name=base), 'BaseCommand', <class 'squyrrel.management.base.BaseCommand'>)
-								add class BaseCommand
+					Squyrrel.load_module(package=PackageMeta(package_name=db, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db, relative_path=squyrrel\db, import_string=squyrrel.db), module_name='connection', load_classes=True)
+						Load module <squyrrel.db.connection>
+						Squyrrel.load_module_classes(module_meta=ModuleMeta(package=db, module_name=connection), imported_module=<module 'squyrrel.db.connection' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\db\\connection.py'>)
+							load classes of module squyrrel.db.connection..
+							Squyrrel.load_class(ModuleMeta(package=db, module_name=connection), 'SqlDatabaseConnection', <class 'squyrrel.db.connection.SqlDatabaseConnection'>)
+								add class SqlDatabaseConnection
 								-> (Squyrrel.load_class) ->: None
 
-							Squyrrel.load_class(ModuleMeta(package=management, module_name=base), 'CommandParser', <class 'squyrrel.management.base.CommandParser'>)
-								add class CommandParser
-								-> (Squyrrel.load_class) ->: None
-
-							loaded 2 classes in module module squyrrel.management.base
+							loaded 1 classes in module module squyrrel.db.connection
 							-> (Squyrrel.load_module_classes) ->: None
 
 						-> (Squyrrel.load_module) ->: None
 
-					Squyrrel.register_module(PackageMeta(package_name=management, package_path=c:\users\lothar\passion\squyrrel\squyrrel\management, relative_path=squyrrel\management, import_string=squyrrel.management), module_name='commands')
-						Register module <commands>..
-						-> (Squyrrel.register_module) ->: ModuleMeta(package=management, module_name=commands)
-
-					Squyrrel.load_module(PackageMeta(package_name=management, package_path=c:\users\lothar\passion\squyrrel\squyrrel\management, relative_path=squyrrel\management, import_string=squyrrel.management), module_name='commands', load_classes=True)
-						Load module <squyrrel.management.commands>
-						Squyrrel.load_module_classes(module_meta=ModuleMeta(package=management, module_name=commands), imported_module=<module 'squyrrel.management.commands' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\management\\commands.py'>)
-							load classes of module squyrrel.management.commands..
-							Squyrrel.load_class(ModuleMeta(package=management, module_name=commands), 'ClassInfoCommand', <class 'squyrrel.management.commands.ClassInfoCommand'>)
-								add class ClassInfoCommand
-								-> (Squyrrel.load_class) ->: None
-
-							Squyrrel.load_class(ModuleMeta(package=management, module_name=commands), 'HelpCommand', <class 'squyrrel.management.commands.HelpCommand'>)
-								add class HelpCommand
-								-> (Squyrrel.load_class) ->: None
-
-							Squyrrel.load_class(ModuleMeta(package=management, module_name=commands), 'SourceCodeCommand', <class 'squyrrel.management.commands.SourceCodeCommand'>)
-								add class SourceCodeCommand
-								-> (Squyrrel.load_class) ->: None
-
-							loaded 3 classes in module module squyrrel.management.commands
-							-> (Squyrrel.load_module_classes) ->: None
-
-						-> (Squyrrel.load_module) ->: None
-
-					Squyrrel.register_module(PackageMeta(package_name=management, package_path=c:\users\lothar\passion\squyrrel\squyrrel\management, relative_path=squyrrel\management, import_string=squyrrel.management), module_name='command_manager')
-						Register module <command_manager>..
-						-> (Squyrrel.register_module) ->: ModuleMeta(package=management, module_name=command_manager)
-
-					Squyrrel.load_module(PackageMeta(package_name=management, package_path=c:\users\lothar\passion\squyrrel\squyrrel\management, relative_path=squyrrel\management, import_string=squyrrel.management), module_name='command_manager', load_classes=True)
-						Load module <squyrrel.management.command_manager>
-						Squyrrel.load_module_classes(module_meta=ModuleMeta(package=management, module_name=command_manager), imported_module=<module 'squyrrel.management.command_manager' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\management\\command_manager.py'>)
-							load classes of module squyrrel.management.command_manager..
-							Squyrrel.load_class(ModuleMeta(package=management, module_name=command_manager), 'CommandManager', <class 'squyrrel.management.command_manager.CommandManager'>)
-								add class CommandManager
-								-> (Squyrrel.load_class) ->: None
-
-							loaded 1 classes in module module squyrrel.management.command_manager
-							-> (Squyrrel.load_module_classes) ->: None
-
-						-> (Squyrrel.load_module) ->: None
-
-					Squyrrel.register_module(PackageMeta(package_name=management, package_path=c:\users\lothar\passion\squyrrel\squyrrel\management, relative_path=squyrrel\management, import_string=squyrrel.management), module_name='constants')
-						Register module <constants>..
-						-> (Squyrrel.register_module) ->: ModuleMeta(package=management, module_name=constants)
-
-					Squyrrel.load_module(PackageMeta(package_name=management, package_path=c:\users\lothar\passion\squyrrel\squyrrel\management, relative_path=squyrrel\management, import_string=squyrrel.management), module_name='constants', load_classes=True)
-						Load module <squyrrel.management.constants>
-						Squyrrel.load_module_classes(module_meta=ModuleMeta(package=management, module_name=constants), imported_module=<module 'squyrrel.management.constants' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\management\\constants.py'>)
-							load classes of module squyrrel.management.constants..
-							loaded 0 classes in module module squyrrel.management.constants
-							-> (Squyrrel.load_module_classes) ->: None
-
-						-> (Squyrrel.load_module) ->: None
-
-					Squyrrel.register_module(PackageMeta(package_name=management, package_path=c:\users\lothar\passion\squyrrel\squyrrel\management, relative_path=squyrrel\management, import_string=squyrrel.management), module_name='context')
-						Register module <context>..
-						-> (Squyrrel.register_module) ->: ModuleMeta(package=management, module_name=context)
-
-					Squyrrel.load_module(PackageMeta(package_name=management, package_path=c:\users\lothar\passion\squyrrel\squyrrel\management, relative_path=squyrrel\management, import_string=squyrrel.management), module_name='context', load_classes=True)
-						Load module <squyrrel.management.context>
-						Squyrrel.load_module_classes(module_meta=ModuleMeta(package=management, module_name=context), imported_module=<module 'squyrrel.management.context' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\management\\context.py'>)
-							load classes of module squyrrel.management.context..
-							Squyrrel.load_class(ModuleMeta(package=management, module_name=context), 'CmdContext', <class 'squyrrel.management.context.CmdContext'>)
-								add class CmdContext
-								-> (Squyrrel.load_class) ->: None
-
-							loaded 1 classes in module module squyrrel.management.context
-							-> (Squyrrel.load_module_classes) ->: None
-
-						-> (Squyrrel.load_module) ->: None
-
-					Squyrrel.register_module(PackageMeta(package_name=management, package_path=c:\users\lothar\passion\squyrrel\squyrrel\management, relative_path=squyrrel\management, import_string=squyrrel.management), module_name='exceptions')
-						Register module <exceptions>..
-						-> (Squyrrel.register_module) ->: ModuleMeta(package=management, module_name=exceptions)
-
-					Squyrrel.load_module(PackageMeta(package_name=management, package_path=c:\users\lothar\passion\squyrrel\squyrrel\management, relative_path=squyrrel\management, import_string=squyrrel.management), module_name='exceptions', load_classes=True)
-						Load module <squyrrel.management.exceptions>
-						Squyrrel.load_module_classes(module_meta=ModuleMeta(package=management, module_name=exceptions), imported_module=<module 'squyrrel.management.exceptions' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\management\\exceptions.py'>)
-							load classes of module squyrrel.management.exceptions..
-							Squyrrel.load_class(ModuleMeta(package=management, module_name=exceptions), 'ArgumentParserException', <class 'squyrrel.management.exceptions.ArgumentParserException'>)
-								add class ArgumentParserException
-								-> (Squyrrel.load_class) ->: None
-
-							Squyrrel.load_class(ModuleMeta(package=management, module_name=exceptions), 'CommandError', <class 'squyrrel.management.exceptions.CommandError'>)
-								add class CommandError
-								-> (Squyrrel.load_class) ->: None
-
-							Squyrrel.load_class(ModuleMeta(package=management, module_name=exceptions), 'CommandNotFoundException', <class 'squyrrel.management.exceptions.CommandNotFoundException'>)
-								add class CommandNotFoundException
-								-> (Squyrrel.load_class) ->: None
-
-							loaded 3 classes in module module squyrrel.management.exceptions
-							-> (Squyrrel.load_module_classes) ->: None
-
-						-> (Squyrrel.load_module) ->: None
-
-					Squyrrel.register_module(PackageMeta(package_name=management, package_path=c:\users\lothar\passion\squyrrel\squyrrel\management, relative_path=squyrrel\management, import_string=squyrrel.management), module_name='regtest')
-						Register module <regtest>..
-						-> (Squyrrel.register_module) ->: ModuleMeta(package=management, module_name=regtest)
-
-					Squyrrel.load_module(PackageMeta(package_name=management, package_path=c:\users\lothar\passion\squyrrel\squyrrel\management, relative_path=squyrrel\management, import_string=squyrrel.management), module_name='regtest', load_classes=True)
-						Load module <squyrrel.management.regtest>
-						Squyrrel.load_module_classes(module_meta=ModuleMeta(package=management, module_name=regtest), imported_module=<module 'squyrrel.management.regtest' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\management\\regtest.py'>)
-							load classes of module squyrrel.management.regtest..
-							loaded 0 classes in module module squyrrel.management.regtest
-							-> (Squyrrel.load_module_classes) ->: None
-
-						-> (Squyrrel.load_module) ->: None
-
-					Squyrrel.register_module(PackageMeta(package_name=management, package_path=c:\users\lothar\passion\squyrrel\squyrrel\management, relative_path=squyrrel\management, import_string=squyrrel.management), module_name='script_reader')
-						Register module <script_reader>..
-						-> (Squyrrel.register_module) ->: ModuleMeta(package=management, module_name=script_reader)
-
-					Squyrrel.load_module(PackageMeta(package_name=management, package_path=c:\users\lothar\passion\squyrrel\squyrrel\management, relative_path=squyrrel\management, import_string=squyrrel.management), module_name='script_reader', load_classes=True)
-						Load module <squyrrel.management.script_reader>
-						Squyrrel.load_module_classes(module_meta=ModuleMeta(package=management, module_name=script_reader), imported_module=<module 'squyrrel.management.script_reader' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\management\\script_reader.py'>)
-							load classes of module squyrrel.management.script_reader..
-							Squyrrel.load_class(ModuleMeta(package=management, module_name=script_reader), 'Assignment', <class 'squyrrel.management.script_reader.Assignment'>)
-								add class Assignment
-								-> (Squyrrel.load_class) ->: None
-
-							Squyrrel.load_class(ModuleMeta(package=management, module_name=script_reader), 'ScriptReader', <class 'squyrrel.management.script_reader.ScriptReader'>)
-								add class ScriptReader
-								-> (Squyrrel.load_class) ->: None
-
-							Squyrrel.load_class(ModuleMeta(package=management, module_name=script_reader), 'Token', <class 'squyrrel.management.script_reader.Token'>)
-								add class Token
-								-> (Squyrrel.load_class) ->: None
-
-							loaded 3 classes in module module squyrrel.management.script_reader
-							-> (Squyrrel.load_module_classes) ->: None
-
-						-> (Squyrrel.load_module) ->: None
-
-					Squyrrel.register_module(PackageMeta(package_name=management, package_path=c:\users\lothar\passion\squyrrel\squyrrel\management, relative_path=squyrrel\management, import_string=squyrrel.management), module_name='signals')
-						Register module <signals>..
-						-> (Squyrrel.register_module) ->: ModuleMeta(package=management, module_name=signals)
-
-					Squyrrel.load_module(PackageMeta(package_name=management, package_path=c:\users\lothar\passion\squyrrel\squyrrel\management, relative_path=squyrrel\management, import_string=squyrrel.management), module_name='signals', load_classes=True)
-						Load module <squyrrel.management.signals>
-						Squyrrel.load_module_classes(module_meta=ModuleMeta(package=management, module_name=signals), imported_module=<module 'squyrrel.management.signals' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\management\\signals.py'>)
-							load classes of module squyrrel.management.signals..
-							loaded 0 classes in module module squyrrel.management.signals
-							-> (Squyrrel.load_module_classes) ->: None
-
-						-> (Squyrrel.load_module) ->: None
-
-					Squyrrel.register_module(PackageMeta(package_name=management, package_path=c:\users\lothar\passion\squyrrel\squyrrel\management, relative_path=squyrrel\management, import_string=squyrrel.management), module_name='squyrrel_commands')
-						Register module <squyrrel_commands>..
-						-> (Squyrrel.register_module) ->: ModuleMeta(package=management, module_name=squyrrel_commands)
-
-					Squyrrel.load_module(PackageMeta(package_name=management, package_path=c:\users\lothar\passion\squyrrel\squyrrel\management, relative_path=squyrrel\management, import_string=squyrrel.management), module_name='squyrrel_commands', load_classes=True)
-						Load module <squyrrel.management.squyrrel_commands>
-						Squyrrel.load_module_classes(module_meta=ModuleMeta(package=management, module_name=squyrrel_commands), imported_module=<module 'squyrrel.management.squyrrel_commands' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\management\\squyrrel_commands.py'>)
-							load classes of module squyrrel.management.squyrrel_commands..
-							Squyrrel.load_class(ModuleMeta(package=management, module_name=squyrrel_commands), 'SquyrrelCommand', <class 'squyrrel.management.squyrrel_commands.SquyrrelCommand'>)
-								add class SquyrrelCommand
-								-> (Squyrrel.load_class) ->: None
-
-							Squyrrel.load_class(ModuleMeta(package=management, module_name=squyrrel_commands), 'SquyrrelHelpCommand', <class 'squyrrel.management.squyrrel_commands.SquyrrelHelpCommand'>)
-								add class SquyrrelHelpCommand
-								-> (Squyrrel.load_class) ->: None
-
-							Squyrrel.load_class(ModuleMeta(package=management, module_name=squyrrel_commands), 'SquyrrelListPackagesCommand', <class 'squyrrel.management.squyrrel_commands.SquyrrelListPackagesCommand'>)
-								add class SquyrrelListPackagesCommand
-								-> (Squyrrel.load_class) ->: None
-
-							Squyrrel.load_class(ModuleMeta(package=management, module_name=squyrrel_commands), 'SquyrrelLoadPackageCommand', <class 'squyrrel.management.squyrrel_commands.SquyrrelLoadPackageCommand'>)
-								add class SquyrrelLoadPackageCommand
-								-> (Squyrrel.load_class) ->: None
-
-							Squyrrel.load_class(ModuleMeta(package=management, module_name=squyrrel_commands), 'SquyrrelReloadCommand', <class 'squyrrel.management.squyrrel_commands.SquyrrelReloadCommand'>)
-								add class SquyrrelReloadCommand
-								-> (Squyrrel.load_class) ->: None
-
-							Squyrrel.load_class(ModuleMeta(package=management, module_name=squyrrel_commands), 'SquyrrelReportCommand', <class 'squyrrel.management.squyrrel_commands.SquyrrelReportCommand'>)
-								add class SquyrrelReportCommand
-								-> (Squyrrel.load_class) ->: None
-
-							loaded 6 classes in module module squyrrel.management.squyrrel_commands
-							-> (Squyrrel.load_module_classes) ->: None
-
-						-> (Squyrrel.load_module) ->: None
-
-					Squyrrel.register_module(PackageMeta(package_name=management, package_path=c:\users\lothar\passion\squyrrel\squyrrel\management, relative_path=squyrrel\management, import_string=squyrrel.management), module_name='__init__')
+					Squyrrel.register_module(PackageMeta(package_name=db, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db, relative_path=squyrrel\db, import_string=squyrrel.db), module_name='__init__')
 						Register module <__init__>..
-						-> (Squyrrel.register_module) ->: ModuleMeta(package=management, module_name=__init__)
+						-> (Squyrrel.register_module) ->: ModuleMeta(package=db, module_name=__init__)
 
-					Squyrrel.load_module(PackageMeta(package_name=management, package_path=c:\users\lothar\passion\squyrrel\squyrrel\management, relative_path=squyrrel\management, import_string=squyrrel.management), module_name='__init__', load_classes=True)
-						Load module <squyrrel.management.__init__>
-						Squyrrel.load_module_classes(module_meta=ModuleMeta(package=management, module_name=__init__), imported_module=<module 'squyrrel.management.__init__' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\management\\__init__.py'>)
-							load classes of module squyrrel.management.__init__..
-							loaded 0 classes in module module squyrrel.management.__init__
+					Squyrrel.load_module(package=PackageMeta(package_name=db, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db, relative_path=squyrrel\db, import_string=squyrrel.db), module_name='__init__', load_classes=True)
+						Load module <squyrrel.db.__init__>
+						Squyrrel.load_module_classes(module_meta=ModuleMeta(package=db, module_name=__init__), imported_module=<module 'squyrrel.db.__init__' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\db\\__init__.py'>)
+							load classes of module squyrrel.db.__init__..
+							loaded 0 classes in module module squyrrel.db.__init__
 							-> (Squyrrel.load_module_classes) ->: None
 
 						-> (Squyrrel.load_module) ->: None
 
 					-> (Squyrrel.register_and_load_modules) ->: None
 
-				Squyrrel.register_and_load_subpackages(package_meta=PackageMeta(package_name=management, package_path=c:\users\lothar\passion\squyrrel\squyrrel\management, relative_path=squyrrel\management, import_string=squyrrel.management), subdirs=['__pycache__'], ignore_rotten_modules=False, load_classes=True)
-					Inspecting subdir __pycache__ ..
-					Squyrrel.register_package('squyrrel\\management\\__pycache__')
-						Register package <squyrrel\management\__pycache__>..
-						Squyrrel.get_full_package_path('squyrrel\\management\\__pycache__')
-							-> (Squyrrel.get_full_package_path) ->: 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\management\\__pycache__'
-
-						Squyrrel._register_package_filter('__pycache__')
-							-> (Squyrrel._register_package_filter) ->: True
-
-						Successfully registered package/dir __pycache__
-						Full path: c:\users\lothar\passion\squyrrel\squyrrel\management\__pycache__
-						-> (Squyrrel.register_package) ->: PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\management\__pycache__, relative_path=squyrrel\management\__pycache__, import_string=squyrrel.management.__pycache__)
-
-					Squyrrel.load_package(PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\management\__pycache__, relative_path=squyrrel\management\__pycache__, import_string=squyrrel.management.__pycache__), ignore_rotten_modules=False, load_classes=True, load_subpackages=True)
-						Load package <PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\management\__pycache__, relative_path=squyrrel\management\__pycache__, import_string=squyrrel.management.__pycache__)>...
-						Squyrrel.package_already_loaded(package_meta=PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\management\__pycache__, relative_path=squyrrel\management\__pycache__, import_string=squyrrel.management.__pycache__))
-							-> (Squyrrel.package_already_loaded) ->: False
-
-						Squyrrel.inspect_directory(PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\management\__pycache__, relative_path=squyrrel\management\__pycache__, import_string=squyrrel.management.__pycache__))
-							-> (Squyrrel.inspect_directory) ->: ([], [])
-
-						..is package (contains __init__.py): False
-						Squyrrel._load_package_filter(PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\management\__pycache__, relative_path=squyrrel\management\__pycache__, import_string=squyrrel.management.__pycache__))
-							-> (Squyrrel._load_package_filter) ->: True
-
-						Squyrrel.register_and_load_modules(package_meta=PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\management\__pycache__, relative_path=squyrrel\management\__pycache__, import_string=squyrrel.management.__pycache__), modules=[], ignore_rotten_modules=False, load_classes=True)
-							-> (Squyrrel.register_and_load_modules) ->: None
-
-						Squyrrel.register_and_load_subpackages(package_meta=PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\management\__pycache__, relative_path=squyrrel\management\__pycache__, import_string=squyrrel.management.__pycache__), subdirs=[], ignore_rotten_modules=False, load_classes=True)
-							-> (Squyrrel.register_and_load_subpackages) ->: None
-
-						-> (Squyrrel.load_package) ->: PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\management\__pycache__, relative_path=squyrrel\management\__pycache__, import_string=squyrrel.management.__pycache__)
-
-					-> (Squyrrel.register_and_load_subpackages) ->: None
-
-				-> (Squyrrel.load_package) ->: PackageMeta(package_name=management, package_path=c:\users\lothar\passion\squyrrel\squyrrel\management, relative_path=squyrrel\management, import_string=squyrrel.management)
-
-			Add subpackage management to package squyrrel
-			Inspecting subdir sql ..
-			Squyrrel.register_package('squyrrel\\sql')
-				Register package <squyrrel\sql>..
-				Squyrrel.get_full_package_path('squyrrel\\sql')
-					-> (Squyrrel.get_full_package_path) ->: 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\sql'
-
-				Squyrrel.package_already_registered(package_name='sql')
-					-> (Squyrrel.package_already_registered) ->: False
-
-				Squyrrel._register_package_filter('sql')
-					-> (Squyrrel._register_package_filter) ->: True
-
-				Successfully registered package/dir sql
-				Full path: c:\users\lothar\passion\squyrrel\squyrrel\sql
-				-> (Squyrrel.register_package) ->: PackageMeta(package_name=sql, package_path=c:\users\lothar\passion\squyrrel\squyrrel\sql, relative_path=squyrrel\sql, import_string=squyrrel.sql)
-
-			Squyrrel.load_package(PackageMeta(package_name=sql, package_path=c:\users\lothar\passion\squyrrel\squyrrel\sql, relative_path=squyrrel\sql, import_string=squyrrel.sql), ignore_rotten_modules=False, load_classes=True, load_subpackages=True)
-				Load package <PackageMeta(package_name=sql, package_path=c:\users\lothar\passion\squyrrel\squyrrel\sql, relative_path=squyrrel\sql, import_string=squyrrel.sql)>...
-				Squyrrel.package_already_loaded(package_meta=PackageMeta(package_name=sql, package_path=c:\users\lothar\passion\squyrrel\squyrrel\sql, relative_path=squyrrel\sql, import_string=squyrrel.sql))
-					-> (Squyrrel.package_already_loaded) ->: False
-
-				Squyrrel.inspect_directory(PackageMeta(package_name=sql, package_path=c:\users\lothar\passion\squyrrel\squyrrel\sql, relative_path=squyrrel\sql, import_string=squyrrel.sql))
-					-> (Squyrrel.inspect_directory) ->: (['clauses', 'expressions', 'query', '__init__'], ['builder', '__pycache__'])
-
-				..is package (contains __init__.py): True
-				Squyrrel._load_package_filter(PackageMeta(package_name=sql, package_path=c:\users\lothar\passion\squyrrel\squyrrel\sql, relative_path=squyrrel\sql, import_string=squyrrel.sql))
-					-> (Squyrrel._load_package_filter) ->: False
-
-				Package sql did not pass loading filter
-				-> (Squyrrel.load_package) ->: PackageMeta(package_name=sql, package_path=c:\users\lothar\passion\squyrrel\squyrrel\sql, relative_path=squyrrel\sql, import_string=squyrrel.sql)
-
-			Add subpackage sql to package squyrrel
-			Inspecting subdir __pycache__ ..
-			Squyrrel.register_package('squyrrel\\__pycache__')
-				Register package <squyrrel\__pycache__>..
-				Squyrrel.get_full_package_path('squyrrel\\__pycache__')
-					-> (Squyrrel.get_full_package_path) ->: 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\__pycache__'
-
-				Squyrrel._register_package_filter('__pycache__')
-					-> (Squyrrel._register_package_filter) ->: True
-
-				Successfully registered package/dir __pycache__
-				Full path: c:\users\lothar\passion\squyrrel\squyrrel\__pycache__
-				-> (Squyrrel.register_package) ->: PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\__pycache__, relative_path=squyrrel\__pycache__, import_string=squyrrel.__pycache__)
-
-			Squyrrel.load_package(PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\__pycache__, relative_path=squyrrel\__pycache__, import_string=squyrrel.__pycache__), ignore_rotten_modules=False, load_classes=True, load_subpackages=True)
-				Load package <PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\__pycache__, relative_path=squyrrel\__pycache__, import_string=squyrrel.__pycache__)>...
-				Squyrrel.package_already_loaded(package_meta=PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\__pycache__, relative_path=squyrrel\__pycache__, import_string=squyrrel.__pycache__))
-					-> (Squyrrel.package_already_loaded) ->: False
-
-				Squyrrel.inspect_directory(PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\__pycache__, relative_path=squyrrel\__pycache__, import_string=squyrrel.__pycache__))
-					-> (Squyrrel.inspect_directory) ->: ([], [])
-
-				..is package (contains __init__.py): False
-				Squyrrel._load_package_filter(PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\__pycache__, relative_path=squyrrel\__pycache__, import_string=squyrrel.__pycache__))
-					-> (Squyrrel._load_package_filter) ->: True
-
-				Squyrrel.register_and_load_modules(package_meta=PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\__pycache__, relative_path=squyrrel\__pycache__, import_string=squyrrel.__pycache__), modules=[], ignore_rotten_modules=False, load_classes=True)
-					-> (Squyrrel.register_and_load_modules) ->: None
-
-				Squyrrel.register_and_load_subpackages(package_meta=PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\__pycache__, relative_path=squyrrel\__pycache__, import_string=squyrrel.__pycache__), subdirs=[], ignore_rotten_modules=False, load_classes=True)
-					-> (Squyrrel.register_and_load_subpackages) ->: None
-
-				-> (Squyrrel.load_package) ->: PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\__pycache__, relative_path=squyrrel\__pycache__, import_string=squyrrel.__pycache__)
-
-			-> (Squyrrel.register_and_load_subpackages) ->: None
-
-		-> (Squyrrel.load_package) ->: PackageMeta(package_name=squyrrel, package_path=c:\users\lothar\passion\squyrrel\squyrrel, relative_path=squyrrel, import_string=squyrrel)
-
-	Squyrrel.build_context()
-		-> (Squyrrel.build_context) ->: None
-
-	Squyrrel.report(0)
-		
-Loaded squyrrel package.
-Loaded 14 (sub)packages.
-Packages registered: core, db, gui, ide, management, sql
-Packages not loaded (because they were filtered): db, gui, ide, sql
-
-		-> (Squyrrel.report) ->: None
-
-	-> (Squyrrel.load_squyrrel_package) ->: None
-
-Squyrrel.find_class_meta_by_name('CommandManager', package_name='management', module_name='command_manager')
-	Squyrrel.find_package_by_name('management')
-		-> (Squyrrel.find_package_by_name) ->: PackageMeta(package_name=management, package_path=c:\users\lothar\passion\squyrrel\squyrrel\management, relative_path=squyrrel\management, import_string=squyrrel.management)
-
-	-> (Squyrrel.find_class_meta_by_name) ->: <squyrrel.core.registry.meta.ClassMeta object at 0x020ED710>
-
-Squyrrel.create_instance(<squyrrel.core.registry.meta.ClassMeta object at 0x020ED710>)
-	
-Create_instance of class <CommandManager>
-	Squyrrel.get_class_config(class_meta=<squyrrel.core.registry.meta.ClassMeta object at 0x020ED710>)
-		-> (Squyrrel.get_class_config) ->: None
-
-	Squyrrel.apply_init_kwargs_hook(None, config_cls=None)
-		-> (Squyrrel.apply_init_kwargs_hook) ->: None
-
-	-> (Squyrrel.create_instance) ->: <squyrrel.management.command_manager.CommandManager object at 0x02108CB0>
-
-Squyrrel.find_class_meta_by_name('ScriptReader', package_name='management', module_name='script_reader')
-	Squyrrel.find_package_by_name('management')
-		-> (Squyrrel.find_package_by_name) ->: PackageMeta(package_name=management, package_path=c:\users\lothar\passion\squyrrel\squyrrel\management, relative_path=squyrrel\management, import_string=squyrrel.management)
-
-	-> (Squyrrel.find_class_meta_by_name) ->: <squyrrel.core.registry.meta.ClassMeta object at 0x020F4FB0>
-
-Squyrrel.create_instance(<squyrrel.core.registry.meta.ClassMeta object at 0x020F4FB0>)
-	
-Create_instance of class <ScriptReader>
-	Squyrrel.get_class_config(class_meta=<squyrrel.core.registry.meta.ClassMeta object at 0x020F4FB0>)
-		-> (Squyrrel.get_class_config) ->: None
-
-	Squyrrel.apply_init_kwargs_hook(None, config_cls=None)
-		-> (Squyrrel.apply_init_kwargs_hook) ->: None
-
-	-> (Squyrrel.create_instance) ->: <squyrrel.management.script_reader.ScriptReader object at 0x02108EB0>
-
-Squyrrel.register_and_load_package('squyrrel/gui')
-	Squyrrel.register_package('squyrrel/gui')
-		Register package <squyrrel/gui>..
-		Squyrrel.get_full_package_path('squyrrel/gui')
-			-> (Squyrrel.get_full_package_path) ->: 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel/gui'
-
-		Squyrrel.package_already_registered(package_name='gui')
-			-> (Squyrrel.package_already_registered) ->: True
-
-		-> (Squyrrel.register_package) ->: PackageMeta(package_name=gui, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui, relative_path=squyrrel\gui, import_string=squyrrel.gui)
-
-	Squyrrel.load_package(PackageMeta(package_name=gui, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui, relative_path=squyrrel\gui, import_string=squyrrel.gui))
-		Load package <PackageMeta(package_name=gui, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui, relative_path=squyrrel\gui, import_string=squyrrel.gui)>...
-		Squyrrel.package_already_loaded(package_meta=PackageMeta(package_name=gui, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui, relative_path=squyrrel\gui, import_string=squyrrel.gui))
-			-> (Squyrrel.package_already_loaded) ->: False
-
-		Squyrrel.inspect_directory(PackageMeta(package_name=gui, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui, relative_path=squyrrel\gui, import_string=squyrrel.gui))
-			-> (Squyrrel.inspect_directory) ->: (['signals', '__init__'], ['decorators', 'widgets', 'windows', '__pycache__'])
-
-		..is package (contains __init__.py): True
-		Squyrrel._load_package_filter(PackageMeta(package_name=gui, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui, relative_path=squyrrel\gui, import_string=squyrrel.gui))
-			-> (Squyrrel._load_package_filter) ->: True
-
-		Squyrrel.register_and_load_modules(package_meta=PackageMeta(package_name=gui, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui, relative_path=squyrrel\gui, import_string=squyrrel.gui), modules=['signals', '__init__'], ignore_rotten_modules=False, load_classes=True)
-			Squyrrel.register_module(PackageMeta(package_name=gui, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui, relative_path=squyrrel\gui, import_string=squyrrel.gui), module_name='signals')
-				Register module <signals>..
-				-> (Squyrrel.register_module) ->: ModuleMeta(package=gui, module_name=signals)
-
-			Squyrrel.load_module(PackageMeta(package_name=gui, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui, relative_path=squyrrel\gui, import_string=squyrrel.gui), module_name='signals', load_classes=True)
-				Load module <squyrrel.gui.signals>
-				Squyrrel.load_module_classes(module_meta=ModuleMeta(package=gui, module_name=signals), imported_module=<module 'squyrrel.gui.signals' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\gui\\signals.py'>)
-					load classes of module squyrrel.gui.signals..
-					loaded 0 classes in module module squyrrel.gui.signals
-					-> (Squyrrel.load_module_classes) ->: None
-
-				-> (Squyrrel.load_module) ->: None
-
-			Squyrrel.register_module(PackageMeta(package_name=gui, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui, relative_path=squyrrel\gui, import_string=squyrrel.gui), module_name='__init__')
-				Register module <__init__>..
-				-> (Squyrrel.register_module) ->: ModuleMeta(package=gui, module_name=__init__)
-
-			Squyrrel.load_module(PackageMeta(package_name=gui, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui, relative_path=squyrrel\gui, import_string=squyrrel.gui), module_name='__init__', load_classes=True)
-				Load module <squyrrel.gui.__init__>
-				Squyrrel.load_module_classes(module_meta=ModuleMeta(package=gui, module_name=__init__), imported_module=<module 'squyrrel.gui.__init__' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\gui\\__init__.py'>)
-					load classes of module squyrrel.gui.__init__..
-					loaded 0 classes in module module squyrrel.gui.__init__
-					-> (Squyrrel.load_module_classes) ->: None
-
-				-> (Squyrrel.load_module) ->: None
-
-			-> (Squyrrel.register_and_load_modules) ->: None
-
-		Squyrrel.register_and_load_subpackages(package_meta=PackageMeta(package_name=gui, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui, relative_path=squyrrel\gui, import_string=squyrrel.gui), subdirs=['decorators', 'widgets', 'windows', '__pycache__'], ignore_rotten_modules=False, load_classes=True)
-			Inspecting subdir decorators ..
-			Squyrrel.register_package('squyrrel\\gui\\decorators')
-				Register package <squyrrel\gui\decorators>..
-				Squyrrel.get_full_package_path('squyrrel\\gui\\decorators')
-					-> (Squyrrel.get_full_package_path) ->: 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\gui\\decorators'
-
-				Squyrrel.package_already_registered(package_name='decorators')
-					-> (Squyrrel.package_already_registered) ->: False
-
-				Squyrrel._register_package_filter('decorators')
-					-> (Squyrrel._register_package_filter) ->: True
-
-				Successfully registered package/dir decorators
-				Full path: c:\users\lothar\passion\squyrrel\squyrrel\gui\decorators
-				-> (Squyrrel.register_package) ->: PackageMeta(package_name=decorators, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\decorators, relative_path=squyrrel\gui\decorators, import_string=squyrrel.gui.decorators)
-
-			Squyrrel.load_package(PackageMeta(package_name=decorators, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\decorators, relative_path=squyrrel\gui\decorators, import_string=squyrrel.gui.decorators), ignore_rotten_modules=False, load_classes=True, load_subpackages=True)
-				Load package <PackageMeta(package_name=decorators, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\decorators, relative_path=squyrrel\gui\decorators, import_string=squyrrel.gui.decorators)>...
-				Squyrrel.package_already_loaded(package_meta=PackageMeta(package_name=decorators, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\decorators, relative_path=squyrrel\gui\decorators, import_string=squyrrel.gui.decorators))
-					-> (Squyrrel.package_already_loaded) ->: False
-
-				Squyrrel.inspect_directory(PackageMeta(package_name=decorators, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\decorators, relative_path=squyrrel\gui\decorators, import_string=squyrrel.gui.decorators))
-					-> (Squyrrel.inspect_directory) ->: (['config', '__init__'], ['__pycache__'])
-
-				..is package (contains __init__.py): True
-				Squyrrel._load_package_filter(PackageMeta(package_name=decorators, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\decorators, relative_path=squyrrel\gui\decorators, import_string=squyrrel.gui.decorators))
-					-> (Squyrrel._load_package_filter) ->: True
-
-				Squyrrel.register_and_load_modules(package_meta=PackageMeta(package_name=decorators, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\decorators, relative_path=squyrrel\gui\decorators, import_string=squyrrel.gui.decorators), modules=['config', '__init__'], ignore_rotten_modules=False, load_classes=True)
-					Squyrrel.register_module(PackageMeta(package_name=decorators, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\decorators, relative_path=squyrrel\gui\decorators, import_string=squyrrel.gui.decorators), module_name='config')
-						Register module <config>..
-						-> (Squyrrel.register_module) ->: ModuleMeta(package=decorators, module_name=config)
-
-					Squyrrel.load_module(PackageMeta(package_name=decorators, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\decorators, relative_path=squyrrel\gui\decorators, import_string=squyrrel.gui.decorators), module_name='config', load_classes=True)
-						Load module <squyrrel.gui.decorators.config>
-						Squyrrel.load_module_classes(module_meta=ModuleMeta(package=decorators, module_name=config), imported_module=<module 'squyrrel.gui.decorators.config' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\gui\\decorators\\config.py'>)
-							load classes of module squyrrel.gui.decorators.config..
-							loaded 0 classes in module module squyrrel.gui.decorators.config
-							-> (Squyrrel.load_module_classes) ->: None
-
-						-> (Squyrrel.load_module) ->: None
-
-					Squyrrel.register_module(PackageMeta(package_name=decorators, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\decorators, relative_path=squyrrel\gui\decorators, import_string=squyrrel.gui.decorators), module_name='__init__')
-						Register module <__init__>..
-						-> (Squyrrel.register_module) ->: ModuleMeta(package=decorators, module_name=__init__)
-
-					Squyrrel.load_module(PackageMeta(package_name=decorators, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\decorators, relative_path=squyrrel\gui\decorators, import_string=squyrrel.gui.decorators), module_name='__init__', load_classes=True)
-						Load module <squyrrel.gui.decorators.__init__>
-						Squyrrel.load_module_classes(module_meta=ModuleMeta(package=decorators, module_name=__init__), imported_module=<module 'squyrrel.gui.decorators.__init__' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\gui\\decorators\\__init__.py'>)
-							load classes of module squyrrel.gui.decorators.__init__..
-							loaded 0 classes in module module squyrrel.gui.decorators.__init__
-							-> (Squyrrel.load_module_classes) ->: None
-
-						-> (Squyrrel.load_module) ->: None
-
-					-> (Squyrrel.register_and_load_modules) ->: None
-
-				Squyrrel.register_and_load_subpackages(package_meta=PackageMeta(package_name=decorators, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\decorators, relative_path=squyrrel\gui\decorators, import_string=squyrrel.gui.decorators), subdirs=['__pycache__'], ignore_rotten_modules=False, load_classes=True)
-					Inspecting subdir __pycache__ ..
-					Squyrrel.register_package('squyrrel\\gui\\decorators\\__pycache__')
-						Register package <squyrrel\gui\decorators\__pycache__>..
-						Squyrrel.get_full_package_path('squyrrel\\gui\\decorators\\__pycache__')
-							-> (Squyrrel.get_full_package_path) ->: 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\gui\\decorators\\__pycache__'
-
-						Squyrrel._register_package_filter('__pycache__')
-							-> (Squyrrel._register_package_filter) ->: True
-
-						Successfully registered package/dir __pycache__
-						Full path: c:\users\lothar\passion\squyrrel\squyrrel\gui\decorators\__pycache__
-						-> (Squyrrel.register_package) ->: PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\decorators\__pycache__, relative_path=squyrrel\gui\decorators\__pycache__, import_string=squyrrel.gui.decorators.__pycache__)
-
-					Squyrrel.load_package(PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\decorators\__pycache__, relative_path=squyrrel\gui\decorators\__pycache__, import_string=squyrrel.gui.decorators.__pycache__), ignore_rotten_modules=False, load_classes=True, load_subpackages=True)
-						Load package <PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\decorators\__pycache__, relative_path=squyrrel\gui\decorators\__pycache__, import_string=squyrrel.gui.decorators.__pycache__)>...
-						Squyrrel.package_already_loaded(package_meta=PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\decorators\__pycache__, relative_path=squyrrel\gui\decorators\__pycache__, import_string=squyrrel.gui.decorators.__pycache__))
-							-> (Squyrrel.package_already_loaded) ->: False
-
-						Squyrrel.inspect_directory(PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\decorators\__pycache__, relative_path=squyrrel\gui\decorators\__pycache__, import_string=squyrrel.gui.decorators.__pycache__))
-							-> (Squyrrel.inspect_directory) ->: ([], [])
-
-						..is package (contains __init__.py): False
-						Squyrrel._load_package_filter(PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\decorators\__pycache__, relative_path=squyrrel\gui\decorators\__pycache__, import_string=squyrrel.gui.decorators.__pycache__))
-							-> (Squyrrel._load_package_filter) ->: True
-
-						Squyrrel.register_and_load_modules(package_meta=PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\decorators\__pycache__, relative_path=squyrrel\gui\decorators\__pycache__, import_string=squyrrel.gui.decorators.__pycache__), modules=[], ignore_rotten_modules=False, load_classes=True)
-							-> (Squyrrel.register_and_load_modules) ->: None
-
-						Squyrrel.register_and_load_subpackages(package_meta=PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\decorators\__pycache__, relative_path=squyrrel\gui\decorators\__pycache__, import_string=squyrrel.gui.decorators.__pycache__), subdirs=[], ignore_rotten_modules=False, load_classes=True)
-							-> (Squyrrel.register_and_load_subpackages) ->: None
-
-						-> (Squyrrel.load_package) ->: PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\decorators\__pycache__, relative_path=squyrrel\gui\decorators\__pycache__, import_string=squyrrel.gui.decorators.__pycache__)
-
-					-> (Squyrrel.register_and_load_subpackages) ->: None
-
-				-> (Squyrrel.load_package) ->: PackageMeta(package_name=decorators, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\decorators, relative_path=squyrrel\gui\decorators, import_string=squyrrel.gui.decorators)
-
-			Add subpackage decorators to package gui
-			Inspecting subdir widgets ..
-			Squyrrel.register_package('squyrrel\\gui\\widgets')
-				Register package <squyrrel\gui\widgets>..
-				Squyrrel.get_full_package_path('squyrrel\\gui\\widgets')
-					-> (Squyrrel.get_full_package_path) ->: 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\gui\\widgets'
-
-				Squyrrel.package_already_registered(package_name='widgets')
-					-> (Squyrrel.package_already_registered) ->: False
-
-				Squyrrel._register_package_filter('widgets')
-					-> (Squyrrel._register_package_filter) ->: True
-
-				Successfully registered package/dir widgets
-				Full path: c:\users\lothar\passion\squyrrel\squyrrel\gui\widgets
-				-> (Squyrrel.register_package) ->: PackageMeta(package_name=widgets, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\widgets, relative_path=squyrrel\gui\widgets, import_string=squyrrel.gui.widgets)
-
-			Squyrrel.load_package(PackageMeta(package_name=widgets, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\widgets, relative_path=squyrrel\gui\widgets, import_string=squyrrel.gui.widgets), ignore_rotten_modules=False, load_classes=True, load_subpackages=True)
-				Load package <PackageMeta(package_name=widgets, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\widgets, relative_path=squyrrel\gui\widgets, import_string=squyrrel.gui.widgets)>...
-				Squyrrel.package_already_loaded(package_meta=PackageMeta(package_name=widgets, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\widgets, relative_path=squyrrel\gui\widgets, import_string=squyrrel.gui.widgets))
-					-> (Squyrrel.package_already_loaded) ->: False
-
-				Squyrrel.inspect_directory(PackageMeta(package_name=widgets, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\widgets, relative_path=squyrrel\gui\widgets, import_string=squyrrel.gui.widgets))
-					-> (Squyrrel.inspect_directory) ->: (['smarttext', 'smarttext_defaultconfig', '__init__'], ['themes', '__pycache__'])
-
-				..is package (contains __init__.py): True
-				Squyrrel._load_package_filter(PackageMeta(package_name=widgets, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\widgets, relative_path=squyrrel\gui\widgets, import_string=squyrrel.gui.widgets))
-					-> (Squyrrel._load_package_filter) ->: True
-
-				Squyrrel.register_and_load_modules(package_meta=PackageMeta(package_name=widgets, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\widgets, relative_path=squyrrel\gui\widgets, import_string=squyrrel.gui.widgets), modules=['smarttext', 'smarttext_defaultconfig', '__init__'], ignore_rotten_modules=False, load_classes=True)
-					Squyrrel.register_module(PackageMeta(package_name=widgets, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\widgets, relative_path=squyrrel\gui\widgets, import_string=squyrrel.gui.widgets), module_name='smarttext')
-						Register module <smarttext>..
-						-> (Squyrrel.register_module) ->: ModuleMeta(package=widgets, module_name=smarttext)
-
-					Squyrrel.load_module(PackageMeta(package_name=widgets, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\widgets, relative_path=squyrrel\gui\widgets, import_string=squyrrel.gui.widgets), module_name='smarttext', load_classes=True)
-						Load module <squyrrel.gui.widgets.smarttext>
-						Squyrrel.load_module_classes(module_meta=ModuleMeta(package=widgets, module_name=smarttext), imported_module=<module 'squyrrel.gui.widgets.smarttext' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\gui\\widgets\\smarttext.py'>)
-							load classes of module squyrrel.gui.widgets.smarttext..
-							Squyrrel.load_class(ModuleMeta(package=widgets, module_name=smarttext), 'CustomText', <class 'squyrrel.gui.widgets.smarttext.CustomText'>)
-								add class CustomText
-								-> (Squyrrel.load_class) ->: None
-
-							Squyrrel.load_class(ModuleMeta(package=widgets, module_name=smarttext), 'SmartText', <class 'squyrrel.gui.widgets.smarttext.SmartText'>)
-								add class SmartText
-								-> (Squyrrel.load_class) ->: None
-
-							Squyrrel.load_class(ModuleMeta(package=widgets, module_name=smarttext), 'TextLineNumbers', <class 'squyrrel.gui.widgets.smarttext.TextLineNumbers'>)
-								add class TextLineNumbers
-								-> (Squyrrel.load_class) ->: None
-
-							loaded 3 classes in module module squyrrel.gui.widgets.smarttext
-							-> (Squyrrel.load_module_classes) ->: None
-
-						-> (Squyrrel.load_module) ->: None
-
-					Squyrrel.register_module(PackageMeta(package_name=widgets, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\widgets, relative_path=squyrrel\gui\widgets, import_string=squyrrel.gui.widgets), module_name='smarttext_defaultconfig')
-						Register module <smarttext_defaultconfig>..
-						-> (Squyrrel.register_module) ->: ModuleMeta(package=widgets, module_name=smarttext_defaultconfig)
-
-					Squyrrel.load_module(PackageMeta(package_name=widgets, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\widgets, relative_path=squyrrel\gui\widgets, import_string=squyrrel.gui.widgets), module_name='smarttext_defaultconfig', load_classes=True)
-						Load module <squyrrel.gui.widgets.smarttext_defaultconfig>
-						Squyrrel.load_module_classes(module_meta=ModuleMeta(package=widgets, module_name=smarttext_defaultconfig), imported_module=<module 'squyrrel.gui.widgets.smarttext_defaultconfig' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\gui\\widgets\\smarttext_defaultconfig.py'>)
-							load classes of module squyrrel.gui.widgets.smarttext_defaultconfig..
-							Squyrrel.load_class(ModuleMeta(package=widgets, module_name=smarttext_defaultconfig), 'SmartTextDefaultConfig', <class 'squyrrel.gui.widgets.smarttext_defaultconfig.SmartTextDefaultConfig'>)
-								add class SmartTextDefaultConfig
-								-> (Squyrrel.load_class) ->: None
-
-							loaded 1 classes in module module squyrrel.gui.widgets.smarttext_defaultconfig
-							-> (Squyrrel.load_module_classes) ->: None
-
-						-> (Squyrrel.load_module) ->: None
-
-					Squyrrel.register_module(PackageMeta(package_name=widgets, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\widgets, relative_path=squyrrel\gui\widgets, import_string=squyrrel.gui.widgets), module_name='__init__')
-						Register module <__init__>..
-						-> (Squyrrel.register_module) ->: ModuleMeta(package=widgets, module_name=__init__)
-
-					Squyrrel.load_module(PackageMeta(package_name=widgets, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\widgets, relative_path=squyrrel\gui\widgets, import_string=squyrrel.gui.widgets), module_name='__init__', load_classes=True)
-						Load module <squyrrel.gui.widgets.__init__>
-						Squyrrel.load_module_classes(module_meta=ModuleMeta(package=widgets, module_name=__init__), imported_module=<module 'squyrrel.gui.widgets.__init__' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\gui\\widgets\\__init__.py'>)
-							load classes of module squyrrel.gui.widgets.__init__..
-							loaded 0 classes in module module squyrrel.gui.widgets.__init__
-							-> (Squyrrel.load_module_classes) ->: None
-
-						-> (Squyrrel.load_module) ->: None
-
-					-> (Squyrrel.register_and_load_modules) ->: None
-
-				Squyrrel.register_and_load_subpackages(package_meta=PackageMeta(package_name=widgets, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\widgets, relative_path=squyrrel\gui\widgets, import_string=squyrrel.gui.widgets), subdirs=['themes', '__pycache__'], ignore_rotten_modules=False, load_classes=True)
-					Inspecting subdir themes ..
-					Squyrrel.register_package('squyrrel\\gui\\widgets\\themes')
-						Register package <squyrrel\gui\widgets\themes>..
-						Squyrrel.get_full_package_path('squyrrel\\gui\\widgets\\themes')
-							-> (Squyrrel.get_full_package_path) ->: 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\gui\\widgets\\themes'
-
-						Squyrrel.package_already_registered(package_name='themes')
+				Squyrrel.register_and_load_subpackages(package_meta=PackageMeta(package_name=db, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db, relative_path=squyrrel\db, import_string=squyrrel.db), subdirs=['postgres', 'scripts', 'sqlite', '__pycache__'], ignore_rotten_modules=False, load_classes=True)
+					Inspecting subdir postgres ..
+					Squyrrel.register_package('squyrrel\\db\\postgres')
+						Register package <squyrrel\db\postgres>..
+						Squyrrel.get_full_package_path('squyrrel\\db\\postgres')
+							-> (Squyrrel.get_full_package_path) ->: 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\db\\postgres'
+
+						Squyrrel.package_already_registered(package_name='postgres')
 							-> (Squyrrel.package_already_registered) ->: False
 
-						Squyrrel._register_package_filter('themes')
+						Squyrrel._register_package_filter('postgres')
 							-> (Squyrrel._register_package_filter) ->: True
 
-						Successfully registered package/dir themes
-						Full path: c:\users\lothar\passion\squyrrel\squyrrel\gui\widgets\themes
-						-> (Squyrrel.register_package) ->: PackageMeta(package_name=themes, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\widgets\themes, relative_path=squyrrel\gui\widgets\themes, import_string=squyrrel.gui.widgets.themes)
+						Successfully registered package/dir postgres
+						Full path: c:\users\lothar\passion\squyrrel\squyrrel\db\postgres
+						-> (Squyrrel.register_package) ->: PackageMeta(package_name=postgres, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\postgres, relative_path=squyrrel\db\postgres, import_string=squyrrel.db.postgres)
 
-					Squyrrel.load_package(PackageMeta(package_name=themes, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\widgets\themes, relative_path=squyrrel\gui\widgets\themes, import_string=squyrrel.gui.widgets.themes), ignore_rotten_modules=False, load_classes=True, load_subpackages=True)
-						Load package <PackageMeta(package_name=themes, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\widgets\themes, relative_path=squyrrel\gui\widgets\themes, import_string=squyrrel.gui.widgets.themes)>...
-						Squyrrel.package_already_loaded(package_meta=PackageMeta(package_name=themes, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\widgets\themes, relative_path=squyrrel\gui\widgets\themes, import_string=squyrrel.gui.widgets.themes))
-							-> (Squyrrel.package_already_loaded) ->: False
+					Squyrrel.load_package(PackageMeta(package_name=postgres, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\postgres, relative_path=squyrrel\db\postgres, import_string=squyrrel.db.postgres), ignore_rotten_modules=False, load_classes=True, load_subpackages=True)
+						Load package <PackageMeta(package_name=postgres, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\postgres, relative_path=squyrrel\db\postgres, import_string=squyrrel.db.postgres)>...
+						Squyrrel.inspect_directory(PackageMeta(package_name=postgres, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\postgres, relative_path=squyrrel\db\postgres, import_string=squyrrel.db.postgres))
+							-> (Squyrrel.inspect_directory) ->: (['commands', 'connection', '__init__'], ['__pycache__'])
 
-						Squyrrel.inspect_directory(PackageMeta(package_name=themes, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\widgets\themes, relative_path=squyrrel\gui\widgets\themes, import_string=squyrrel.gui.widgets.themes))
-							-> (Squyrrel.inspect_directory) ->: ([], [])
-
-						..is package (contains __init__.py): False
-						Squyrrel._load_package_filter(PackageMeta(package_name=themes, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\widgets\themes, relative_path=squyrrel\gui\widgets\themes, import_string=squyrrel.gui.widgets.themes))
+						..is package (contains __init__.py): True
+						Squyrrel._load_package_filter(PackageMeta(package_name=postgres, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\postgres, relative_path=squyrrel\db\postgres, import_string=squyrrel.db.postgres))
 							-> (Squyrrel._load_package_filter) ->: True
 
-						Squyrrel.register_and_load_modules(package_meta=PackageMeta(package_name=themes, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\widgets\themes, relative_path=squyrrel\gui\widgets\themes, import_string=squyrrel.gui.widgets.themes), modules=[], ignore_rotten_modules=False, load_classes=True)
-							-> (Squyrrel.register_and_load_modules) ->: None
-
-						Squyrrel.register_and_load_subpackages(package_meta=PackageMeta(package_name=themes, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\widgets\themes, relative_path=squyrrel\gui\widgets\themes, import_string=squyrrel.gui.widgets.themes), subdirs=[], ignore_rotten_modules=False, load_classes=True)
-							-> (Squyrrel.register_and_load_subpackages) ->: None
-
-						-> (Squyrrel.load_package) ->: PackageMeta(package_name=themes, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\widgets\themes, relative_path=squyrrel\gui\widgets\themes, import_string=squyrrel.gui.widgets.themes)
-
-					Inspecting subdir __pycache__ ..
-					Squyrrel.register_package('squyrrel\\gui\\widgets\\__pycache__')
-						Register package <squyrrel\gui\widgets\__pycache__>..
-						Squyrrel.get_full_package_path('squyrrel\\gui\\widgets\\__pycache__')
-							-> (Squyrrel.get_full_package_path) ->: 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\gui\\widgets\\__pycache__'
-
-						Squyrrel._register_package_filter('__pycache__')
-							-> (Squyrrel._register_package_filter) ->: True
-
-						Successfully registered package/dir __pycache__
-						Full path: c:\users\lothar\passion\squyrrel\squyrrel\gui\widgets\__pycache__
-						-> (Squyrrel.register_package) ->: PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\widgets\__pycache__, relative_path=squyrrel\gui\widgets\__pycache__, import_string=squyrrel.gui.widgets.__pycache__)
-
-					Squyrrel.load_package(PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\widgets\__pycache__, relative_path=squyrrel\gui\widgets\__pycache__, import_string=squyrrel.gui.widgets.__pycache__), ignore_rotten_modules=False, load_classes=True, load_subpackages=True)
-						Load package <PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\widgets\__pycache__, relative_path=squyrrel\gui\widgets\__pycache__, import_string=squyrrel.gui.widgets.__pycache__)>...
-						Squyrrel.package_already_loaded(package_meta=PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\widgets\__pycache__, relative_path=squyrrel\gui\widgets\__pycache__, import_string=squyrrel.gui.widgets.__pycache__))
-							-> (Squyrrel.package_already_loaded) ->: False
-
-						Squyrrel.inspect_directory(PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\widgets\__pycache__, relative_path=squyrrel\gui\widgets\__pycache__, import_string=squyrrel.gui.widgets.__pycache__))
-							-> (Squyrrel.inspect_directory) ->: ([], [])
-
-						..is package (contains __init__.py): False
-						Squyrrel._load_package_filter(PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\widgets\__pycache__, relative_path=squyrrel\gui\widgets\__pycache__, import_string=squyrrel.gui.widgets.__pycache__))
-							-> (Squyrrel._load_package_filter) ->: True
-
-						Squyrrel.register_and_load_modules(package_meta=PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\widgets\__pycache__, relative_path=squyrrel\gui\widgets\__pycache__, import_string=squyrrel.gui.widgets.__pycache__), modules=[], ignore_rotten_modules=False, load_classes=True)
-							-> (Squyrrel.register_and_load_modules) ->: None
-
-						Squyrrel.register_and_load_subpackages(package_meta=PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\widgets\__pycache__, relative_path=squyrrel\gui\widgets\__pycache__, import_string=squyrrel.gui.widgets.__pycache__), subdirs=[], ignore_rotten_modules=False, load_classes=True)
-							-> (Squyrrel.register_and_load_subpackages) ->: None
-
-						-> (Squyrrel.load_package) ->: PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\widgets\__pycache__, relative_path=squyrrel\gui\widgets\__pycache__, import_string=squyrrel.gui.widgets.__pycache__)
-
-					-> (Squyrrel.register_and_load_subpackages) ->: None
-
-				-> (Squyrrel.load_package) ->: PackageMeta(package_name=widgets, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\widgets, relative_path=squyrrel\gui\widgets, import_string=squyrrel.gui.widgets)
-
-			Add subpackage widgets to package gui
-			Inspecting subdir windows ..
-			Squyrrel.register_package('squyrrel\\gui\\windows')
-				Register package <squyrrel\gui\windows>..
-				Squyrrel.get_full_package_path('squyrrel\\gui\\windows')
-					-> (Squyrrel.get_full_package_path) ->: 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\gui\\windows'
-
-				Squyrrel.package_already_registered(package_name='windows')
-					-> (Squyrrel.package_already_registered) ->: False
-
-				Squyrrel._register_package_filter('windows')
-					-> (Squyrrel._register_package_filter) ->: True
-
-				Successfully registered package/dir windows
-				Full path: c:\users\lothar\passion\squyrrel\squyrrel\gui\windows
-				-> (Squyrrel.register_package) ->: PackageMeta(package_name=windows, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\windows, relative_path=squyrrel\gui\windows, import_string=squyrrel.gui.windows)
-
-			Squyrrel.load_package(PackageMeta(package_name=windows, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\windows, relative_path=squyrrel\gui\windows, import_string=squyrrel.gui.windows), ignore_rotten_modules=False, load_classes=True, load_subpackages=True)
-				Load package <PackageMeta(package_name=windows, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\windows, relative_path=squyrrel\gui\windows, import_string=squyrrel.gui.windows)>...
-				Squyrrel.package_already_loaded(package_meta=PackageMeta(package_name=windows, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\windows, relative_path=squyrrel\gui\windows, import_string=squyrrel.gui.windows))
-					-> (Squyrrel.package_already_loaded) ->: False
-
-				Squyrrel.inspect_directory(PackageMeta(package_name=windows, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\windows, relative_path=squyrrel\gui\windows, import_string=squyrrel.gui.windows))
-					-> (Squyrrel.inspect_directory) ->: (['base', '__init__'], ['__pycache__'])
-
-				..is package (contains __init__.py): True
-				Squyrrel._load_package_filter(PackageMeta(package_name=windows, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\windows, relative_path=squyrrel\gui\windows, import_string=squyrrel.gui.windows))
-					-> (Squyrrel._load_package_filter) ->: True
-
-				Squyrrel.register_and_load_modules(package_meta=PackageMeta(package_name=windows, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\windows, relative_path=squyrrel\gui\windows, import_string=squyrrel.gui.windows), modules=['base', '__init__'], ignore_rotten_modules=False, load_classes=True)
-					Squyrrel.register_module(PackageMeta(package_name=windows, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\windows, relative_path=squyrrel\gui\windows, import_string=squyrrel.gui.windows), module_name='base')
-						Register module <base>..
-						-> (Squyrrel.register_module) ->: ModuleMeta(package=windows, module_name=base)
-
-					Squyrrel.load_module(PackageMeta(package_name=windows, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\windows, relative_path=squyrrel\gui\windows, import_string=squyrrel.gui.windows), module_name='base', load_classes=True)
-						Load module <squyrrel.gui.windows.base>
-						Squyrrel.load_module_classes(module_meta=ModuleMeta(package=windows, module_name=base), imported_module=<module 'squyrrel.gui.windows.base' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\gui\\windows\\base.py'>)
-							load classes of module squyrrel.gui.windows.base..
-							Squyrrel.load_class(ModuleMeta(package=windows, module_name=base), 'MainWindow', <class 'squyrrel.gui.windows.base.MainWindow'>)
-								add class MainWindow
-								-> (Squyrrel.load_class) ->: None
-
-							Squyrrel.load_class(ModuleMeta(package=windows, module_name=base), 'TextMainWindow', <class 'squyrrel.gui.windows.base.TextMainWindow'>)
-								add class TextMainWindow
-								-> (Squyrrel.load_class) ->: None
-
-							Squyrrel.load_class(ModuleMeta(package=windows, module_name=base), 'TextWindow', <class 'squyrrel.gui.windows.base.TextWindow'>)
-								add class TextWindow
-								-> (Squyrrel.load_class) ->: None
-
-							Squyrrel.load_class(ModuleMeta(package=windows, module_name=base), 'TextWindowBase', <class 'squyrrel.gui.windows.base.TextWindowBase'>)
-								add class TextWindowBase
-								-> (Squyrrel.load_class) ->: None
-
-							Squyrrel.load_class(ModuleMeta(package=windows, module_name=base), 'WindowBase', <class 'squyrrel.gui.windows.base.WindowBase'>)
-								add class WindowBase
-								-> (Squyrrel.load_class) ->: None
-
-							Squyrrel.load_class(ModuleMeta(package=windows, module_name=base), 'WindowBaseDefaultConfig', <class 'squyrrel.gui.windows.base.WindowBaseDefaultConfig'>)
-								add class WindowBaseDefaultConfig
-								-> (Squyrrel.load_class) ->: None
-
-							loaded 6 classes in module module squyrrel.gui.windows.base
-							-> (Squyrrel.load_module_classes) ->: None
-
-						-> (Squyrrel.load_module) ->: None
-
-					Squyrrel.register_module(PackageMeta(package_name=windows, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\windows, relative_path=squyrrel\gui\windows, import_string=squyrrel.gui.windows), module_name='__init__')
-						Register module <__init__>..
-						-> (Squyrrel.register_module) ->: ModuleMeta(package=windows, module_name=__init__)
-
-					Squyrrel.load_module(PackageMeta(package_name=windows, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\windows, relative_path=squyrrel\gui\windows, import_string=squyrrel.gui.windows), module_name='__init__', load_classes=True)
-						Load module <squyrrel.gui.windows.__init__>
-						Squyrrel.load_module_classes(module_meta=ModuleMeta(package=windows, module_name=__init__), imported_module=<module 'squyrrel.gui.windows.__init__' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\gui\\windows\\__init__.py'>)
-							load classes of module squyrrel.gui.windows.__init__..
-							loaded 0 classes in module module squyrrel.gui.windows.__init__
-							-> (Squyrrel.load_module_classes) ->: None
-
-						-> (Squyrrel.load_module) ->: None
-
-					-> (Squyrrel.register_and_load_modules) ->: None
-
-				Squyrrel.register_and_load_subpackages(package_meta=PackageMeta(package_name=windows, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\windows, relative_path=squyrrel\gui\windows, import_string=squyrrel.gui.windows), subdirs=['__pycache__'], ignore_rotten_modules=False, load_classes=True)
-					Inspecting subdir __pycache__ ..
-					Squyrrel.register_package('squyrrel\\gui\\windows\\__pycache__')
-						Register package <squyrrel\gui\windows\__pycache__>..
-						Squyrrel.get_full_package_path('squyrrel\\gui\\windows\\__pycache__')
-							-> (Squyrrel.get_full_package_path) ->: 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\gui\\windows\\__pycache__'
-
-						Squyrrel._register_package_filter('__pycache__')
-							-> (Squyrrel._register_package_filter) ->: True
-
-						Successfully registered package/dir __pycache__
-						Full path: c:\users\lothar\passion\squyrrel\squyrrel\gui\windows\__pycache__
-						-> (Squyrrel.register_package) ->: PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\windows\__pycache__, relative_path=squyrrel\gui\windows\__pycache__, import_string=squyrrel.gui.windows.__pycache__)
-
-					Squyrrel.load_package(PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\windows\__pycache__, relative_path=squyrrel\gui\windows\__pycache__, import_string=squyrrel.gui.windows.__pycache__), ignore_rotten_modules=False, load_classes=True, load_subpackages=True)
-						Load package <PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\windows\__pycache__, relative_path=squyrrel\gui\windows\__pycache__, import_string=squyrrel.gui.windows.__pycache__)>...
-						Squyrrel.package_already_loaded(package_meta=PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\windows\__pycache__, relative_path=squyrrel\gui\windows\__pycache__, import_string=squyrrel.gui.windows.__pycache__))
-							-> (Squyrrel.package_already_loaded) ->: False
-
-						Squyrrel.inspect_directory(PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\windows\__pycache__, relative_path=squyrrel\gui\windows\__pycache__, import_string=squyrrel.gui.windows.__pycache__))
-							-> (Squyrrel.inspect_directory) ->: ([], [])
-
-						..is package (contains __init__.py): False
-						Squyrrel._load_package_filter(PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\windows\__pycache__, relative_path=squyrrel\gui\windows\__pycache__, import_string=squyrrel.gui.windows.__pycache__))
-							-> (Squyrrel._load_package_filter) ->: True
-
-						Squyrrel.register_and_load_modules(package_meta=PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\windows\__pycache__, relative_path=squyrrel\gui\windows\__pycache__, import_string=squyrrel.gui.windows.__pycache__), modules=[], ignore_rotten_modules=False, load_classes=True)
-							-> (Squyrrel.register_and_load_modules) ->: None
-
-						Squyrrel.register_and_load_subpackages(package_meta=PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\windows\__pycache__, relative_path=squyrrel\gui\windows\__pycache__, import_string=squyrrel.gui.windows.__pycache__), subdirs=[], ignore_rotten_modules=False, load_classes=True)
-							-> (Squyrrel.register_and_load_subpackages) ->: None
-
-						-> (Squyrrel.load_package) ->: PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\windows\__pycache__, relative_path=squyrrel\gui\windows\__pycache__, import_string=squyrrel.gui.windows.__pycache__)
-
-					-> (Squyrrel.register_and_load_subpackages) ->: None
-
-				-> (Squyrrel.load_package) ->: PackageMeta(package_name=windows, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\windows, relative_path=squyrrel\gui\windows, import_string=squyrrel.gui.windows)
-
-			Add subpackage windows to package gui
-			Inspecting subdir __pycache__ ..
-			Squyrrel.register_package('squyrrel\\gui\\__pycache__')
-				Register package <squyrrel\gui\__pycache__>..
-				Squyrrel.get_full_package_path('squyrrel\\gui\\__pycache__')
-					-> (Squyrrel.get_full_package_path) ->: 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\gui\\__pycache__'
-
-				Squyrrel._register_package_filter('__pycache__')
-					-> (Squyrrel._register_package_filter) ->: True
-
-				Successfully registered package/dir __pycache__
-				Full path: c:\users\lothar\passion\squyrrel\squyrrel\gui\__pycache__
-				-> (Squyrrel.register_package) ->: PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\__pycache__, relative_path=squyrrel\gui\__pycache__, import_string=squyrrel.gui.__pycache__)
-
-			Squyrrel.load_package(PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\__pycache__, relative_path=squyrrel\gui\__pycache__, import_string=squyrrel.gui.__pycache__), ignore_rotten_modules=False, load_classes=True, load_subpackages=True)
-				Load package <PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\__pycache__, relative_path=squyrrel\gui\__pycache__, import_string=squyrrel.gui.__pycache__)>...
-				Squyrrel.package_already_loaded(package_meta=PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\__pycache__, relative_path=squyrrel\gui\__pycache__, import_string=squyrrel.gui.__pycache__))
-					-> (Squyrrel.package_already_loaded) ->: False
-
-				Squyrrel.inspect_directory(PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\__pycache__, relative_path=squyrrel\gui\__pycache__, import_string=squyrrel.gui.__pycache__))
-					-> (Squyrrel.inspect_directory) ->: ([], [])
-
-				..is package (contains __init__.py): False
-				Squyrrel._load_package_filter(PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\__pycache__, relative_path=squyrrel\gui\__pycache__, import_string=squyrrel.gui.__pycache__))
-					-> (Squyrrel._load_package_filter) ->: True
-
-				Squyrrel.register_and_load_modules(package_meta=PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\__pycache__, relative_path=squyrrel\gui\__pycache__, import_string=squyrrel.gui.__pycache__), modules=[], ignore_rotten_modules=False, load_classes=True)
-					-> (Squyrrel.register_and_load_modules) ->: None
-
-				Squyrrel.register_and_load_subpackages(package_meta=PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\__pycache__, relative_path=squyrrel\gui\__pycache__, import_string=squyrrel.gui.__pycache__), subdirs=[], ignore_rotten_modules=False, load_classes=True)
-					-> (Squyrrel.register_and_load_subpackages) ->: None
-
-				-> (Squyrrel.load_package) ->: PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui\__pycache__, relative_path=squyrrel\gui\__pycache__, import_string=squyrrel.gui.__pycache__)
-
-			-> (Squyrrel.register_and_load_subpackages) ->: None
-
-		-> (Squyrrel.load_package) ->: PackageMeta(package_name=gui, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui, relative_path=squyrrel\gui, import_string=squyrrel.gui)
-
-	-> (Squyrrel.register_and_load_package) ->: PackageMeta(package_name=gui, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui, relative_path=squyrrel\gui, import_string=squyrrel.gui)
-
-Squyrrel.register_and_load_package('squyrrel/ide')
-	Squyrrel.register_package('squyrrel/ide')
-		Register package <squyrrel/ide>..
-		Squyrrel.get_full_package_path('squyrrel/ide')
-			-> (Squyrrel.get_full_package_path) ->: 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel/ide'
-
-		Squyrrel.package_already_registered(package_name='ide')
-			-> (Squyrrel.package_already_registered) ->: True
-
-		-> (Squyrrel.register_package) ->: PackageMeta(package_name=ide, package_path=c:\users\lothar\passion\squyrrel\squyrrel\ide, relative_path=squyrrel\ide, import_string=squyrrel.ide)
-
-	Squyrrel.load_package(PackageMeta(package_name=ide, package_path=c:\users\lothar\passion\squyrrel\squyrrel\ide, relative_path=squyrrel\ide, import_string=squyrrel.ide))
-		Load package <PackageMeta(package_name=ide, package_path=c:\users\lothar\passion\squyrrel\squyrrel\ide, relative_path=squyrrel\ide, import_string=squyrrel.ide)>...
-		Squyrrel.package_already_loaded(package_meta=PackageMeta(package_name=ide, package_path=c:\users\lothar\passion\squyrrel\squyrrel\ide, relative_path=squyrrel\ide, import_string=squyrrel.ide))
-			-> (Squyrrel.package_already_loaded) ->: False
-
-		Squyrrel.inspect_directory(PackageMeta(package_name=ide, package_path=c:\users\lothar\passion\squyrrel\squyrrel\ide, relative_path=squyrrel\ide, import_string=squyrrel.ide))
-			-> (Squyrrel.inspect_directory) ->: (['commands', 'gui', 'log_window', 'main', 'shell', 'shell_window', 'windows', '__init__'], ['__pycache__'])
-
-		..is package (contains __init__.py): True
-		Squyrrel._load_package_filter(PackageMeta(package_name=ide, package_path=c:\users\lothar\passion\squyrrel\squyrrel\ide, relative_path=squyrrel\ide, import_string=squyrrel.ide))
-			-> (Squyrrel._load_package_filter) ->: True
-
-		Squyrrel.register_and_load_modules(package_meta=PackageMeta(package_name=ide, package_path=c:\users\lothar\passion\squyrrel\squyrrel\ide, relative_path=squyrrel\ide, import_string=squyrrel.ide), modules=['commands', 'gui', 'log_window', 'main', 'shell', 'shell_window', 'windows', '__init__'], ignore_rotten_modules=False, load_classes=True)
-			Squyrrel.register_module(PackageMeta(package_name=ide, package_path=c:\users\lothar\passion\squyrrel\squyrrel\ide, relative_path=squyrrel\ide, import_string=squyrrel.ide), module_name='commands')
-				Register module <commands>..
-				-> (Squyrrel.register_module) ->: ModuleMeta(package=ide, module_name=commands)
-
-			Squyrrel.load_module(PackageMeta(package_name=ide, package_path=c:\users\lothar\passion\squyrrel\squyrrel\ide, relative_path=squyrrel\ide, import_string=squyrrel.ide), module_name='commands', load_classes=True)
-				Load module <squyrrel.ide.commands>
-				Squyrrel.load_module_classes(module_meta=ModuleMeta(package=ide, module_name=commands), imported_module=<module 'squyrrel.ide.commands' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\ide\\commands.py'>)
-					load classes of module squyrrel.ide.commands..
-					Squyrrel.load_class(ModuleMeta(package=ide, module_name=commands), 'PrintlnShellCommand', <class 'squyrrel.ide.commands.PrintlnShellCommand'>)
-						add class PrintlnShellCommand
-						-> (Squyrrel.load_class) ->: None
-
-					Squyrrel.load_class(ModuleMeta(package=ide, module_name=commands), 'ShellCommand', <class 'squyrrel.ide.commands.ShellCommand'>)
-						add class ShellCommand
-						-> (Squyrrel.load_class) ->: None
-
-					loaded 2 classes in module module squyrrel.ide.commands
-					-> (Squyrrel.load_module_classes) ->: None
-
-				-> (Squyrrel.load_module) ->: None
-
-			Squyrrel.register_module(PackageMeta(package_name=ide, package_path=c:\users\lothar\passion\squyrrel\squyrrel\ide, relative_path=squyrrel\ide, import_string=squyrrel.ide), module_name='gui')
-				Register module <gui>..
-				-> (Squyrrel.register_module) ->: ModuleMeta(package=ide, module_name=gui)
-
-			Squyrrel.load_module(PackageMeta(package_name=ide, package_path=c:\users\lothar\passion\squyrrel\squyrrel\ide, relative_path=squyrrel\ide, import_string=squyrrel.ide), module_name='gui', load_classes=True)
-				Load module <squyrrel.ide.gui>
-				Squyrrel.load_module_classes(module_meta=ModuleMeta(package=ide, module_name=gui), imported_module=<module 'squyrrel.ide.gui' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\ide\\gui.py'>)
-					load classes of module squyrrel.ide.gui..
-					loaded 0 classes in module module squyrrel.ide.gui
-					-> (Squyrrel.load_module_classes) ->: None
-
-				-> (Squyrrel.load_module) ->: None
-
-			Squyrrel.register_module(PackageMeta(package_name=ide, package_path=c:\users\lothar\passion\squyrrel\squyrrel\ide, relative_path=squyrrel\ide, import_string=squyrrel.ide), module_name='log_window')
-				Register module <log_window>..
-				-> (Squyrrel.register_module) ->: ModuleMeta(package=ide, module_name=log_window)
-
-			Squyrrel.load_module(PackageMeta(package_name=ide, package_path=c:\users\lothar\passion\squyrrel\squyrrel\ide, relative_path=squyrrel\ide, import_string=squyrrel.ide), module_name='log_window', load_classes=True)
-				Load module <squyrrel.ide.log_window>
-				Squyrrel.load_module_classes(module_meta=ModuleMeta(package=ide, module_name=log_window), imported_module=<module 'squyrrel.ide.log_window' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\ide\\log_window.py'>)
-					load classes of module squyrrel.ide.log_window..
-					Squyrrel.load_class(ModuleMeta(package=ide, module_name=log_window), 'LogWindow', <class 'squyrrel.ide.log_window.LogWindow'>)
-						add class LogWindow
-						-> (Squyrrel.load_class) ->: None
-
-					Squyrrel.load_class(ModuleMeta(package=ide, module_name=log_window), 'LogWindowConfig', <class 'squyrrel.ide.log_window.LogWindowConfig'>)
-						add class LogWindowConfig
-						-> (Squyrrel.load_class) ->: None
-
-					loaded 2 classes in module module squyrrel.ide.log_window
-					-> (Squyrrel.load_module_classes) ->: None
-
-				-> (Squyrrel.load_module) ->: None
-
-			Squyrrel.register_module(PackageMeta(package_name=ide, package_path=c:\users\lothar\passion\squyrrel\squyrrel\ide, relative_path=squyrrel\ide, import_string=squyrrel.ide), module_name='main')
-				Register module <main>..
-				-> (Squyrrel.register_module) ->: ModuleMeta(package=ide, module_name=main)
-
-			Squyrrel.load_module(PackageMeta(package_name=ide, package_path=c:\users\lothar\passion\squyrrel\squyrrel\ide, relative_path=squyrrel\ide, import_string=squyrrel.ide), module_name='main', load_classes=True)
-				Load module <squyrrel.ide.main>
-				Squyrrel.load_module_classes(module_meta=ModuleMeta(package=ide, module_name=main), imported_module=<module 'squyrrel.ide.main' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\ide\\main.py'>)
-					load classes of module squyrrel.ide.main..
-					Squyrrel.load_class(ModuleMeta(package=ide, module_name=main), 'App', <class 'squyrrel.ide.main.App'>)
-						add class App
-						-> (Squyrrel.load_class) ->: None
-
-					loaded 1 classes in module module squyrrel.ide.main
-					-> (Squyrrel.load_module_classes) ->: None
-
-				-> (Squyrrel.load_module) ->: None
-
-			Squyrrel.register_module(PackageMeta(package_name=ide, package_path=c:\users\lothar\passion\squyrrel\squyrrel\ide, relative_path=squyrrel\ide, import_string=squyrrel.ide), module_name='shell')
-				Register module <shell>..
-				-> (Squyrrel.register_module) ->: ModuleMeta(package=ide, module_name=shell)
-
-			Squyrrel.load_module(PackageMeta(package_name=ide, package_path=c:\users\lothar\passion\squyrrel\squyrrel\ide, relative_path=squyrrel\ide, import_string=squyrrel.ide), module_name='shell', load_classes=True)
-				Load module <squyrrel.ide.shell>
-				Squyrrel.load_module_classes(module_meta=ModuleMeta(package=ide, module_name=shell), imported_module=<module 'squyrrel.ide.shell' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\ide\\shell.py'>)
-					load classes of module squyrrel.ide.shell..
-					loaded 0 classes in module module squyrrel.ide.shell
-					-> (Squyrrel.load_module_classes) ->: None
-
-				-> (Squyrrel.load_module) ->: None
-
-			Squyrrel.register_module(PackageMeta(package_name=ide, package_path=c:\users\lothar\passion\squyrrel\squyrrel\ide, relative_path=squyrrel\ide, import_string=squyrrel.ide), module_name='shell_window')
-				Register module <shell_window>..
-				-> (Squyrrel.register_module) ->: ModuleMeta(package=ide, module_name=shell_window)
-
-			Squyrrel.load_module(PackageMeta(package_name=ide, package_path=c:\users\lothar\passion\squyrrel\squyrrel\ide, relative_path=squyrrel\ide, import_string=squyrrel.ide), module_name='shell_window', load_classes=True)
-				Load module <squyrrel.ide.shell_window>
-				Squyrrel.load_module_classes(module_meta=ModuleMeta(package=ide, module_name=shell_window), imported_module=<module 'squyrrel.ide.shell_window' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\ide\\shell_window.py'>)
-					load classes of module squyrrel.ide.shell_window..
-					Squyrrel.load_class(ModuleMeta(package=ide, module_name=shell_window), 'ShellWindow', <class 'squyrrel.ide.shell_window.ShellWindow'>)
-						add class ShellWindow
-						-> (Squyrrel.load_class) ->: None
-
-					Squyrrel.load_class(ModuleMeta(package=ide, module_name=shell_window), 'ShellWindowConfig', <class 'squyrrel.ide.shell_window.ShellWindowConfig'>)
-						add class ShellWindowConfig
-						-> (Squyrrel.load_class) ->: None
-
-					loaded 2 classes in module module squyrrel.ide.shell_window
-					-> (Squyrrel.load_module_classes) ->: None
-
-				-> (Squyrrel.load_module) ->: None
-
-			Squyrrel.register_module(PackageMeta(package_name=ide, package_path=c:\users\lothar\passion\squyrrel\squyrrel\ide, relative_path=squyrrel\ide, import_string=squyrrel.ide), module_name='windows')
-				Register module <windows>..
-				-> (Squyrrel.register_module) ->: ModuleMeta(package=ide, module_name=windows)
-
-			Squyrrel.load_module(PackageMeta(package_name=ide, package_path=c:\users\lothar\passion\squyrrel\squyrrel\ide, relative_path=squyrrel\ide, import_string=squyrrel.ide), module_name='windows', load_classes=True)
-				Load module <squyrrel.ide.windows>
-				Squyrrel.load_module_classes(module_meta=ModuleMeta(package=ide, module_name=windows), imported_module=<module 'squyrrel.ide.windows' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\ide\\windows.py'>)
-					load classes of module squyrrel.ide.windows..
-					loaded 0 classes in module module squyrrel.ide.windows
-					-> (Squyrrel.load_module_classes) ->: None
-
-				-> (Squyrrel.load_module) ->: None
-
-			Squyrrel.register_module(PackageMeta(package_name=ide, package_path=c:\users\lothar\passion\squyrrel\squyrrel\ide, relative_path=squyrrel\ide, import_string=squyrrel.ide), module_name='__init__')
-				Register module <__init__>..
-				-> (Squyrrel.register_module) ->: ModuleMeta(package=ide, module_name=__init__)
-
-			Squyrrel.load_module(PackageMeta(package_name=ide, package_path=c:\users\lothar\passion\squyrrel\squyrrel\ide, relative_path=squyrrel\ide, import_string=squyrrel.ide), module_name='__init__', load_classes=True)
-				Load module <squyrrel.ide.__init__>
-				Squyrrel.load_module_classes(module_meta=ModuleMeta(package=ide, module_name=__init__), imported_module=<module 'squyrrel.ide.__init__' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\ide\\__init__.py'>)
-					load classes of module squyrrel.ide.__init__..
-					loaded 0 classes in module module squyrrel.ide.__init__
-					-> (Squyrrel.load_module_classes) ->: None
-
-				-> (Squyrrel.load_module) ->: None
-
-			-> (Squyrrel.register_and_load_modules) ->: None
-
-		Squyrrel.register_and_load_subpackages(package_meta=PackageMeta(package_name=ide, package_path=c:\users\lothar\passion\squyrrel\squyrrel\ide, relative_path=squyrrel\ide, import_string=squyrrel.ide), subdirs=['__pycache__'], ignore_rotten_modules=False, load_classes=True)
-			Inspecting subdir __pycache__ ..
-			Squyrrel.register_package('squyrrel\\ide\\__pycache__')
-				Register package <squyrrel\ide\__pycache__>..
-				Squyrrel.get_full_package_path('squyrrel\\ide\\__pycache__')
-					-> (Squyrrel.get_full_package_path) ->: 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\ide\\__pycache__'
-
-				Squyrrel._register_package_filter('__pycache__')
-					-> (Squyrrel._register_package_filter) ->: True
-
-				Successfully registered package/dir __pycache__
-				Full path: c:\users\lothar\passion\squyrrel\squyrrel\ide\__pycache__
-				-> (Squyrrel.register_package) ->: PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\ide\__pycache__, relative_path=squyrrel\ide\__pycache__, import_string=squyrrel.ide.__pycache__)
-
-			Squyrrel.load_package(PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\ide\__pycache__, relative_path=squyrrel\ide\__pycache__, import_string=squyrrel.ide.__pycache__), ignore_rotten_modules=False, load_classes=True, load_subpackages=True)
-				Load package <PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\ide\__pycache__, relative_path=squyrrel\ide\__pycache__, import_string=squyrrel.ide.__pycache__)>...
-				Squyrrel.package_already_loaded(package_meta=PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\ide\__pycache__, relative_path=squyrrel\ide\__pycache__, import_string=squyrrel.ide.__pycache__))
-					-> (Squyrrel.package_already_loaded) ->: False
-
-				Squyrrel.inspect_directory(PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\ide\__pycache__, relative_path=squyrrel\ide\__pycache__, import_string=squyrrel.ide.__pycache__))
-					-> (Squyrrel.inspect_directory) ->: ([], [])
-
-				..is package (contains __init__.py): False
-				Squyrrel._load_package_filter(PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\ide\__pycache__, relative_path=squyrrel\ide\__pycache__, import_string=squyrrel.ide.__pycache__))
-					-> (Squyrrel._load_package_filter) ->: True
-
-				Squyrrel.register_and_load_modules(package_meta=PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\ide\__pycache__, relative_path=squyrrel\ide\__pycache__, import_string=squyrrel.ide.__pycache__), modules=[], ignore_rotten_modules=False, load_classes=True)
-					-> (Squyrrel.register_and_load_modules) ->: None
-
-				Squyrrel.register_and_load_subpackages(package_meta=PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\ide\__pycache__, relative_path=squyrrel\ide\__pycache__, import_string=squyrrel.ide.__pycache__), subdirs=[], ignore_rotten_modules=False, load_classes=True)
-					-> (Squyrrel.register_and_load_subpackages) ->: None
-
-				-> (Squyrrel.load_package) ->: PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\ide\__pycache__, relative_path=squyrrel\ide\__pycache__, import_string=squyrrel.ide.__pycache__)
-
-			-> (Squyrrel.register_and_load_subpackages) ->: None
-
-		-> (Squyrrel.load_package) ->: PackageMeta(package_name=ide, package_path=c:\users\lothar\passion\squyrrel\squyrrel\ide, relative_path=squyrrel\ide, import_string=squyrrel.ide)
-
-	-> (Squyrrel.register_and_load_package) ->: PackageMeta(package_name=ide, package_path=c:\users\lothar\passion\squyrrel\squyrrel\ide, relative_path=squyrrel\ide, import_string=squyrrel.ide)
-
-Squyrrel.find_class_meta_by_name(class_name='App', package_name='ide', module_name='main')
-	Squyrrel.find_package_by_name('ide')
-		-> (Squyrrel.find_package_by_name) ->: PackageMeta(package_name=ide, package_path=c:\users\lothar\passion\squyrrel\squyrrel\ide, relative_path=squyrrel\ide, import_string=squyrrel.ide)
-
-	-> (Squyrrel.find_class_meta_by_name) ->: <squyrrel.core.registry.meta.ClassMeta object at 0x022F7B90>
-
-Squyrrel.get_package('ide')
-	-> (Squyrrel.get_package) ->: PackageMeta(package_name=ide, package_path=c:\users\lothar\passion\squyrrel\squyrrel\ide, relative_path=squyrrel\ide, import_string=squyrrel.ide)
-
-Squyrrel.create_instance(<squyrrel.core.registry.meta.ClassMeta object at 0x02304A10>, {'init_args': [None], 'init_kwargs': None, 'after_init_kwargs': {'window_title': 'Squyrrel CLI'}})
-	
-Create_instance of class <ShellWindow>
-	Squyrrel.get_class_config(class_meta=<squyrrel.core.registry.meta.ClassMeta object at 0x02304A10>)
-		-> (Squyrrel.get_class_config) ->: <class 'squyrrel.ide.shell_window.ShellWindowConfig'>
-
-	Squyrrel.apply_init_kwargs_hook(None, config_cls=<class 'squyrrel.ide.shell_window.ShellWindowConfig'>)
-		-> (Squyrrel.apply_init_kwargs_hook) ->: None
-
-	Squyrrel.get_package('gui')
-		-> (Squyrrel.get_package) ->: PackageMeta(package_name=gui, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui, relative_path=squyrrel\gui, import_string=squyrrel.gui)
-
-	Squyrrel.create_instance(<squyrrel.core.registry.meta.ClassMeta object at 0x0213AA50>, {'init_args': [<squyrrel.ide.shell_window.ShellWindow object .>], 'init_kwargs': None, 'after_init_kwargs': None})
-		
-Create_instance of class <SmartText>
-		Squyrrel.get_class_config(class_meta=<squyrrel.core.registry.meta.ClassMeta object at 0x0213AA50>)
-			-> (Squyrrel.get_class_config) ->: <class 'squyrrel.gui.widgets.smarttext_defaultconfig.SmartTextDefaultConfig'>
-
-		Squyrrel.apply_init_kwargs_hook(None, config_cls=<class 'squyrrel.gui.widgets.smarttext_defaultconfig.SmartTextDefaultConfig'>)
-			-> (Squyrrel.apply_init_kwargs_hook) ->: None
-
-		config class: SmartTextDefaultConfig
-		Squyrrel.config_instance(instance=<squyrrel.gui.widgets.smarttext.SmartText object .!smarttext>, cls=<class 'squyrrel.gui.widgets.smarttext.SmartText'>, config_cls=<class 'squyrrel.gui.widgets.smarttext_defaultconfig.SmartTextDefaultConfig'>, params={'init_args': [<squyrrel.ide.shell_window.ShellWindow object .>], 'init_kwargs': None, 'after_init_kwargs': None})
-			After init hook for SmartText: IConfigRegistry.setup_logging
-			Setup logging of SmartText methods..
-			After init hook for SmartText: IConfigRegistry.config
-			SmartText.apply_theme({'font': ['courier', 9, 'normal'], 'bg': '#131819', 'fg': '#c4cfd3', 'active_line_bg': 'gray18', 'sel_bg': 'gray37', 'sel_fg': '#c4cfd3', 'line_numbers_bg': '#131819', 'line_numbers_fg': '#c4cfd3', 'line_numbers_active_line_bg': 'gray18', 'line_numbers_sel_bg': 'gray37', 'cursor_bg': 'white', 'tags': {'error': {'foreground': 'red'}, 'call': {'foreground': '#2f44cc'}, 'gui_call': {'foreground': '#36c96c'}, 'signal': {'foreground': 'd63ddb'}}})
-				SmartText.config_option('font', ['courier', 9, 'normal'])
-					-> (SmartText.config_option) ->: None
-
-				SmartText.config_option('bg', '#131819')
-					-> (SmartText.config_option) ->: None
-
-				SmartText.config_option('fg', '#c4cfd3')
-					-> (SmartText.config_option) ->: None
-
-				SmartText.config_option('active_line_bg', 'gray18')
-					-> (SmartText.config_option) ->: None
-
-				SmartText.config_option('sel_bg', 'gray37')
-					-> (SmartText.config_option) ->: None
-
-				SmartText.config_option('sel_fg', '#c4cfd3')
-					-> (SmartText.config_option) ->: None
-
-				SmartText.config_option('line_numbers_bg', '#131819')
-					-> (SmartText.config_option) ->: None
-
-				SmartText.config_option('line_numbers_fg', '#c4cfd3')
-					-> (SmartText.config_option) ->: None
-
-				SmartText.config_option('line_numbers_active_line_bg', 'gray18')
-					-> (SmartText.config_option) ->: None
-
-				SmartText.config_option('line_numbers_sel_bg', 'gray37')
-					-> (SmartText.config_option) ->: None
-
-				SmartText.config_option('cursor_bg', 'white')
-					-> (SmartText.config_option) ->: None
-
-				SmartText.config_option('tags', {'error': {'foreground': 'red'}, 'call': {'foreground': '#2f44cc'}, 'gui_call': {'foreground': '#36c96c'}, 'signal': {'foreground': 'd63ddb'}})
-					-> (SmartText.config_option) ->: None
-
-				-> (SmartText.apply_theme) ->: None
-
-			-> (Squyrrel.config_instance) ->: None
-
-		-> (Squyrrel.create_instance) ->: <squyrrel.gui.widgets.smarttext.SmartText object .!smarttext>
-
-	config class: ShellWindowConfig
-	Squyrrel.config_instance(instance=<squyrrel.ide.shell_window.ShellWindow object .>, cls=<class 'squyrrel.ide.shell_window.ShellWindow'>, config_cls=<class 'squyrrel.ide.shell_window.ShellWindowConfig'>, params={'init_args': [None], 'init_kwargs': None, 'after_init_kwargs': {'window_title': 'Squyrrel CLI'}})
-		After init hook for ShellWindow: IConfigRegistry.config
-		-> (Squyrrel.config_instance) ->: None
-
-	-> (Squyrrel.create_instance) ->: <squyrrel.ide.shell_window.ShellWindow object .>
-
-Squyrrel.get_package('ide')
-	-> (Squyrrel.get_package) ->: PackageMeta(package_name=ide, package_path=c:\users\lothar\passion\squyrrel\squyrrel\ide, relative_path=squyrrel\ide, import_string=squyrrel.ide)
-
-Squyrrel.create_instance(<squyrrel.core.registry.meta.ClassMeta object at 0x021BE710>, {'init_args': [<squyrrel.ide.shell_window.ShellWindow object .>], 'init_kwargs': None, 'after_init_kwargs': {'window_title': 'Squyrrel Log'}})
-	
-Create_instance of class <LogWindow>
-	Squyrrel.get_class_config(class_meta=<squyrrel.core.registry.meta.ClassMeta object at 0x021BE710>)
-		-> (Squyrrel.get_class_config) ->: <class 'squyrrel.ide.log_window.LogWindowConfig'>
-
-	Squyrrel.apply_init_kwargs_hook(None, config_cls=<class 'squyrrel.ide.log_window.LogWindowConfig'>)
-		-> (Squyrrel.apply_init_kwargs_hook) ->: None
-
-	Squyrrel.get_package('gui')
-		-> (Squyrrel.get_package) ->: PackageMeta(package_name=gui, package_path=c:\users\lothar\passion\squyrrel\squyrrel\gui, relative_path=squyrrel\gui, import_string=squyrrel.gui)
-
-	Squyrrel.create_instance(<squyrrel.core.registry.meta.ClassMeta object at 0x0213AA50>, {'init_args': [<squyrrel.ide.log_window.LogWindow object .!logwindow>], 'init_kwargs': None, 'after_init_kwargs': None})
-		
-Create_instance of class <SmartText>
-		Squyrrel.get_class_config(class_meta=<squyrrel.core.registry.meta.ClassMeta object at 0x0213AA50>)
-			-> (Squyrrel.get_class_config) ->: <class 'squyrrel.gui.widgets.smarttext_defaultconfig.SmartTextDefaultConfig'>
-
-		Squyrrel.apply_init_kwargs_hook(None, config_cls=<class 'squyrrel.gui.widgets.smarttext_defaultconfig.SmartTextDefaultConfig'>)
-			-> (Squyrrel.apply_init_kwargs_hook) ->: None
-
-		config class: SmartTextDefaultConfig
-		Squyrrel.config_instance(instance=<squyrrel.gui.widgets.smarttext.SmartText object .!logwindow.!smarttext>, cls=<class 'squyrrel.gui.widgets.smarttext.SmartText'>, config_cls=<class 'squyrrel.gui.widgets.smarttext_defaultconfig.SmartTextDefaultConfig'>, params={'init_args': [<squyrrel.ide.log_window.LogWindow object .!logwindow>], 'init_kwargs': None, 'after_init_kwargs': None})
-			After init hook for SmartText: IConfigRegistry.setup_logging
-			Setup logging of SmartText methods..
-			After init hook for SmartText: IConfigRegistry.config
-			SmartText.apply_theme({'font': ['courier', 9, 'normal'], 'bg': '#131819', 'fg': '#c4cfd3', 'active_line_bg': 'gray18', 'sel_bg': 'gray37', 'sel_fg': '#c4cfd3', 'line_numbers_bg': '#131819', 'line_numbers_fg': '#c4cfd3', 'line_numbers_active_line_bg': 'gray18', 'line_numbers_sel_bg': 'gray37', 'cursor_bg': 'white', 'tags': {'error': {'foreground': 'red'}, 'call': {'foreground': '#2f44cc'}, 'gui_call': {'foreground': '#36c96c'}, 'signal': {'foreground': 'd63ddb'}}})
-				SmartText.config_option('font', ['courier', 9, 'normal'])
-					-> (SmartText.config_option) ->: None
-
-				SmartText.config_option('bg', '#131819')
-					-> (SmartText.config_option) ->: None
-
-				SmartText.config_option('fg', '#c4cfd3')
-					-> (SmartText.config_option) ->: None
-
-				SmartText.config_option('active_line_bg', 'gray18')
-					-> (SmartText.config_option) ->: None
-
-				SmartText.config_option('sel_bg', 'gray37')
-					-> (SmartText.config_option) ->: None
-
-				SmartText.config_option('sel_fg', '#c4cfd3')
-					-> (SmartText.config_option) ->: None
-
-				SmartText.config_option('line_numbers_bg', '#131819')
-					-> (SmartText.config_option) ->: None
-
-				SmartText.config_option('line_numbers_fg', '#c4cfd3')
-					-> (SmartText.config_option) ->: None
-
-				SmartText.config_option('line_numbers_active_line_bg', 'gray18')
-					-> (SmartText.config_option) ->: None
-
-				SmartText.config_option('line_numbers_sel_bg', 'gray37')
-					-> (SmartText.config_option) ->: None
-
-				SmartText.config_option('cursor_bg', 'white')
-					-> (SmartText.config_option) ->: None
-
-				SmartText.config_option('tags', {'error': {'foreground': 'red'}, 'call': {'foreground': '#2f44cc'}, 'gui_call': {'foreground': '#36c96c'}, 'signal': {'foreground': 'd63ddb'}})
-					-> (SmartText.config_option) ->: None
-
-				-> (SmartText.apply_theme) ->: None
-
-			-> (Squyrrel.config_instance) ->: None
-
-		-> (Squyrrel.create_instance) ->: <squyrrel.gui.widgets.smarttext.SmartText object .!logwindow.!smarttext>
-
-	config class: LogWindowConfig
-	Squyrrel.config_instance(instance=<squyrrel.ide.log_window.LogWindow object .!logwindow>, cls=<class 'squyrrel.ide.log_window.LogWindow'>, config_cls=<class 'squyrrel.ide.log_window.LogWindowConfig'>, params={'init_args': [<squyrrel.ide.shell_window.ShellWindow object .>], 'init_kwargs': None, 'after_init_kwargs': {'window_title': 'Squyrrel Log'}})
-		After init hook for LogWindow: IConfigRegistry.config
-		-> (Squyrrel.config_instance) ->: None
-
-	-> (Squyrrel.create_instance) ->: <squyrrel.ide.log_window.LogWindow object .!logwindow>
-
-Squyrrel.register_and_load_package('squyrrel/db')
-	Squyrrel.register_package('squyrrel/db')
-		Register package <squyrrel/db>..
-		Squyrrel.get_full_package_path('squyrrel/db')
-			-> (Squyrrel.get_full_package_path) ->: 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel/db'
-
-		Squyrrel.package_already_registered(package_name='db')
-			-> (Squyrrel.package_already_registered) ->: True
-
-		-> (Squyrrel.register_package) ->: PackageMeta(package_name=db, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db, relative_path=squyrrel\db, import_string=squyrrel.db)
-
-	Squyrrel.load_package(PackageMeta(package_name=db, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db, relative_path=squyrrel\db, import_string=squyrrel.db))
-		Load package <PackageMeta(package_name=db, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db, relative_path=squyrrel\db, import_string=squyrrel.db)>...
-		Squyrrel.package_already_loaded(package_meta=PackageMeta(package_name=db, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db, relative_path=squyrrel\db, import_string=squyrrel.db))
-			-> (Squyrrel.package_already_loaded) ->: False
-
-		Squyrrel.inspect_directory(PackageMeta(package_name=db, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db, relative_path=squyrrel\db, import_string=squyrrel.db))
-			-> (Squyrrel.inspect_directory) ->: (['connection', '__init__'], ['scripts', 'sqlite', '__pycache__'])
-
-		..is package (contains __init__.py): True
-		Squyrrel._load_package_filter(PackageMeta(package_name=db, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db, relative_path=squyrrel\db, import_string=squyrrel.db))
-			-> (Squyrrel._load_package_filter) ->: True
-
-		Squyrrel.register_and_load_modules(package_meta=PackageMeta(package_name=db, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db, relative_path=squyrrel\db, import_string=squyrrel.db), modules=['connection', '__init__'], ignore_rotten_modules=False, load_classes=True)
-			Squyrrel.register_module(PackageMeta(package_name=db, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db, relative_path=squyrrel\db, import_string=squyrrel.db), module_name='connection')
-				Register module <connection>..
-				-> (Squyrrel.register_module) ->: ModuleMeta(package=db, module_name=connection)
-
-			Squyrrel.load_module(PackageMeta(package_name=db, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db, relative_path=squyrrel\db, import_string=squyrrel.db), module_name='connection', load_classes=True)
-				Load module <squyrrel.db.connection>
-				Squyrrel.load_module_classes(module_meta=ModuleMeta(package=db, module_name=connection), imported_module=<module 'squyrrel.db.connection' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\db\\connection.py'>)
-					load classes of module squyrrel.db.connection..
-					Squyrrel.load_class(ModuleMeta(package=db, module_name=connection), 'SqlDatabaseConnection', <class 'squyrrel.db.connection.SqlDatabaseConnection'>)
-						add class SqlDatabaseConnection
-						-> (Squyrrel.load_class) ->: None
-
-					loaded 1 classes in module module squyrrel.db.connection
-					-> (Squyrrel.load_module_classes) ->: None
-
-				-> (Squyrrel.load_module) ->: None
-
-			Squyrrel.register_module(PackageMeta(package_name=db, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db, relative_path=squyrrel\db, import_string=squyrrel.db), module_name='__init__')
-				Register module <__init__>..
-				-> (Squyrrel.register_module) ->: ModuleMeta(package=db, module_name=__init__)
-
-			Squyrrel.load_module(PackageMeta(package_name=db, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db, relative_path=squyrrel\db, import_string=squyrrel.db), module_name='__init__', load_classes=True)
-				Load module <squyrrel.db.__init__>
-				Squyrrel.load_module_classes(module_meta=ModuleMeta(package=db, module_name=__init__), imported_module=<module 'squyrrel.db.__init__' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\db\\__init__.py'>)
-					load classes of module squyrrel.db.__init__..
-					loaded 0 classes in module module squyrrel.db.__init__
-					-> (Squyrrel.load_module_classes) ->: None
-
-				-> (Squyrrel.load_module) ->: None
-
-			-> (Squyrrel.register_and_load_modules) ->: None
-
-		Squyrrel.register_and_load_subpackages(package_meta=PackageMeta(package_name=db, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db, relative_path=squyrrel\db, import_string=squyrrel.db), subdirs=['scripts', 'sqlite', '__pycache__'], ignore_rotten_modules=False, load_classes=True)
-			Inspecting subdir scripts ..
-			Squyrrel.register_package('squyrrel\\db\\scripts')
-				Register package <squyrrel\db\scripts>..
-				Squyrrel.get_full_package_path('squyrrel\\db\\scripts')
-					-> (Squyrrel.get_full_package_path) ->: 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\db\\scripts'
-
-				Squyrrel.package_already_registered(package_name='scripts')
-					-> (Squyrrel.package_already_registered) ->: False
-
-				Squyrrel._register_package_filter('scripts')
-					-> (Squyrrel._register_package_filter) ->: True
-
-				Successfully registered package/dir scripts
-				Full path: c:\users\lothar\passion\squyrrel\squyrrel\db\scripts
-				-> (Squyrrel.register_package) ->: PackageMeta(package_name=scripts, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\scripts, relative_path=squyrrel\db\scripts, import_string=squyrrel.db.scripts)
-
-			Squyrrel.load_package(PackageMeta(package_name=scripts, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\scripts, relative_path=squyrrel\db\scripts, import_string=squyrrel.db.scripts), ignore_rotten_modules=False, load_classes=True, load_subpackages=True)
-				Load package <PackageMeta(package_name=scripts, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\scripts, relative_path=squyrrel\db\scripts, import_string=squyrrel.db.scripts)>...
-				Squyrrel.package_already_loaded(package_meta=PackageMeta(package_name=scripts, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\scripts, relative_path=squyrrel\db\scripts, import_string=squyrrel.db.scripts))
-					-> (Squyrrel.package_already_loaded) ->: False
-
-				Squyrrel.inspect_directory(PackageMeta(package_name=scripts, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\scripts, relative_path=squyrrel\db\scripts, import_string=squyrrel.db.scripts))
-					-> (Squyrrel.inspect_directory) ->: ([], [])
-
-				..is package (contains __init__.py): False
-				Squyrrel._load_package_filter(PackageMeta(package_name=scripts, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\scripts, relative_path=squyrrel\db\scripts, import_string=squyrrel.db.scripts))
-					-> (Squyrrel._load_package_filter) ->: True
-
-				Squyrrel.register_and_load_modules(package_meta=PackageMeta(package_name=scripts, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\scripts, relative_path=squyrrel\db\scripts, import_string=squyrrel.db.scripts), modules=[], ignore_rotten_modules=False, load_classes=True)
-					-> (Squyrrel.register_and_load_modules) ->: None
-
-				Squyrrel.register_and_load_subpackages(package_meta=PackageMeta(package_name=scripts, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\scripts, relative_path=squyrrel\db\scripts, import_string=squyrrel.db.scripts), subdirs=[], ignore_rotten_modules=False, load_classes=True)
-					-> (Squyrrel.register_and_load_subpackages) ->: None
-
-				-> (Squyrrel.load_package) ->: PackageMeta(package_name=scripts, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\scripts, relative_path=squyrrel\db\scripts, import_string=squyrrel.db.scripts)
-
-			Inspecting subdir sqlite ..
-			Squyrrel.register_package('squyrrel\\db\\sqlite')
-				Register package <squyrrel\db\sqlite>..
-				Squyrrel.get_full_package_path('squyrrel\\db\\sqlite')
-					-> (Squyrrel.get_full_package_path) ->: 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\db\\sqlite'
-
-				Squyrrel.package_already_registered(package_name='sqlite')
-					-> (Squyrrel.package_already_registered) ->: False
-
-				Squyrrel._register_package_filter('sqlite')
-					-> (Squyrrel._register_package_filter) ->: True
-
-				Successfully registered package/dir sqlite
-				Full path: c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite
-				-> (Squyrrel.register_package) ->: PackageMeta(package_name=sqlite, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite, relative_path=squyrrel\db\sqlite, import_string=squyrrel.db.sqlite)
-
-			Squyrrel.load_package(PackageMeta(package_name=sqlite, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite, relative_path=squyrrel\db\sqlite, import_string=squyrrel.db.sqlite), ignore_rotten_modules=False, load_classes=True, load_subpackages=True)
-				Load package <PackageMeta(package_name=sqlite, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite, relative_path=squyrrel\db\sqlite, import_string=squyrrel.db.sqlite)>...
-				Squyrrel.package_already_loaded(package_meta=PackageMeta(package_name=sqlite, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite, relative_path=squyrrel\db\sqlite, import_string=squyrrel.db.sqlite))
-					-> (Squyrrel.package_already_loaded) ->: False
-
-				Squyrrel.inspect_directory(PackageMeta(package_name=sqlite, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite, relative_path=squyrrel\db\sqlite, import_string=squyrrel.db.sqlite))
-					-> (Squyrrel.inspect_directory) ->: (['commands', 'config', 'connection', '__init__'], ['__pycache__'])
-
-				..is package (contains __init__.py): True
-				Squyrrel._load_package_filter(PackageMeta(package_name=sqlite, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite, relative_path=squyrrel\db\sqlite, import_string=squyrrel.db.sqlite))
-					-> (Squyrrel._load_package_filter) ->: True
-
-				Squyrrel.register_and_load_modules(package_meta=PackageMeta(package_name=sqlite, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite, relative_path=squyrrel\db\sqlite, import_string=squyrrel.db.sqlite), modules=['commands', 'config', 'connection', '__init__'], ignore_rotten_modules=False, load_classes=True)
-					Squyrrel.register_module(PackageMeta(package_name=sqlite, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite, relative_path=squyrrel\db\sqlite, import_string=squyrrel.db.sqlite), module_name='commands')
-						Register module <commands>..
-						-> (Squyrrel.register_module) ->: ModuleMeta(package=sqlite, module_name=commands)
-
-					Squyrrel.load_module(PackageMeta(package_name=sqlite, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite, relative_path=squyrrel\db\sqlite, import_string=squyrrel.db.sqlite), module_name='commands', load_classes=True)
-						Load module <squyrrel.db.sqlite.commands>
-						Squyrrel.load_module_classes(module_meta=ModuleMeta(package=sqlite, module_name=commands), imported_module=<module 'squyrrel.db.sqlite.commands' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\db\\sqlite\\commands.py'>)
-							load classes of module squyrrel.db.sqlite.commands..
-							Squyrrel.load_class(ModuleMeta(package=sqlite, module_name=commands), 'SqliteCommand', <class 'squyrrel.db.sqlite.commands.SqliteCommand'>)
-								add class SqliteCommand
-								-> (Squyrrel.load_class) ->: None
-
-							Squyrrel.load_class(ModuleMeta(package=sqlite, module_name=commands), 'SqliteConnectCommand', <class 'squyrrel.db.sqlite.commands.SqliteConnectCommand'>)
-								add class SqliteConnectCommand
-								-> (Squyrrel.load_class) ->: None
-
-							loaded 2 classes in module module squyrrel.db.sqlite.commands
-							-> (Squyrrel.load_module_classes) ->: None
-
-						-> (Squyrrel.load_module) ->: None
-
-					Squyrrel.register_module(PackageMeta(package_name=sqlite, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite, relative_path=squyrrel\db\sqlite, import_string=squyrrel.db.sqlite), module_name='config')
-						Register module <config>..
-						-> (Squyrrel.register_module) ->: ModuleMeta(package=sqlite, module_name=config)
-
-					Squyrrel.load_module(PackageMeta(package_name=sqlite, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite, relative_path=squyrrel\db\sqlite, import_string=squyrrel.db.sqlite), module_name='config', load_classes=True)
-						Load module <squyrrel.db.sqlite.config>
-						Squyrrel.load_module_classes(module_meta=ModuleMeta(package=sqlite, module_name=config), imported_module=<module 'squyrrel.db.sqlite.config' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\db\\sqlite\\config.py'>)
-							load classes of module squyrrel.db.sqlite.config..
-							Squyrrel.load_class(ModuleMeta(package=sqlite, module_name=config), 'SqliteConnectionConfig', <class 'squyrrel.db.sqlite.config.SqliteConnectionConfig'>)
-								add class SqliteConnectionConfig
-								-> (Squyrrel.load_class) ->: None
-
-							loaded 1 classes in module module squyrrel.db.sqlite.config
-							-> (Squyrrel.load_module_classes) ->: None
-
-						-> (Squyrrel.load_module) ->: None
-
-					Squyrrel.register_module(PackageMeta(package_name=sqlite, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite, relative_path=squyrrel\db\sqlite, import_string=squyrrel.db.sqlite), module_name='connection')
-						Register module <connection>..
-						-> (Squyrrel.register_module) ->: ModuleMeta(package=sqlite, module_name=connection)
-
-					Squyrrel.load_module(PackageMeta(package_name=sqlite, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite, relative_path=squyrrel\db\sqlite, import_string=squyrrel.db.sqlite), module_name='connection', load_classes=True)
-						Load module <squyrrel.db.sqlite.connection>
-						Squyrrel.load_module_classes(module_meta=ModuleMeta(package=sqlite, module_name=connection), imported_module=<module 'squyrrel.db.sqlite.connection' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\db\\sqlite\\connection.py'>)
-							load classes of module squyrrel.db.sqlite.connection..
-							Squyrrel.load_class(ModuleMeta(package=sqlite, module_name=connection), 'SqliteConnection', <class 'squyrrel.db.sqlite.connection.SqliteConnection'>)
-								add class SqliteConnection
-								-> (Squyrrel.load_class) ->: None
-
-							loaded 1 classes in module module squyrrel.db.sqlite.connection
-							-> (Squyrrel.load_module_classes) ->: None
-
-						-> (Squyrrel.load_module) ->: None
-
-					Squyrrel.register_module(PackageMeta(package_name=sqlite, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite, relative_path=squyrrel\db\sqlite, import_string=squyrrel.db.sqlite), module_name='__init__')
-						Register module <__init__>..
-						-> (Squyrrel.register_module) ->: ModuleMeta(package=sqlite, module_name=__init__)
-
-					Squyrrel.load_module(PackageMeta(package_name=sqlite, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite, relative_path=squyrrel\db\sqlite, import_string=squyrrel.db.sqlite), module_name='__init__', load_classes=True)
-						Load module <squyrrel.db.sqlite.__init__>
-						Squyrrel.load_module_classes(module_meta=ModuleMeta(package=sqlite, module_name=__init__), imported_module=<module 'squyrrel.db.sqlite.__init__' from 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\db\\sqlite\\__init__.py'>)
-							load classes of module squyrrel.db.sqlite.__init__..
-							loaded 0 classes in module module squyrrel.db.sqlite.__init__
-							-> (Squyrrel.load_module_classes) ->: None
-
-						-> (Squyrrel.load_module) ->: None
-
-					-> (Squyrrel.register_and_load_modules) ->: None
-
-				Squyrrel.register_and_load_subpackages(package_meta=PackageMeta(package_name=sqlite, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite, relative_path=squyrrel\db\sqlite, import_string=squyrrel.db.sqlite), subdirs=['__pycache__'], ignore_rotten_modules=False, load_classes=True)
-					Inspecting subdir __pycache__ ..
-					Squyrrel.register_package('squyrrel\\db\\sqlite\\__pycache__')
-						Register package <squyrrel\db\sqlite\__pycache__>..
-						Squyrrel.get_full_package_path('squyrrel\\db\\sqlite\\__pycache__')
-							-> (Squyrrel.get_full_package_path) ->: 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\db\\sqlite\\__pycache__'
-
-						Squyrrel._register_package_filter('__pycache__')
-							-> (Squyrrel._register_package_filter) ->: True
-
-						Successfully registered package/dir __pycache__
-						Full path: c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite\__pycache__
-						-> (Squyrrel.register_package) ->: PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite\__pycache__, relative_path=squyrrel\db\sqlite\__pycache__, import_string=squyrrel.db.sqlite.__pycache__)
-
-					Squyrrel.load_package(PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite\__pycache__, relative_path=squyrrel\db\sqlite\__pycache__, import_string=squyrrel.db.sqlite.__pycache__), ignore_rotten_modules=False, load_classes=True, load_subpackages=True)
-						Load package <PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite\__pycache__, relative_path=squyrrel\db\sqlite\__pycache__, import_string=squyrrel.db.sqlite.__pycache__)>...
-						Squyrrel.package_already_loaded(package_meta=PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite\__pycache__, relative_path=squyrrel\db\sqlite\__pycache__, import_string=squyrrel.db.sqlite.__pycache__))
-							-> (Squyrrel.package_already_loaded) ->: False
-
-						Squyrrel.inspect_directory(PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite\__pycache__, relative_path=squyrrel\db\sqlite\__pycache__, import_string=squyrrel.db.sqlite.__pycache__))
-							-> (Squyrrel.inspect_directory) ->: ([], [])
-
-						..is package (contains __init__.py): False
-						Squyrrel._load_package_filter(PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite\__pycache__, relative_path=squyrrel\db\sqlite\__pycache__, import_string=squyrrel.db.sqlite.__pycache__))
-							-> (Squyrrel._load_package_filter) ->: True
-
-						Squyrrel.register_and_load_modules(package_meta=PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite\__pycache__, relative_path=squyrrel\db\sqlite\__pycache__, import_string=squyrrel.db.sqlite.__pycache__), modules=[], ignore_rotten_modules=False, load_classes=True)
-							-> (Squyrrel.register_and_load_modules) ->: None
-
-						Squyrrel.register_and_load_subpackages(package_meta=PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite\__pycache__, relative_path=squyrrel\db\sqlite\__pycache__, import_string=squyrrel.db.sqlite.__pycache__), subdirs=[], ignore_rotten_modules=False, load_classes=True)
-							-> (Squyrrel.register_and_load_subpackages) ->: None
-
-						-> (Squyrrel.load_package) ->: PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite\__pycache__, relative_path=squyrrel\db\sqlite\__pycache__, import_string=squyrrel.db.sqlite.__pycache__)
-
-					-> (Squyrrel.register_and_load_subpackages) ->: None
-
-				-> (Squyrrel.load_package) ->: PackageMeta(package_name=sqlite, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite, relative_path=squyrrel\db\sqlite, import_string=squyrrel.db.sqlite)
-
-			Add subpackage sqlite to package db
-			Inspecting subdir __pycache__ ..
-			Squyrrel.register_package('squyrrel\\db\\__pycache__')
-				Register package <squyrrel\db\__pycache__>..
-				Squyrrel.get_full_package_path('squyrrel\\db\\__pycache__')
-					-> (Squyrrel.get_full_package_path) ->: 'c:\\users\\lothar\\passion\\squyrrel\\squyrrel\\db\\__pycache__'
-
-				Squyrrel._register_package_filter('__pycache__')
-					-> (Squyrrel._register_package_filter) ->: True
-
-				Successfully registered package/dir __pycache__
-				Full path: c:\users\lothar\passion\squyrrel\squyrrel\db\__pycache__
-				-> (Squyrrel.register_package) ->: PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\__pycache__, relative_path=squyrrel\db\__pycache__, import_string=squyrrel.db.__pycache__)
-
-			Squyrrel.load_package(PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\__pycache__, relative_path=squyrrel\db\__pycache__, import_string=squyrrel.db.__pycache__), ignore_rotten_modules=False, load_classes=True, load_subpackages=True)
-				Load package <PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\__pycache__, relative_path=squyrrel\db\__pycache__, import_string=squyrrel.db.__pycache__)>...
-				Squyrrel.package_already_loaded(package_meta=PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\__pycache__, relative_path=squyrrel\db\__pycache__, import_string=squyrrel.db.__pycache__))
-					-> (Squyrrel.package_already_loaded) ->: False
-
-				Squyrrel.inspect_directory(PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\__pycache__, relative_path=squyrrel\db\__pycache__, import_string=squyrrel.db.__pycache__))
-					-> (Squyrrel.inspect_directory) ->: ([], [])
-
-				..is package (contains __init__.py): False
-				Squyrrel._load_package_filter(PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\__pycache__, relative_path=squyrrel\db\__pycache__, import_string=squyrrel.db.__pycache__))
-					-> (Squyrrel._load_package_filter) ->: True
-
-				Squyrrel.register_and_load_modules(package_meta=PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\__pycache__, relative_path=squyrrel\db\__pycache__, import_string=squyrrel.db.__pycache__), modules=[], ignore_rotten_modules=False, load_classes=True)
-					-> (Squyrrel.register_and_load_modules) ->: None
-
-				Squyrrel.register_and_load_subpackages(package_meta=PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\__pycache__, relative_path=squyrrel\db\__pycache__, import_string=squyrrel.db.__pycache__), subdirs=[], ignore_rotten_modules=False, load_classes=True)
-					-> (Squyrrel.register_and_load_subpackages) ->: None
-
-				-> (Squyrrel.load_package) ->: PackageMeta(package_name=__pycache__, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\__pycache__, relative_path=squyrrel\db\__pycache__, import_string=squyrrel.db.__pycache__)
-
-			-> (Squyrrel.register_and_load_subpackages) ->: None
-
-		-> (Squyrrel.load_package) ->: PackageMeta(package_name=db, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db, relative_path=squyrrel\db, import_string=squyrrel.db)
-
-	-> (Squyrrel.register_and_load_package) ->: PackageMeta(package_name=db, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db, relative_path=squyrrel\db, import_string=squyrrel.db)
-
-Squyrrel.find_class_meta_by_name('SqliteConnection', package_name='sqlite', module_name='connection')
-	Squyrrel.find_package_by_name('sqlite')
-		-> (Squyrrel.find_package_by_name) ->: PackageMeta(package_name=sqlite, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\sqlite, relative_path=squyrrel\db\sqlite, import_string=squyrrel.db.sqlite)
-
-	-> (Squyrrel.find_class_meta_by_name) ->: <squyrrel.core.registry.meta.ClassMeta object at 0x02418350>
-
-Squyrrel.create_instance(<squyrrel.core.registry.meta.ClassMeta object at 0x02418350>)
-	
-Create_instance of class <SqliteConnection>
-	Squyrrel.get_class_config(class_meta=<squyrrel.core.registry.meta.ClassMeta object at 0x02418350>)
-		-> (Squyrrel.get_class_config) ->: <class 'squyrrel.db.sqlite.config.SqliteConnectionConfig'>
-
-	Squyrrel.apply_init_kwargs_hook(None, config_cls=<class 'squyrrel.db.sqlite.config.SqliteConnectionConfig'>)
-		-> (Squyrrel.apply_init_kwargs_hook) ->: None
-
-	config class: SqliteConnectionConfig
-	Squyrrel.config_instance(instance=<squyrrel.db.sqlite.connection.SqliteConnection object at 0x0241E2B0>, cls=<class 'squyrrel.db.sqlite.connection.SqliteConnection'>, config_cls=<class 'squyrrel.db.sqlite.config.SqliteConnectionConfig'>, params={})
-		After init hook for SqliteConnection: IConfigRegistry.install_logging
-		Setup logging of SqliteConnection methods..
-		-> (Squyrrel.config_instance) ->: None
-
-	-> (Squyrrel.create_instance) ->: <squyrrel.db.sqlite.connection.SqliteConnection object at 0x0241E2B0>
-
-SqliteConnection.connect(filename='kivur_27_12_2019.db')
-	-> (SqliteConnection.connect) ->: None
-
+						Squyrrel.register_and_load_modules(package_meta=PackageMeta(package_name=postgres, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\postgres, relative_path=squyrrel\db\postgres, import_string=squyrrel.db.postgres), modules=['commands', 'connection', '__init__'], ignore_rotten_modules=False, load_classes=True)
+							Squyrrel.register_module(PackageMeta(package_name=postgres, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\postgres, relative_path=squyrrel\db\postgres, import_string=squyrrel.db.postgres), module_name='commands')
+								Register module <commands>..
+								-> (Squyrrel.register_module) ->: ModuleMeta(package=postgres, module_name=commands)
+
+							Squyrrel.load_module(package=PackageMeta(package_name=postgres, package_path=c:\users\lothar\passion\squyrrel\squyrrel\db\postgres, relative_path=squyrrel\db\postgres, import_string=squyrrel.db.postgres), module_name='commands', load_classes=True)
+								Load module <squyrrel.db.postgres.commands>

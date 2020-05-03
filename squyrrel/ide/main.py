@@ -5,12 +5,12 @@ import re
 
 from squyrrel import Squyrrel
 # from squyrrel.management.command_manager import CommandManager
-from .windows import cmd_window_factory, log_window_factory
+from windows import cmd_window_factory, log_window_factory
 from squyrrel.core.registry.signals import (squyrrel_debug_signal, squyrrel_error_signal,
     class_loaded_signal, command_loaded_signal)
 
 
-from .shell import on_return, execute_cmd_from_shell
+from shell import on_return, execute_cmd_from_shell
 
 
 class App:
@@ -27,7 +27,7 @@ class App:
             self.connect_signals()
 
             self.run_scripts()
-            self.test_db()
+            #self.test_db()
         except:
             self.write_log()
             raise
@@ -51,12 +51,15 @@ class App:
 
     def load_dependencies(self):
         # Squyrrel.load_package(PackageMeta(package_name=squyrrel, package_path=c:\users\lothar\passion\squyrrel\squyrrel, relative_path=squyrrel, import_string=squyrrel))
-        self.squyrrel.register_and_load_package('squyrrel/gui')
+
+
         self.squyrrel.register_and_load_package('squyrrel/ide')
         class_meta = self.squyrrel.find_class_meta_by_name(class_name='App', package_name='ide', module_name='main')
         class_meta.add_instance(self)
 
     def init_workers(self):
+        self.squyrrel.register_and_load_package('squyrrel/management')
+        self.squyrrel.register_and_load_package('squyrrel/gui')
         cmd_mgr_cls_meta = self.squyrrel.find_class_meta_by_name('CommandManager', package_name='management', module_name='command_manager')
         self.cmd_mgr = self.squyrrel.create_instance(cmd_mgr_cls_meta)
         for stamp in command_loaded_signal.clear_cache():

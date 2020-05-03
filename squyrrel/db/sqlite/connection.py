@@ -5,6 +5,8 @@ from squyrrel.db.connection import SqlDatabaseConnection
 
 class SqliteConnection(SqlDatabaseConnection):
 
+    database_error_cls = sqlite3.Error
+
     def connect(self, filename, select_version=False, **kwargs):
         self.filename = filename
 

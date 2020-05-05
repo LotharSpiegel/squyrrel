@@ -1,16 +1,13 @@
-import sys
-import pprint
 import os
-import re
 
 from squyrrel import Squyrrel
 # from squyrrel.management.command_manager import CommandManager
-from windows import cmd_window_factory, log_window_factory
-from squyrrel.core.registry.signals import (squyrrel_debug_signal, squyrrel_error_signal,
+from squyrrel.ide.windows import cmd_window_factory, log_window_factory
+from squyrrel.core.registry.signals import (squyrrel_debug_signal, # squyrrel_error_signal
     class_loaded_signal, command_loaded_signal)
 
 
-from shell import on_return, execute_cmd_from_shell
+from squyrrel.ide.shell import on_return, execute_cmd_from_shell
 
 
 class App:

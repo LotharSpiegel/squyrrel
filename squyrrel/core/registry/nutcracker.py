@@ -13,14 +13,12 @@ import sys
 
 from squyrrel.core.registry.exceptions import *
 from squyrrel.core.registry.exception_handler import ExceptionHandler
-from squyrrel.core.registry.meta import PackageMeta, ClassMeta
-from squyrrel.core.registry.signals import (squyrrel_debug_signal, squyrrel_error_signal,
-    class_loaded_signal)
+from squyrrel.core.registry.meta import PackageMeta, ClassMeta, ModuleMeta
+from squyrrel.core.registry.signals import (squyrrel_debug_signal, class_loaded_signal) # squyrrel_error_signal
 from squyrrel.core.utils.singleton import Singleton
 from squyrrel.core.utils.paths import convert_path_to_import_string, find_first_parent
 from squyrrel.core.config.base import ConfigRegistry, IConfig
 from squyrrel.core.config.decorators import exclude_from_logging
-from squyrrel.core.logging.utils import arguments_tostring
 
 
 __SQUYRREL_PACKAGE_NAME__ = 'squyrrel'
@@ -205,6 +203,7 @@ Packages not loaded (because they were filtered): {', '.join(filtered_packages)}
             return self.register_package(name)
 
     def inspect_directory(self, package_meta):
+        # todo: write test, what about sub_dirs?
         modules = []
         for root, sub_dirs, files in os.walk(package_meta.path):
             for file in files:
@@ -367,7 +366,6 @@ Packages not loaded (because they were filtered): {', '.join(filtered_packages)}
     @property
     def loaded_packages(self):
         return [package for package in self.packages if package.loaded]
-        return self._loaded_packages
 
     def load_package(self, package_meta, ignore_rotten_modules=False,
                            load_classes=True, load_subpackages=True,
@@ -470,7 +468,7 @@ Packages not loaded (because they were filtered): {', '.join(filtered_packages)}
     def get_object(self, class_name_or_meta, package_name=None, module_name=None,
                     create_instance_when_not_found=True, params=None):
         # todo: refine searching criteria
-        self.debug('get_object:' + class_name_or_meta)
+        self.debug('get_object:' + str(class_name_or_meta))
 
         if isinstance(class_name_or_meta, ClassMeta):
             class_meta = class_name_or_meta

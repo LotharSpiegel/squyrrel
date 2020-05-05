@@ -12,6 +12,10 @@ DEFAULT_TRACEBACK_LIMIT = 20
 class ExceptionHandler:
 
     def __init__(self, traceback_limit=DEFAULT_TRACEBACK_LIMIT):
+        """
+
+        :rtype:
+        """
         self.traceback_limit = traceback_limit
 
     def handle(self, module_meta, exc_type, exc_value, exc_traceback):

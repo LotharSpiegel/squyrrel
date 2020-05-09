@@ -2,14 +2,13 @@ from squyrrel.sql.query import (Query, UpdateQuery, InsertQuery,
     DeleteQuery, CreateTableQuery)
 from squyrrel.sql.clauses import *
 from squyrrel.sql.expressions import (Equals, NumericalLiteral,
-    StringLiteral, Like, And, Or, Parameter)
-from squyrrel.sql.references import ColumnReference, TableReference
+    StringLiteral, And, Parameter)
+from squyrrel.sql.references import ColumnReference
 from squyrrel.sql.join import OnJoinCondition, JoinConstruct, JoinType
 from squyrrel.orm.exceptions import *
 from squyrrel.orm.field import (ManyToOne, ManyToMany, StringField,
     DateTimeField, IntegerField)
-from squyrrel.orm.filter import (ManyToOneFilter, ManyToManyFilter,
-    StringFieldFilter)
+from squyrrel.orm.filter import (ManyToOneFilter, ManyToManyFilter)
 from squyrrel.orm.signals import model_loaded_signal
 from squyrrel.orm.utils import extract_ids
 from squyrrel.orm.query_builder import QueryBuilder
@@ -32,17 +31,31 @@ class QueryWizzard:
         print('ROLLBACK')
         self.db.rollback()
 
+    def last_insert_rowid(self):
+        # todo: this only implements sqlite
+        # other like postgres..
+
+        self.execute_sql(sql="SELECT last_insert_rowid()")
+
+        data = self.db.fetchone()
+        if not data:
+            return None
+        return data[0]
+
+    def execute_sql(self, sql, params=None):
+        try:
+            self.db.execute(sql=sql, params=params)
+        except Exception as exc:
+            # todo: log
+            raise self.sql_exc(sql, exc) from exc
+
     def execute_query(self, query):
         # todo: log!
         sql = self.builder.build(query)
         print('\n'+sql)
         print('params:', query.params)
         self.last_sql_query = query
-        try:
-            self.db.execute(sql=sql, params=query.params)
-        except Exception as exc:
-            # todo: log
-            raise self.sql_exc(sql, exc) from exc
+        self.execute_sql(sql, params=query.params)
 
     def execute_queries_in_transaction(self, queries):
         print(f'start transaction, {len(queries)} queries')
@@ -774,16 +787,34 @@ class QueryWizzard:
         # todo: delete in one query with 'IN' expression
         return queries
 
+    def delete_by_condition(self, model, filter_condition, commit=True):
+        model = self.get_model(model)
+        delete_query = DeleteQuery(model.table_name, filter_condition)
+        self.execute_query(delete_query)
+
     def create(self, model, data, commit=True):
-        # todo: make as mighty as update (relations, etc.)
         model = self.get_model(model)
         inserts = dict()
+        m2m_insert_queries = []
+
         for column, value in data.items():
-            print('column:', column)
+            # print('column:', column)
             field = model.get_field(column)
-            print('field:', field)
+            # print('field:', field)
             if field is None:
-                pass
+                if not value:
+                    continue
+                relation = model.get_relation(column)
+                if isinstance(relation, ManyToOne):
+                    if relation.load_all:
+                        fk_id = int(value)
+                    else:
+                        fk_id = self.retrieve_id_by_value(
+                            model=relation.foreign_model,
+                            filter_column=relation.update_search_column,
+                            filter_value=value
+                        )
+                    inserts[relation.foreign_key_field] = fk_id
             else:
                 # todo: refactor
                 # if isinstance(field, DateTimeField):
@@ -802,17 +833,45 @@ class QueryWizzard:
         insert_query = InsertQuery.build(
             table=model.table_name, inserts=inserts)
         print('params of insert_query:', insert_query.params)
-        self.execute_queries_in_transaction([insert_query,])
+        #self.execute_queries_in_transaction([insert_query,])
 
-    def delete_by_condition(self, model, filter_condition, commit=True):
-        model = self.get_model(model)
-        delete_query = DeleteQuery(model.table_name, filter_condition)
-        self.execute_query(delete_query)
+        try:
+            self.execute_query(insert_query)
+            inserted_id = self.last_insert_rowid()
+
+            for column, value in data.items():
+                field = model.get_field(column)
+                # print('field:', field)
+                if field is None:
+                    if not value:
+                        continue
+                    relation = model.get_relation(column)
+                    if isinstance(relation, ManyToMany):
+                        m2m_insert_queries.extend(
+                                self.build_m2m_update_queries(
+                                    model=model,
+                                    instance_id=inserted_id,
+                                    relation=relation,
+                                    actual_ids=[],
+                                    new_ids=value
+                                )
+                        )
+
+            for query in m2m_insert_queries:
+                self.execute_query(query)
+        except Exception as exc:
+            self.rollback()
+            raise exc
+        else:
+            self.commit()
+            print('successfully committed all queries in transaction')
+            return inserted_id
 
     def update(self, model, filter_condition, data, instance=None, commit=True):
         # todo only update changed data
         # i.e. difference data - instance.data
-        # todo: all in transaction!
+        # todo: what about commit?
+
         model = self.get_model(model)
         updates = dict()
         m2m_update_queries = []
@@ -838,12 +897,14 @@ class QueryWizzard:
                 elif isinstance(relation, ManyToMany):
                     # compare difference
                     # if instance is None, needs to be loaded first..
-                    m2m_update_queries.extend(self.build_m2m_update_queries(
-                        model=model,
-                        instance_id=instance.id,
-                        relation=relation,
-                        actual_ids=[entity.id for entity in getattr(instance, column).entities],
-                        new_ids=value)
+                    m2m_update_queries.extend(
+                        self.build_m2m_update_queries(
+                            model=model,
+                            instance_id=instance.id,
+                            relation=relation,
+                            actual_ids=[entity.id for entity in getattr(instance, column).entities],
+                            new_ids=value
+                        )
                     )
 
                 elif relation is None:

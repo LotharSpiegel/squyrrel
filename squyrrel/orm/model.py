@@ -211,6 +211,13 @@ class Model(AbstractModel):
         return self.as_json()
 
     @classmethod
+    def model_data(cls):
+        json_dict = {}
+        for field_name, field in cls.fields():
+            json_dict[field_name] = field.value
+        return json_dict
+
+    @classmethod
     def build_many_to_one_filter(cls, model, name, relation, load_all=False):
         return ManyToOneFilter(
             model=model,
@@ -296,9 +303,13 @@ class Model(AbstractModel):
                 return filter
         return None
 
+    @classmethod
+    def name(cls):
+        return cls.__name__
+
     def __str__(self):
         props = {}
         for field_name, field in self.instance_fields():
             props[field_name] = field.value
         properties = ', '.join([f'{key}={value}' for key, value in props.items()])
-        return f'{self.model.__name__}({properties})'
+        return f'{self.model.name()}({properties})'

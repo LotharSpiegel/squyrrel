@@ -661,24 +661,19 @@ class QueryWizzard:
         )
         return query
 
-    def prepare_data(self, instance):
-        data = instance.data
-        prepared_data = dict(data)
-        model = instance.model
-        # todo: can substitute by same method as m2m fields below..
-        # no need for lookup, except not loaded yet
+    def prepare_m2m_data(self, model, prepared_data, instance=None):
+        for m2m_relation_name, m2m_relation in model.many_to_many_relations():
+            prepared_data[m2m_relation_name] = getattr(instance, m2m_relation_name).entities
 
-        #print('prepare_data')
-        #print(data)
+    def prepare_m21_data(self, model, data, prepared_data):
         for column, value in data.items():
             try:
                 relation_name, relation = model.get_relation_by_fk_id_column(column)
             except RelationNotFoundException as exc:
-                # log
+                # todo: log
                 print(str(exc))
                 pass
             else:
-                # print(f'\n did find relation in column {column}')
                 if isinstance(relation, ManyToOne):
                     # if columns not equal
                     # refactor: retrieve value by id
@@ -686,17 +681,27 @@ class QueryWizzard:
                         prepared_data[relation_name+'_all'] = self.get_all(relation.foreign_model)
                         #print(prepared_data[relation_name+'_all'])
 
+                    relation_foreign_model = self.get_model(relation.foreign_model)
                     prepared_value = self.retrieve_value_by_value(
-                        model=relation.foreign_model,
+                        model=relation_foreign_model,
                         lookup_column=relation.update_search_column,
-                        filter_column=relation.foreign_model.id_field_name(),
+                        filter_column=relation_foreign_model.id_field_name(),
                         filter_value=value
                     )
                     prepared_data[relation_name] = prepared_value
                 else:
+                    # todo: log
                     raise Exception(f'Error during data preparation: Could not handle {relation}')
-        for m2m_relation_name, m2m_relation in model.many_to_many_relations():
-            prepared_data[m2m_relation_name] = getattr(instance, m2m_relation_name).entities
+
+
+    def prepare_data(self, data, model, instance=None):
+        prepared_data = dict(data)
+        # todo: can substitute by same method as m2m fields below..
+        # no need for lookup, except not loaded yet
+
+        self.prepare_m21_data(model, data, prepared_data)
+        if instance is not None:
+            self.prepare_m2m_data(model, prepared_data, instance=instance)
         return prepared_data
 
     def retrieve_value_by_value(self, model, lookup_column, filter_column, filter_value):

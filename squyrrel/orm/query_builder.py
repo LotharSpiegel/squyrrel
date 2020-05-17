@@ -80,11 +80,11 @@ class QueryBuilder:
                             search_value=filter_.value
                         )
                     )
-        print('\n')
-        print('filters:')
-        print(filters)
-        print('filter_conditions:')
-        print(self.filter_conditions)
+        #print('\n')
+        #print('filters:')
+        #print(filters)
+        #print('filter_conditions:')
+        #print(self.filter_conditions)
 
         if filter_condition is not None:
             self.filter_conditions.append(filter_condition)
@@ -94,7 +94,7 @@ class QueryBuilder:
                 self.build_search_condition(search_value=fulltext_search))
 
     def build_where_clause(self):
-        print('filter_conditions:', self.filter_conditions)
+        #print('filter_conditions:', self.filter_conditions)
         if self.filter_conditions:
             self.where_clause = WhereClause(And.concat(self.filter_conditions))
         else:
@@ -121,15 +121,15 @@ class QueryBuilder:
         print('include_column', column_reference.table, self.model.table_name)
         if column_reference.table != self.model.table_name:
             foreign_model = self.qw.get_model_by_table(column_reference.table)
-            print('\nforeign_model', foreign_model)
+            #print('\nforeign_model', foreign_model)
             try:
                 relation_name, relation = self.model.get_relation_by_foreign_model(foreign_model.__name__)
             except RelationNotFoundException as exc:
                 raise
             else:
                 # TODO: handle m21 and 12m
-                print(relation_name)
-                print(relation)
+                #print(relation_name)
+                #print(relation)
                 if isinstance(relation, ManyToMany):
                     self.add_m2m_relation(foreign_model=foreign_model, relation_name=relation_name) # relation_name=search_column.table
 
@@ -176,13 +176,13 @@ class QueryBuilder:
         for condition in self.filter_conditions:
             for column in condition.columns:
                 columns_to_check.add(column)
-        print('columns_to_check:', columns_to_check)
+        #print('columns_to_check:', columns_to_check)
         for column_reference in list(columns_to_check):
             self.include_column(column_reference)
 
         for relation_name, relation in self.m2m_relations:
             #if self.does_filter_condition_concern_relation(filter_condition, relation):
-            print('include_many_to_many_join:', relation_name)
+            #print('include_many_to_many_join:', relation_name)
             self.include_many_to_many_join(relation=relation)
 
     def add_m2m_relation(self, foreign_model, relation_name):

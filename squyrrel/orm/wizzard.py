@@ -24,11 +24,11 @@ class QueryWizzard:
         model_loaded_signal.connect(self.on_model_loaded)
 
     def commit(self):
-        print('COMMIT')
+        #print('COMMIT')
         self.db.commit()
 
     def rollback(self):
-        print('ROLLBACK')
+        #print('ROLLBACK')
         self.db.rollback()
 
     def last_insert_rowid(self):
@@ -290,7 +290,7 @@ class QueryWizzard:
                 page_size = options.get('page_size', None)
                 active_page = options.get('active_page', None)
 
-            print('handle relation:', relation_name)
+            #print('handle relation:', relation_name)
             relation.entities = self.get_all(relation.foreign_model,
                                     filter_condition=filter_condition,
                                     orderby=orderby,
@@ -299,8 +299,8 @@ class QueryWizzard:
             #print('entities:', relation.entities)
 
     def load_one_to_many_entities(self, entity, one_to_many_options):
-        print('load_one_to_many_entities, options:')
-        print(one_to_many_options)
+        #print('load_one_to_many_entities, options:')
+        #print(one_to_many_options)
         if one_to_many_options is None:
             one_to_many_options = {'load_12m': True}
         else:
@@ -327,13 +327,13 @@ class QueryWizzard:
                 page_size = options.get('page_size', None)
                 active_page = options.get('active_page', None)
 
-            print('handle relation:', relation_name)
+            #print('handle relation:', relation_name)
             relation.entities = self.get_all(relation.foreign_model,
                                     filter_condition=filter_condition,
                                     orderby=orderby,
                                     page_size=page_size,
                                     active_page=active_page)
-            print(f'loaded {len(relation.entities)} entities')
+            #print(f'loaded {len(relation.entities)} entities')
 
     def include_many_to_many_join(self, model, relation, from_clause):
         # !! todo: first check if not already joined!!
@@ -355,7 +355,7 @@ class QueryWizzard:
             orderby=None, ascending=None, page_size=None, active_page=None):
         """filters and filter_condition cannot be both not None"""
 
-        print('\nbuild_get_all_query\n')
+        #print('\nbuild_get_all_query\n')
         qb = QueryBuilder(model=self.get_model(model), qw=self)
         return qb.build_get_all_query(
             select_fields=select_fields,
@@ -684,7 +684,7 @@ class QueryWizzard:
                     # refactor: retrieve value by id
                     if relation.load_all:
                         prepared_data[relation_name+'_all'] = self.get_all(relation.foreign_model)
-                        print(prepared_data[relation_name+'_all'])
+                        #print(prepared_data[relation_name+'_all'])
 
                     prepared_value = self.retrieve_value_by_value(
                         model=relation.foreign_model,
@@ -749,12 +749,12 @@ class QueryWizzard:
         return data
 
     def build_m2m_update_queries(self, model, instance_id, relation, actual_ids, new_ids):
-        print('update_m2m_relation')
+        #print('update_m2m_relation')
         model = self.get_model(model)
         foreign_model = self.get_model(relation.foreign_model)
 
-        print('new_ids:', new_ids)
-        print('actual_ids:', actual_ids)
+        #print('new_ids:', new_ids)
+        #print('actual_ids:', actual_ids)
         if isinstance(actual_ids, str):
             actual_ids = extract_ids(actual_ids)
         if isinstance(new_ids, str):
@@ -829,10 +829,10 @@ class QueryWizzard:
                 #         )
                 inserts[column] = value
 
-        print('inserts:', inserts)
+        #print('inserts:', inserts)
         insert_query = InsertQuery.build(
             table=model.table_name, inserts=inserts)
-        print('params of insert_query:', insert_query.params)
+        #print('params of insert_query:', insert_query.params)
         #self.execute_queries_in_transaction([insert_query,])
 
         try:
@@ -916,7 +916,7 @@ class QueryWizzard:
 
         update_query = UpdateQuery.build(
             model, filter_condition=filter_condition, updates=updates)
-        print('params of update_query:', update_query.params)
+        #print('params of update_query:', update_query.params)
 
         self.execute_queries_in_transaction(queries=[update_query] + m2m_update_queries)
 

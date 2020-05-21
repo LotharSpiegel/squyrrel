@@ -117,8 +117,8 @@ class QueryBuilder:
         return Or.concat(conditions)
 
     def include_column(self, column_reference):
-        print('model, table_name', self.model.table_name)
-        print('include_column', column_reference.table, self.model.table_name)
+        # print('model, table_name', self.model.table_name)
+        # print('include_column', column_reference.table, self.model.table_name)
         if column_reference.table != self.model.table_name:
             foreign_model = self.qw.get_model_by_table(column_reference.table)
             #print('\nforeign_model', foreign_model)

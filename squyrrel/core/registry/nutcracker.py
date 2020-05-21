@@ -185,8 +185,8 @@ Packages not loaded (because they were filtered): {', '.join(filtered_packages)}
         paths = '\n'.join(paths_tried)
         self.debug('Did not find package <{relative_path}>. Tried the following paths: \n{paths}'.format(
             relative_path=relative_path, paths=paths))
-        print('sys.path:')
-        print(sys.path)
+        # print('sys.path:')
+        # print(sys.path)
         return None
 
     def find_package_by_name(self, name):
@@ -248,8 +248,8 @@ Packages not loaded (because they were filtered): {', '.join(filtered_packages)}
             imported_module = importlib.import_module(module_meta.import_string)#, package=package.import_string)
         except ModuleNotFoundError:
             module_meta.status = 'not found'
-            print('package:', package.import_string)
-            print('module:', module_meta.import_string)
+            # print('package:', package.import_string)
+            # print('module:', module_meta.import_string)
 
             # imported_module = importlib.import_module('.'+module_name, package=package.import_string)
 

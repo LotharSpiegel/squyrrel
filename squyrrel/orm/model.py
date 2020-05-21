@@ -115,14 +115,14 @@ class Model(AbstractModel):
             model2_ = model2
         else:
             model2_ = model2.__name__
-        print('compare_models')
-        print(model1_)
-        print(model2_)
+        #print('compare_models')
+        #print(model1_)
+        #print(model2_)
         return model1_ == model2_
 
     @classmethod
     def get_relation_by_foreign_model(cls, foreign_model):
-        print('get_relation_by_foreign_model')
+        #print('get_relation_by_foreign_model')
         for relation_name, relation in cls.relations_dict().items():
             if cls.compare_models(relation.foreign_model, foreign_model):
                 return relation_name, relation

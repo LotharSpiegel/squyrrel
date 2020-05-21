@@ -52,23 +52,23 @@ class QueryWizzard:
     def execute_query(self, query):
         # todo: log!
         sql = self.builder.build(query)
-        print('\n'+sql)
-        print('params:', query.params)
+        # print('\n'+sql)
+        # print('params:', query.params)
         self.last_sql_query = query
         self.execute_sql(sql, params=query.params)
 
     def execute_queries_in_transaction(self, queries):
-        print(f'start transaction, {len(queries)} queries')
+        # print(f'start transaction, {len(queries)} queries')
         try:
             for query in queries:
-                print('execute query with params', query.params)
+                # print('execute query with params', query.params)
                 self.execute_query(query)
         except Exception as exc:
             self.rollback()
             raise exc
         else:
             self.commit()
-            print('successfully committed all queries in transaction')
+            # print('successfully committed all queries in transaction')
 
     def on_model_loaded(self, *args, **kwargs):
         new_model_class_meta = kwargs.get('class_meta') or args[0]
@@ -79,14 +79,14 @@ class QueryWizzard:
 
     def register_model(self, model_cls_meta, table_name):
         if table_name is None:
-            print(f'Warning: Model {model_cls_meta.class_name} has table_name=None. Will not be registered.')
+            # print(f'Warning: Model {model_cls_meta.class_name} has table_name=None. Will not be registered.')
             return
         key = model_cls_meta.class_name
         if key in self.models.keys():
-            print(f'There is already a model on key <{key}>')
+            # print(f'There is already a model on key <{key}>')
             return
         self.models[key] = model_cls_meta.class_reference
-        print('register_model:', key)
+        # print('register_model:', key)
 
     def get_model(self, model):
         if isinstance(model, str):
@@ -671,17 +671,20 @@ class QueryWizzard:
                 relation_name, relation = model.get_relation_by_fk_id_column(column)
             except RelationNotFoundException as exc:
                 # todo: log
-                print(str(exc))
+                # print(str(exc))
+                print('did not find relation ', column)
                 pass
             else:
                 if isinstance(relation, ManyToOne):
+                    print('handle m21:', relation_name)
                     # if columns not equal
                     # refactor: retrieve value by id
-                    if relation.load_all:
-                        prepared_data[relation_name+'_all'] = self.get_all(relation.foreign_model)
-                        #print(prepared_data[relation_name+'_all'])
-
                     relation_foreign_model = self.get_model(relation.foreign_model)
+                    if relation.load_all:
+                        print('load_all')
+                        prepared_data[relation_name+'_all'] = self.get_all(relation_foreign_model)
+                        print(prepared_data[relation_name+'_all'])
+
                     prepared_value = self.retrieve_value_by_value(
                         model=relation_foreign_model,
                         lookup_column=relation.update_search_column,
@@ -692,17 +695,6 @@ class QueryWizzard:
                 else:
                     # todo: log
                     raise Exception(f'Error during data preparation: Could not handle {relation}')
-
-
-    def prepare_data(self, data, model, instance=None):
-        prepared_data = dict(data)
-        # todo: can substitute by same method as m2m fields below..
-        # no need for lookup, except not loaded yet
-
-        self.prepare_m21_data(model, data, prepared_data)
-        if instance is not None:
-            self.prepare_m2m_data(model, prepared_data, instance=instance)
-        return prepared_data
 
     def retrieve_value_by_value(self, model, lookup_column, filter_column, filter_value):
         # todo generalize to search function

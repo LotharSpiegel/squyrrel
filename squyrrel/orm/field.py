@@ -93,8 +93,8 @@ class DateTimeField(Field):
         super().__init__(*args, **kwargs)
 
     def set_value(self, value):
-        print('set_value')
-        print(value)
+        # print('set_value')
+        # print(value)
         if isinstance(value, datetime):
             self._value = value.strftime(self.timestamp_format)
         elif value == 'now':
@@ -113,8 +113,8 @@ class DateTimeField(Field):
 
     @classmethod
     def as_python_datetime(cls, value, timestamp_format=None):
-        print('value', value)
-        print('timestamp_format:', timestamp_format)
+        # print('value', value)
+        # print('timestamp_format:', timestamp_format)
         return datetime.strptime(value, timestamp_format or cls.DEFAULT_TIMESTAMP_FORMAT)
 
 

@@ -35,21 +35,19 @@ class PackageMeta:
         return new_module
 
     def find_module(self, module_name, status=None):
+        """ Goes through all loaded modules and compares their name with `module_name` """
         # todo handle case when there is more than one module with the same name
+        # todo: add options
 
-        #if status is None:
-        #    status = 'registered'
         for module_name_, module_meta in self.modules.items():
             if module_name_ == module_name:
                 if status is None:
                     return module_meta
+                if module_meta.status == status:
+                    return module_meta
                 else:
-                    if module_meta.status == status:
-                        return module_meta
-                    else:
-                        if status == 'registered':
-                            raise ModuleNotRegisteredException(f'Found module with name <{module_name}>, but its status is `{module_meta.status}`, not `{status}`!')
-                    #    raise Exception(f'Found module with name <{module_name}>, but its status is `{module_meta.status}`, not `{status}`!')
+                    if status == 'registered':
+                        raise ModuleNotRegisteredException(f'Found module with name <{module_name}>, but its status is `{module_meta.status}`, not `{status}`!')
         raise ModuleNotFoundException(f'Did not find module with name <{module_name}>')
 
     def add_subpackage(self, package_meta):

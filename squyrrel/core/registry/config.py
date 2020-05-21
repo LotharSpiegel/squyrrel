@@ -15,15 +15,13 @@ class SquyrrelDefaultConfig(IConfig):
 
     @hook(IConfig.HOOK_REPLACE)
     def _load_package_filter(squyrrel, package_meta):
-        if squyrrel.loading:
-            if package_meta.name in SquyrrelDefaultConfig.exclude_subpackages_from_loading:
-                return False
+        if squyrrel.loading and package_meta.name in SquyrrelDefaultConfig.exclude_subpackages_from_loading:
+            return False
         return True
 
     @hook(IConfig.HOOK_REPLACE)
     def _register_package_filter(squyrrel, package_name):
-        if squyrrel.loading:
-            if package_name in SquyrrelDefaultConfig.exclude_subpackages_from_registration:
+        if squyrrel.loading and package_name in SquyrrelDefaultConfig.exclude_subpackages_from_registration:
                 return False
         return True
 
@@ -43,9 +41,3 @@ class SquyrrelDefaultConfig(IConfig):
             method = getattr(squyrrel, method_name)
             if not hasattr(method, '__exclude_from_logging__'):
                 setattr(squyrrel, method_name, log_call(squyrrel, caller_name='Squyrrel', func=method))
-
-
-
-            # squyrrel.replace_method(instance=squyrrel, method_name=method_name, new_method=log_call_method)
-
-            # print('replaced {}'.format(method_name))

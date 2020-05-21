@@ -56,7 +56,6 @@ class Squyrrel(metaclass=Singleton):
         self.squyrrel_package = self.register_package(__SQUYRREL_PACKAGE_NAME__)
         self.load_package(self.squyrrel_package)
         self.loading = False
-        self.build_context()
         self.report(num_packages_before)
 
     def reload_squyrrel_package(self):
@@ -66,9 +65,6 @@ class Squyrrel(metaclass=Singleton):
 
     def get_squyrrel_package_root_path(self):
         return find_first_parent(__file__, __SQUYRREL_PACKAGE_NAME__)
-
-    def build_context(self):
-        pass
 
     def report(self, num_packages_before):
         filtered_packages = [str(package) for package in self.squyrrel_package.subpackages if (package.registered and not package.loaded)]

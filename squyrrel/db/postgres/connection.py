@@ -8,11 +8,6 @@ class PostgresConnection(SqlDatabaseConnection):
     database_error_cls = psycopg2.Error
 
     def connect(self, user, password, database, host="127.0.0.1", port=5432, select_version=False, **kwargs):
-        self.filename = filename
-
-        self.c = sqlite3.connect(self.filename, **kwargs)
-        if select_version:
-            self.execute('SELECT sqlite_version()')
 
         if isinstance(port, int):
             port = str(port)

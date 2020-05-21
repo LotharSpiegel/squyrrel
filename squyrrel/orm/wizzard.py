@@ -789,29 +789,55 @@ class QueryWizzard:
         delete_query = DeleteQuery(model.table_name, filter_condition)
         self.execute_query(delete_query)
 
-    def create(self, model, data, commit=True):
-        model = self.get_model(model)
-        inserts = dict()
-        m2m_insert_queries = []
-
+    def execute_create_queries(self, model, data, insert_query, m2m_insert_queries):
+        self.execute_query(insert_query)
+        inserted_id = self.last_insert_rowid()
         for column, value in data.items():
-            # print('column:', column)
             field = model.get_field(column)
             # print('field:', field)
             if field is None:
                 if not value:
                     continue
                 relation = model.get_relation(column)
-                if isinstance(relation, ManyToOne):
-                    if relation.load_all:
-                        fk_id = int(value)
-                    else:
-                        fk_id = self.retrieve_id_by_value(
-                            model=relation.foreign_model,
-                            filter_column=relation.update_search_column,
-                            filter_value=value
+                if isinstance(relation, ManyToMany):
+                    m2m_insert_queries.extend(
+                        self.build_m2m_update_queries(
+                            model=model,
+                            instance_id=inserted_id,
+                            relation=relation,
+                            actual_ids=[],
+                            new_ids=value
                         )
-                    inserts[relation.foreign_key_field] = fk_id
+                    )
+        for query in m2m_insert_queries:
+            self.execute_query(query)
+        return inserted_id
+
+    def get_m21_value(self, relation, value):
+        if relation.load_all:
+            return int(value)
+        else:
+            return self.retrieve_id_by_value(
+                model=relation.foreign_model,
+                filter_column=relation.update_search_column,
+                filter_value=value
+            )
+
+    def create(self, model, data, commit=True):
+        model = self.get_model(model)
+        inserts = dict()
+        m2m_insert_queries = []
+
+        for column, value in data.items():
+            field = model.get_field(column)
+            if field is None:
+                if not value:
+                    continue
+                relation = model.get_relation(column)
+                if isinstance(relation, ManyToOne):
+                    fk_id = self.get_m21_value(relation, value)
+                    if fk_id:
+                        inserts[relation.foreign_key_field] = fk_id
             else:
                 # todo: refactor
                 # if isinstance(field, DateTimeField):
@@ -826,42 +852,17 @@ class QueryWizzard:
                 #         )
                 inserts[column] = value
 
-        #print('inserts:', inserts)
         insert_query = InsertQuery.build(
             table=model.table_name, inserts=inserts)
-        #print('params of insert_query:', insert_query.params)
-        #self.execute_queries_in_transaction([insert_query,])
 
         try:
-            self.execute_query(insert_query)
-            inserted_id = self.last_insert_rowid()
-
-            for column, value in data.items():
-                field = model.get_field(column)
-                # print('field:', field)
-                if field is None:
-                    if not value:
-                        continue
-                    relation = model.get_relation(column)
-                    if isinstance(relation, ManyToMany):
-                        m2m_insert_queries.extend(
-                                self.build_m2m_update_queries(
-                                    model=model,
-                                    instance_id=inserted_id,
-                                    relation=relation,
-                                    actual_ids=[],
-                                    new_ids=value
-                                )
-                        )
-
-            for query in m2m_insert_queries:
-                self.execute_query(query)
+            inserted_id = self.execute_create_queries(model, data, insert_query, m2m_insert_queries)
         except Exception as exc:
             self.rollback()
+            # todo: reraise special exception class
             raise exc
         else:
             self.commit()
-            print('successfully committed all queries in transaction')
             return inserted_id
 
     def update(self, model, filter_condition, data, instance=None, commit=True):
@@ -882,15 +883,9 @@ class QueryWizzard:
                     continue
                 relation = model.get_relation(column)
                 if isinstance(relation, ManyToOne):
-                    if relation.load_all:
-                        fk_id = int(value)
-                    else:
-                        fk_id = self.retrieve_id_by_value(
-                            model=relation.foreign_model,
-                            filter_column=relation.update_search_column,
-                            filter_value=value
-                        )
-                    updates[relation.foreign_key_field] = fk_id
+                    fk_id = self.get_m21_value(relation, value)
+                    if fk_id:
+                        updates[relation.foreign_key_field] = fk_id
                 elif isinstance(relation, ManyToMany):
                     # compare difference
                     # if instance is None, needs to be loaded first..
@@ -903,9 +898,8 @@ class QueryWizzard:
                             new_ids=value
                         )
                     )
-
                 elif relation is None:
-                    raise Exception(f'Error during update: did not find column {column}')
+                    raise Exception(f'Error during update: Did not find column {column}')
                 else:
                     raise Exception(f'Error during update: Could not handle {relation}')
             else:
@@ -913,7 +907,6 @@ class QueryWizzard:
 
         update_query = UpdateQuery.build(
             model, filter_condition=filter_condition, updates=updates)
-        #print('params of update_query:', update_query.params)
 
         self.execute_queries_in_transaction(queries=[update_query] + m2m_update_queries)
 

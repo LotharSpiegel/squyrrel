@@ -7,13 +7,15 @@ here = path.abspath(path.dirname(__file__))
 with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
+version = '0.2.2'
+
 setup(
     name='squyrrel', # https://packaging.python.org/specifications/core-metadata/#name
 
     # Versions should comply with PEP 440:
     # https://www.python.org/dev/peps/pep-0440/
-    version='0.2.1',
-    download_url='https://github.com/LotharSpiegel/squyrrel/archive/v0.1.1.tar.gz',
+    version=version,
+    download_url=f'https://github.com/LotharSpiegel/squyrrel/archive/v{version}.tar.gz',
 
     description='Python library for scanning and lazy importing of classes, modules and packages. Including sql parser, builder and an Orm.',
     long_description=long_description,

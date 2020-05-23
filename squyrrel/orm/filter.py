@@ -1,11 +1,16 @@
 
 
+class FieldFilter:
 
-class StringFieldFilter:
-
-    def __init__(self, name, model, field_name, value=None):
+    def __init__(self, name, model):
         self.name = name
         self.model = model
+
+
+class StringFieldFilter(FieldFilter):
+
+    def __init__(self, name, model, field_name, value=None):
+        super().__init__(name=name, model=model)
         self.field_name = field_name
         self._value = value
 
@@ -36,8 +41,7 @@ class RelationFilter:
     conjunction = 'AND'
 
     def __init__(self, name, model, relation, id_values=None, entities=None, load_all=False):
-        self.name = name
-        self.model = model
+        super().__init__(name=name, model=model)
         self._relation = relation
         self.id_values = id_values
         self._entities = None

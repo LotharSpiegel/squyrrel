@@ -1,10 +1,17 @@
 
-
 class FieldFilter:
 
-    def __init__(self, name, model):
+    def __init__(self, name: str, model, description: str = None):
         self.name = name
         self.model = model
+        self.description = description
+
+    @property
+    def model_name(self):
+        if isinstance(self.model, str):
+            return self.model
+        else:
+            return self.model.name()
 
 
 class StringFieldFilter(FieldFilter):
@@ -37,7 +44,7 @@ class StringFieldFilter(FieldFilter):
 # todo: inherit relationfilter from clonable!! (see field)
 
 
-class RelationFilter:
+class RelationFilter(FieldFilter):
     conjunction = 'AND'
 
     def __init__(self, name, model, relation, id_values=None, entities=None, load_all=False):
@@ -48,13 +55,13 @@ class RelationFilter:
         self.load_all = load_all
         self.select_options = None
 
-    def clone(self, id_values, entities=None):
+    def clone(self, id_values, entities=None, relation=None):
         field_clone = self.__class__(
             name=self.name,
             model=self.model,
-            relation=self.relation,
+            relation=relation or self._relation,
             load_all=self.load_all)
-        #for attr in self.clone_attributes:
+        # for attr in self.clone_attributes:
         #    setattr(field_clone, attr, getattr(self, attr))
         field_clone.id_values = id_values
         field_clone.entities = entities
@@ -62,11 +69,13 @@ class RelationFilter:
 
     @property
     def foreign_model(self):
-        return self.relation.foreign_model
+        return self._relation.foreign_model
 
     @property
     def key(self):
-        return self.relation.foreign_key_field
+        if hasattr(self._relation, 'foreign_key_field'):
+            return self._relation.foreign_key_field
+        return str(self._relation)
 
     @property
     def value(self):

@@ -47,10 +47,13 @@ class QueryBuilder:
         # todo: check when needed to include relations joins (to have fields available for filtering)
 
         self.filter_conditions = []
+        print('filters:')
+        print(filters)
         if filters is not None:
             for filter_ in filters:
                 if isinstance(filter_, ManyToOneFilter):
                     conditions = []
+                    print(filter_.id_values)
                     for id_value in filter_.id_values:
                         conditions.append(
                             Equals.column_as_parameter(
@@ -108,7 +111,7 @@ class QueryBuilder:
             #     if isinstance(column, str) and not '.' in column:
             #         column = ColumnReference(column, table=model.table_name)
         if search_columns is None:
-            raise Exception('build_search_condition needs search_columns (either via argument or from model.fulltext_search_columns)')
+            raise ValueError('build_search_condition needs search_columns (either via argument or from model.fulltext_search_columns)')
 
         conditions = []
         for search_column in search_columns:

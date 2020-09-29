@@ -1,7 +1,8 @@
 from squyrrel.orm.field import (Field, Relation, ManyToOne,
-    ManyToMany, OneToMany, StringField, CongregateField)
+                                ManyToMany, OneToMany, StringField, CongregateField)
 from squyrrel.orm.exceptions import RelationNotFoundException
 from squyrrel.orm.filter import ManyToOneFilter, ManyToManyFilter, StringFieldFilter
+from squyrrel.orm.entity_format import EntityFormat
 
 
 class AbstractModel:
@@ -13,7 +14,8 @@ class AbstractModel:
     @classmethod
     def attr_dict(cls, field_cls, exclude_cls=CongregateField):
         if exclude_cls is not None:
-            return {k: v for k, v in cls.attributes().items() if isinstance(v, field_cls) and not isinstance(v, exclude_cls)}
+            return {k: v for k, v in cls.attributes().items() if
+                    isinstance(v, field_cls) and not isinstance(v, exclude_cls)}
         return {k: v for k, v in cls.attributes().items() if isinstance(v, field_cls)}
 
     @classmethod
@@ -22,7 +24,6 @@ class AbstractModel:
 
 
 class Model(AbstractModel):
-
     table_name = None
     default_orderby = None
     fulltext_search_columns = None
@@ -40,7 +41,7 @@ class Model(AbstractModel):
         return cls.congregate_attr_dict().items()
 
     @classmethod
-    def id_field_name(cls):
+    def id_field_name(cls) -> str:
         # todo: handle more different cases
         for field_name, field in cls.fields():
             if field.primary_key:
@@ -115,14 +116,10 @@ class Model(AbstractModel):
             model2_ = model2
         else:
             model2_ = model2.__name__
-        #print('compare_models')
-        #print(model1_)
-        #print(model2_)
         return model1_ == model2_
 
     @classmethod
     def get_relation_by_foreign_model(cls, foreign_model):
-        #print('get_relation_by_foreign_model')
         for relation_name, relation in cls.relations_dict().items():
             if cls.compare_models(relation.foreign_model, foreign_model):
                 return relation_name, relation
@@ -139,7 +136,6 @@ class Model(AbstractModel):
         raise RelationNotFoundException(fk_id_column=fk_id_column)
 
     def __init__(self, **kwargs):
-        #print('model.init', kwargs)
         self.init_fields(**kwargs)
         self.init_congregate_fields(**kwargs)
         self.init_many_to_one_relations(**kwargs)
@@ -170,7 +166,7 @@ class Model(AbstractModel):
         for relation_name, relation in self.model.one_to_many_relations():
             instance_relation = relation.clone()
             if instance_relation.aggregation is None:
-                pass # set entities
+                pass  # set entities
             else:
                 instance_relation.aggregation_value = kwargs.get(relation_name, None)
                 setattr(self, relation_name, instance_relation)
@@ -193,11 +189,11 @@ class Model(AbstractModel):
     def instance_fields(self):
         return self.instance_fields_dict().items()
 
-    def id_field(self):
+    def id_field(self) -> Field:
         return getattr(self, self.model.id_field_name())
 
     @property
-    def id(self):
+    def id(self) -> str:
         return self.id_field().value
 
     def as_json(self):
@@ -240,22 +236,37 @@ class Model(AbstractModel):
         return None
 
     @classmethod
-    def build_rows(cls, items, max_rows, columns):
+    def build_rows(cls, items, max_rows, columns, entity_format=EntityFormat.MODEL):
         rows = []
         if max_rows is None:
             max_rows = len(items)
         print('build_rows:', max_rows)
-        for item in items[:max_rows]:
-            row = []
-            for col in columns:
-                column = getattr(item, col)
-                val = str(column)
-                # if isinstance(column, CongregateField):
-                #     val = column.value
-                # else:
-                #     val = str(column)
-                row.append(val)
-            rows.append(row)
+        if entity_format == EntityFormat.MODEL:
+            for item in items[:max_rows]:
+                row = []
+                for col in columns:
+                    column = getattr(item, col)
+                    val = str(column)
+                    # if isinstance(column, CongregateField):
+                    #     val = column.value
+                    # else:
+                    #     val = str(column)
+                    row.append(val)
+                rows.append(row)
+        elif entity_format == EntityFormat.JSON:
+            for item in items[:max_rows]:
+                row = []
+                for col in columns:
+                    # todo: add sth like format_series() where it outputs series.name for example
+                    val = item.get(col, '')
+                    # column = getattr(item, col)
+                    # val = str(column)
+                    # if isinstance(column, CongregateField):
+                    #     val = column.value
+                    # else:
+                    #     val = str(column)
+                    row.append(val)
+                rows.append(row)
         return rows
 
     @classmethod

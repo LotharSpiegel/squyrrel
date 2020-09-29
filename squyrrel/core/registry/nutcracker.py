@@ -4,7 +4,6 @@ Todo: register/unregister package: more refined than storing with key = package_
 
 """
 
-
 from functools import wraps
 import importlib
 import inspect
@@ -14,19 +13,16 @@ import sys
 from squyrrel.core.registry.exceptions import *
 from squyrrel.core.registry.exception_handler import ExceptionHandler
 from squyrrel.core.registry.meta import PackageMeta, ClassMeta, ModuleMeta
-from squyrrel.core.registry.signals import (squyrrel_debug_signal, class_loaded_signal) # squyrrel_error_signal
+from squyrrel.core.registry.signals import (squyrrel_debug_signal, class_loaded_signal)  # squyrrel_error_signal
 from squyrrel.core.utils.singleton import Singleton
 from squyrrel.core.utils.paths import convert_path_to_import_string, find_first_parent
 from squyrrel.core.config.base import ConfigRegistry, IConfig
 from squyrrel.core.config.decorators import exclude_from_logging
 
-
 __SQUYRREL_PACKAGE_NAME__ = 'squyrrel'
 
 
-
 class Squyrrel(metaclass=Singleton):
-
     config_module_name = 'config'
 
     def __init__(self, root_path=None, config_class=None):
@@ -47,7 +43,7 @@ class Squyrrel(metaclass=Singleton):
         self.context = None
         self.active_profile = None
         self.last_report = None
-        self.module_import_exception_handler = ExceptionHandler() # traceback_limit=
+        self.module_import_exception_handler = ExceptionHandler()  # traceback_limit=
         self.load_config(config_class)
 
     def load_squyrrel_package(self):
@@ -67,7 +63,8 @@ class Squyrrel(metaclass=Singleton):
         return find_first_parent(__file__, __SQUYRREL_PACKAGE_NAME__)
 
     def report(self, num_packages_before):
-        filtered_packages = [str(package) for package in self.squyrrel_package.subpackages if (package.registered and not package.loaded)]
+        filtered_packages = [str(package) for package in self.squyrrel_package.subpackages if
+                             (package.registered and not package.loaded)]
         self.last_report = f"""
 Loaded squyrrel package.
 Loaded {self.num_registered_packages - num_packages_before} (sub)packages.
@@ -78,7 +75,7 @@ Packages not loaded (because they were filtered): {', '.join(filtered_packages)}
 
     @exclude_from_logging
     def format_debug_output(self, text):
-        return '{indent}{text}'.format(indent=self.debug_indent_level*'\t', text=text)
+        return '{indent}{text}'.format(indent=self.debug_indent_level * '\t', text=text)
 
     @exclude_from_logging
     def debug(self, message, tags=None):
@@ -94,10 +91,10 @@ Packages not loaded (because they were filtered): {', '.join(filtered_packages)}
         self.active_profile = profile_name
 
     def load_config(self, config_cls):
-        #self.squyrrel_config_module = self.register_module(self.squyrrel_package,
+        # self.squyrrel_config_module = self.register_module(self.squyrrel_package,
         #    module_name=self.config_module_name)
-        #self.load_module(self.squyrrel_package, self.config_module_name)
-        #squyrrel_config = self.find_class_meta_by_name('SquyrrelConfig')
+        # self.load_module(self.squyrrel_package, self.config_module_name)
+        # squyrrel_config = self.find_class_meta_by_name('SquyrrelConfig')
         # find class by annotation!
         if config_cls is None:
             from .config import SquyrrelDefaultConfig
@@ -126,21 +123,23 @@ Packages not loaded (because they were filtered): {', '.join(filtered_packages)}
         if not 'squyrrel' in after_init_kwargs and instance != self:
             after_init_kwargs['squyrrel'] = self
         for method in after_init_methods:
-            self.debug(f'After init hook for {instance.__class__.__name__}: {config_cls.__class__.__name__}.{method.__name__}')
+            self.debug(
+                f'After init hook for {instance.__class__.__name__}: {config_cls.__class__.__name__}.{method.__name__}')
             method(instance, *after_init_args, **after_init_kwargs)
-            #try:
+            # try:
             #    method(instance, *after_init_args, **after_init_kwargs)
-            #except TypeError as exc:
+            # except TypeError as exc:
             #    arguments = arguments_tostring(*after_init_args, **after_init_kwargs)
             #    add_message = (f'. Wrong arguments for calling <{config_cls.__name__}.{method.__name__}>; Used: {arguments}')
-                # self.debug(str(exc) + add_message)
-                # todo: -> self.error
+            # self.debug(str(exc) + add_message)
+            # todo: -> self.error
             #    raise type(exc)(str(exc) + add_message).with_traceback(sys.exc_info()[2])# from exc
 
     def replace_method(self, instance, method_name, new_method):
         @wraps(getattr(instance, method_name))
         def wrapper(*args, **kwargs):
             return new_method(instance, *args, **kwargs)
+
         setattr(instance, method_name, wrapper)
 
     @property
@@ -173,7 +172,7 @@ Packages not loaded (because they were filtered): {', '.join(filtered_packages)}
 
     def get_full_package_path(self, relative_path):
         paths_tried = []
-        for path in sys.path: #TODO: self.paths
+        for path in sys.path:  # TODO: self.paths
             check_path = os.path.join(path, relative_path)
             paths_tried.append(check_path)
             if os.path.exists(check_path):
@@ -236,19 +235,17 @@ Packages not loaded (because they were filtered): {', '.join(filtered_packages)}
 
         self.debug(f'Load module <{module_meta.import_string}>')
 
-        # if module_meta is None:
-        #     raise ModuleNotRegisteredException('Error while loading module: Module {} not registered yet'.format(module_name))
-        # sys.path.append('c:\\users\\lothar\\passion\\math')
+        # if module_meta is None: raise ModuleNotRegisteredException('Error while loading module: Module {} not
+        # registered yet'.format(module_name)) sys.path.append('c:\\users\\lothar\\passion\\math')
         try:
             # TODO: enable relative import (pass package='example' to import_module...)
-            imported_module = importlib.import_module(module_meta.import_string)#, package=package.import_string)
+            imported_module = importlib.import_module(module_meta.import_string)  # , package=package.import_string)
         except ModuleNotFoundError:
             module_meta.status = 'not found'
             # print('package:', package.import_string)
             # print('module:', module_meta.import_string)
 
             # imported_module = importlib.import_module('.'+module_name, package=package.import_string)
-
 
             raise
         except Exception as exc:
@@ -267,25 +264,25 @@ Packages not loaded (because they were filtered): {', '.join(filtered_packages)}
     def load_class(self, module_meta, class_name, class_reference):
         self.debug('add class {}'.format(class_name))
         new_class_meta = module_meta.add_class(class_reference=class_reference,
-                              class_name=class_name)
+                                               class_name=class_name)
         class_loaded_signal.emit(class_meta=new_class_meta)
-        #if hasattr(class_reference, 'is_class_config'):
+        # if hasattr(class_reference, 'is_class_config'):
         #    if class_reference.is_class_config:
         #        self.add_config()
-        #is_class_config
+        # is_class_config
 
     def load_module_classes(self, module_meta, imported_module):
         self.debug('load classes of module {module}..'.format(module=module_meta))
         mod_imp_str = module_meta.import_string
         classes = {m[0]: m[1] for m in sorted(
-                inspect.getmembers(
-                    imported_module,
-                    lambda member: inspect.isclass(member) and member.__module__ == mod_imp_str)
+            inspect.getmembers(
+                imported_module,
+                lambda member: inspect.isclass(member) and member.__module__ == mod_imp_str)
         )}
         for class_name, class_reference in classes.items():
             self.load_class(module_meta, class_name, class_reference)
         module_meta.classes_loaded = True
-        self.debug('loaded {num_classes} classes in module module {module}'.format(
+        self.debug('loaded {num_classes} classes in module {module}'.format(
             num_classes=module_meta.num_classes, module=module_meta))
 
     def find_class_meta_by_name(self, class_name, package_name=None, module_name=None):
@@ -320,7 +317,7 @@ Packages not loaded (because they were filtered): {', '.join(filtered_packages)}
         del self.packages[package_key]
 
     def package_already_registered(self, package_name):
-        #TODO:refine with path, ..
+        # TODO:refine with path, ..
         return package_name in self.packages.keys()
 
     def register_package(self, relative_path, register_package_filter=None, raise_when_already_registered=False):
@@ -364,8 +361,8 @@ Packages not loaded (because they were filtered): {', '.join(filtered_packages)}
         return [package for package in self.packages if package.loaded]
 
     def load_package(self, package_meta, ignore_rotten_modules=False,
-                           load_classes=True, load_subpackages=True,
-                           load_package_filter=None, raise_when_already_loaded=False):
+                     load_classes=True, load_subpackages=True,
+                     load_package_filter=None, raise_when_already_loaded=False):
         msg = 'Load package <{package}>...'.format(package=repr(package_meta))
         self.debug(msg)
 
@@ -421,9 +418,9 @@ Packages not loaded (because they were filtered): {', '.join(filtered_packages)}
             if subpackage_meta.status == 'excluded by filter':
                 continue
             subpackage_meta = self.load_package(subpackage_meta,
-                ignore_rotten_modules=ignore_rotten_modules,
-                load_classes=load_classes,
-                load_subpackages=True)
+                                                ignore_rotten_modules=ignore_rotten_modules,
+                                                load_classes=load_classes,
+                                                load_subpackages=True)
             if subpackage_meta.has_init:
                 self.debug('Add subpackage {} to package {}'.format(subpackage_meta.name, package_meta.name))
                 package_meta.add_subpackage(subpackage_meta)
@@ -454,7 +451,8 @@ Packages not loaded (because they were filtered): {', '.join(filtered_packages)}
 
         if config_cls is not None:
             self.debug(f'config class: {config_cls.__name__}')
-            self.config_instance(instance=instance, cls=class_meta.class_reference, config_cls=config_cls, params=params)
+            self.config_instance(instance=instance, cls=class_meta.class_reference, config_cls=config_cls,
+                                 params=params)
 
         if add_object:
             class_meta.add_instance(instance)
@@ -462,7 +460,7 @@ Packages not loaded (because they were filtered): {', '.join(filtered_packages)}
         return instance
 
     def get_object(self, class_name_or_meta, package_name=None, module_name=None,
-                    create_instance_when_not_found=True, params=None):
+                   create_instance_when_not_found=True, params=None):
         # todo: refine searching criteria
         self.debug('get_object:' + str(class_name_or_meta))
 

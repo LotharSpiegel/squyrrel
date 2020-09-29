@@ -1,5 +1,3 @@
-
-
 # todo: could also put these exception types on the class Model to encapsulate
 
 
@@ -36,3 +34,8 @@ class RelationNotFoundException(Exception):
 
 class SqlException(Exception):
     pass
+
+
+class SqlIntegryException(SqlException):
+    pass
+

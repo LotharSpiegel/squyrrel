@@ -1,5 +1,13 @@
-from enum import Enum
+from squyrrel.db.connection import SqlDatabaseConnection
 
+from squyrrel.orm.entity_format import EntityFormat
+from squyrrel.orm.exceptions import *
+from squyrrel.orm.field import (ManyToOne, ManyToMany, StringField,
+                                DateTimeField, IntegerField)
+from squyrrel.orm.filter import (ManyToOneFilter, ManyToManyFilter)
+from squyrrel.orm.signals import model_loaded_signal
+from squyrrel.orm.utils import sanitize_id_array
+from squyrrel.orm.query_builder import QueryBuilder
 from squyrrel.sql.query import (Query, UpdateQuery, InsertQuery,
                                 DeleteQuery, CreateTableQuery)
 from squyrrel.sql.clauses import *
@@ -7,23 +15,11 @@ from squyrrel.sql.expressions import (Equals, NumericalLiteral,
                                       StringLiteral, And, Parameter)
 from squyrrel.sql.references import ColumnReference
 from squyrrel.sql.join import OnJoinCondition, JoinConstruct, JoinType
-from squyrrel.orm.exceptions import *
-from squyrrel.orm.field import (ManyToOne, ManyToMany, StringField,
-                                DateTimeField, IntegerField)
-from squyrrel.orm.filter import (ManyToOneFilter, ManyToManyFilter)
-from squyrrel.orm.signals import model_loaded_signal
-from squyrrel.orm.utils import extract_ids
-from squyrrel.orm.query_builder import QueryBuilder
-
-
-class EntityFormat(Enum):
-    MODEL = 'Model'
-    JSON = 'Json'
 
 
 class QueryWizzard:
 
-    def __init__(self, db, builder):
+    def __init__(self, db: SqlDatabaseConnection, builder):
         self.db = db
         self.builder = builder
         self.last_sql_query = None
@@ -50,11 +46,13 @@ class QueryWizzard:
         return data[0]
 
     def execute_sql(self, sql, params=None):
-        try:
-            self.db.execute(sql=sql, params=params)
-        except Exception as exc:
-            # todo: log
-            raise self.sql_exc(sql, exc) from exc
+        self.db.execute(sql=sql, params=params)
+        # try:
+        #    self.db.execute(sql=sql, params=params)
+        # except self.db.database_error_cls as exc:
+        #    # todo: log
+        #    # log sql? (but don't give it out in exception! otherwise it would land in request responses
+        #    raise SqlException(f'Database during execution of query: : {str(exc)}')
 
     def execute_query(self, query):
         # todo: log!
@@ -109,10 +107,6 @@ class QueryWizzard:
             if model.table_name == table_name:
                 return model
         return None
-
-    def sql_exc(self, sql, exc):
-        error_category = 'Sql Error'
-        return SqlException(f'Error during execution of query: \n{sql}\n{error_category}: {str(exc)}')
 
     def build_select_fields(self, model, select_fields=None):
         if select_fields is None:
@@ -267,26 +261,29 @@ class QueryWizzard:
         relation.table_name = subquery_tablename
         aggregations.append((relation_name, relation))
 
-    def load_many_to_many_entities(self, entity, m2m_options):
+    def load_many_to_many_entities(self, model, id, m2m_options, entity_format=EntityFormat.MODEL):
         # todo: refactor: combine with load_one_to_many_entities
         if m2m_options is None:
             m2m_options = {'load_m2m': True}
         else:
             if not m2m_options.get('load_m2m', True):
-                return
+                return {}
 
-        for relation_name in entity.many_to_many_dict():
-            relation = getattr(entity, relation_name)
+        data = {}
+
+        for relation_name in model.many_to_many_dict():
+            relation = getattr(model, relation_name)
 
             if relation.lazy_load:
                 continue
-            filter_condition = Equals(ColumnReference(entity.model.id_field_name(), table=entity.table_name),
-                                      NumericalLiteral(entity.id))
+            filter_condition = Equals(ColumnReference(model.id_field_name(), table=model.table_name),
+                                      NumericalLiteral(id))
 
             orderby = None
             page_size = None
             active_page = None
 
+            # todo: refactor, how to make sure, options is dict?
             options = m2m_options.get(relation_name, None)
             if options is not None:
                 dont_load = options.get('dont_load', False)
@@ -297,14 +294,16 @@ class QueryWizzard:
                 active_page = options.get('active_page', None)
 
             # print('handle relation:', relation_name)
-            relation.entities = self.get_all(relation.foreign_model,
-                                             filter_condition=filter_condition,
-                                             orderby=orderby,
-                                             page_size=page_size,
-                                             active_page=active_page)
+            data[relation_name] = self.get_all(relation.foreign_model,
+                                               filter_condition=filter_condition,
+                                               orderby=orderby,
+                                               page_size=page_size,
+                                               active_page=active_page,
+                                               entity_format=entity_format)
             # print('entities:', relation.entities)
+        return data
 
-    def load_one_to_many_entities(self, entity, one_to_many_options):
+    def load_one_to_many_entities(self, model, id, one_to_many_options, entity_format=EntityFormat.MODEL):
         # print('load_one_to_many_entities, options:')
         # print(one_to_many_options)
         if one_to_many_options is None:
@@ -313,13 +312,15 @@ class QueryWizzard:
             if not one_to_many_options.get('load_12m', True):
                 return
 
-        for relation_name in entity.one_to_many_dict():
-            relation = getattr(entity, relation_name)
+        data = {}
+
+        for relation_name in model.one_to_many_dict():
+            relation = model.get_relation(relation_name)
             if relation.lazy_load:
                 continue
 
-            filter_condition = Equals(ColumnReference(entity.model.id_field_name(), table=entity.model.table_name),
-                                      NumericalLiteral(entity.id))
+            filter_condition = Equals(ColumnReference(model.id_field_name(), table=model.table_name),
+                                      NumericalLiteral(id))
             orderby = None
             page_size = None
             active_page = None
@@ -334,12 +335,14 @@ class QueryWizzard:
                 active_page = options.get('active_page', None)
 
             # print('handle relation:', relation_name)
-            relation.entities = self.get_all(relation.foreign_model,
-                                             filter_condition=filter_condition,
-                                             orderby=orderby,
-                                             page_size=page_size,
-                                             active_page=active_page)
+            data[relation_name] = self.get_all(relation.foreign_model,
+                                               filter_condition=filter_condition,
+                                               orderby=orderby,
+                                               page_size=page_size,
+                                               active_page=active_page,
+                                               entity_format=entity_format)
             # print(f'loaded {len(relation.entities)} entities')
+        return data
 
     def include_many_to_many_join(self, model, relation, from_clause):
         # !! todo: first check if not already joined!!
@@ -459,6 +462,23 @@ class QueryWizzard:
         data = self.model_instance_dict(model, data, entity_format, select_fields,
                                         many_to_one_entities, one_to_many_aggregations,
                                         m2m_aggregations)
+        entity_id = data.get(model.id_field_name())
+
+        if not disable_relations:
+            m2m_data = self.load_many_to_many_entities(
+                model,
+                id=entity_id,
+                m2m_options=m2m_options,
+                entity_format=entity_format)
+            data.update(**m2m_data)
+            one_to_many_data = self.load_one_to_many_entities(
+                model,
+                id=entity_id,
+                one_to_many_options=one_to_many_options,
+                entity_format=entity_format)
+            data.update(**one_to_many_data)
+
+        # todo: refactor in method/class entitybuilder
         if entity_format == EntityFormat.MODEL:
             entity = self.build_entity(
                 model,
@@ -466,9 +486,6 @@ class QueryWizzard:
                 select_fields,
                 m2m_aggregations=m2m_aggregations
             )
-            if not disable_relations:
-                self.load_many_to_many_entities(entity, m2m_options=m2m_options)
-                self.load_one_to_many_entities(entity, one_to_many_options=one_to_many_options)
             # self.handle_one_to_many(entity, one_to_many_options=one_to_many_options)
             return entity
         elif entity_format == EntityFormat.JSON:
@@ -551,6 +568,7 @@ class QueryWizzard:
                                              many_to_one_entities, one_to_many_aggregations,
                                              m2m_aggregations)
                 )
+        print("include count: ", include_count)
         if include_count:
             count = self.count(model, query=query)
             return {'entities': entities, 'count': count}
@@ -594,9 +612,9 @@ class QueryWizzard:
             if entity_format == EntityFormat.MODEL:
                 kwargs[relation_name] = relation.foreign_model(**foreign_kwargs)
             elif entity_format == EntityFormat.JSON:
-                #print(foreign_kwargs)
+                # print(foreign_kwargs)
                 kwargs[relation_name] = dict(foreign_kwargs)
-        #print(kwargs)
+        # print(kwargs)
 
         for relation_name, relation in one_to_many_aggregations:
             # TODO: überarbeiten-> gleich wie m2m oder umgekehrt
@@ -613,7 +631,7 @@ class QueryWizzard:
 
         return kwargs
 
-    def build_entity(self, model, data, select_fields, m2m_aggregations):
+    def build_entity(self, model, data, select_fields, m2m_aggregations=None):
         entity = model(**data)
         # TODO: REPAIR m2m aggregations
         # self.add_m2m_aggregations_to_entity(entity, m2m_aggregations, data, select_fields)
@@ -623,8 +641,8 @@ class QueryWizzard:
 
     def get_data(self, data, select_fields, reference):
         results = []
-        #print('get_Data, reference:', reference)
-        #print(data)
+        # print('get_Data, reference:', reference)
+        # print(data)
         # todo: type result into namedtuple: index and value
         if isinstance(reference, ColumnReference):
             for i, column_ref in enumerate(select_fields):
@@ -676,7 +694,9 @@ class QueryWizzard:
 
         self.execute_query(query)
         data = self.db.fetchone()
-        return int(data[0])
+        if data:
+            return int(data[0])
+        return 0
 
     def build_simple_search_query(self, model, select_fields, search_column, value):
         model = self.get_model(model)
@@ -783,28 +803,21 @@ class QueryWizzard:
             data['list'] = [el.as_json() for el in data['list']]
         return data
 
-    def build_m2m_update_queries(self, model, instance_id, relation, actual_ids, new_ids):
-        # print('update_m2m_relation')
+    def build_m2m_update_queries(self, model, instance_id, relation, current_ids, new_ids):
         model = self.get_model(model)
         foreign_model = self.get_model(relation.foreign_model)
 
-        # print('new_ids:', new_ids)
-        # print('actual_ids:', actual_ids)
-        if isinstance(actual_ids, str):
-            actual_ids = extract_ids(actual_ids)
-        if isinstance(new_ids, str):
-            new_ids = extract_ids(new_ids)
-        actual_ids = set(actual_ids)
-        new_ids = set(new_ids)
-        ids_to_add = new_ids - actual_ids
-        ids_to_remove = actual_ids - new_ids
+        current_ids = set(sanitize_id_array(foreign_model, current_ids))
+        new_ids = set(sanitize_id_array(foreign_model, new_ids))
+        ids_to_add = new_ids - current_ids
+        ids_to_remove = current_ids - new_ids
 
         queries = []
 
         id_field_name = model.id_field_name()
         foreign_id_field_name = foreign_model.id_field_name()
         table = relation.junction_table
-        # print('m2m, add:', ids_to_add)
+
         for id_to_add in ids_to_add:
             queries.append(
                 InsertQuery.build(table, inserts={
@@ -826,6 +839,11 @@ class QueryWizzard:
         model = self.get_model(model)
         delete_query = DeleteQuery(model.table_name, filter_condition)
         self.execute_query(delete_query)
+        if commit:
+            self.commit()
+
+    def delete_by_id(self, model, instance_id, commit=True):
+        self.delete_by_condition(model, Equals.id_as_parameter(model, instance_id), commit=commit)
 
     def execute_create_queries(self, model, data, insert_query, m2m_insert_queries):
         self.execute_query(insert_query)
@@ -843,7 +861,7 @@ class QueryWizzard:
                             model=model,
                             instance_id=inserted_id,
                             relation=relation,
-                            actual_ids=[],
+                            current_ids=[],
                             new_ids=value
                         )
                     )
@@ -861,7 +879,7 @@ class QueryWizzard:
                 filter_value=value
             )
 
-    def create(self, model, data, commit=True):
+    def create(self, model, data, commit=True, return_created_object=True):
         model = self.get_model(model)
         inserts = dict()
         m2m_insert_queries = []
@@ -901,9 +919,12 @@ class QueryWizzard:
             raise exc
         else:
             self.commit()
+
+            if return_created_object:
+                return self.get_by_id(model, inserted_id, entity_format=EntityFormat.JSON)
             return inserted_id
 
-    def update(self, model, filter_condition, data, instance=None, commit=True):
+    def update(self, model, filter_condition, instance_id, prev_data, data, commit=True, fetch_m21_values=False):
         # todo only update changed data
         # i.e. difference data - instance.data
         # todo: what about commit?
@@ -915,50 +936,64 @@ class QueryWizzard:
         for column, value in data.items():
             # todo value into sql value
             field = model.get_field(column)
+
             # todo refactor
-            if field is None:
-                if not value:
-                    continue
-                relation = model.get_relation(column)
-                if isinstance(relation, ManyToOne):
-                    fk_id = self.get_m21_value(relation, value)
-                    if fk_id:
-                        updates[relation.foreign_key_field] = fk_id
-                elif isinstance(relation, ManyToMany):
-                    # compare difference
-                    # if instance is None, needs to be loaded first..
-                    m2m_update_queries.extend(
-                        self.build_m2m_update_queries(
-                            model=model,
-                            instance_id=instance.id,
-                            relation=relation,
-                            actual_ids=[entity.id for entity in getattr(instance, column).entities],
-                            new_ids=value
-                        )
-                    )
-                elif relation is None:
-                    raise Exception(f'Error during update: Did not find column {column}')
-                else:
-                    raise Exception(f'Error during update: Could not handle {relation}')
-            else:
+            if field is not None:
                 updates[column] = value
+                continue
+
+            if not value:
+                continue
+
+            relation = model.get_relation(column)
+
+            # todo: refactor
+            if isinstance(relation, ManyToOne):
+                if fetch_m21_values:
+                    fk_id = self.get_m21_value(relation, value)
+                else:
+                    fk_id = value
+                if fk_id:
+                    updates[relation.foreign_key_field] = fk_id
+
+            elif isinstance(relation, ManyToMany):
+                # compare difference
+                # if instance is None, needs to be loaded first..
+
+                m2m_update_queries.extend(
+                    self.build_m2m_update_queries(
+                        model=model,
+                        instance_id=instance_id,
+                        relation=relation,
+                        current_ids=prev_data.get(column),
+                        new_ids=value
+                    )
+                )
+            elif relation is None:
+                raise Exception(f'Error during update: Did not find column {column}')
+            else:
+                raise Exception(f'Error during update: Could not handle relation {repr(relation)}')
 
         update_query = UpdateQuery.build(
             model, filter_condition=filter_condition, updates=updates)
 
         self.execute_queries_in_transaction(queries=[update_query] + m2m_update_queries)
 
-    def update_by_id(self, model, id, data, instance=None, commit=True, return_updated_object=True):
+    def update_by_id(self, model, instance_id, data, prev_data, commit=True, return_updated_object=True):
+        # todo: add extensive doc string for params!!
+
         model = self.get_model(model)
-        filter_condition = Equals.id_as_parameter(model, id)
-        try:
-            self.update(model=model, filter_condition=filter_condition, data=data,
-                        instance=instance, commit=commit)
-        except:
-            # todo: log
-            raise
-        else:
-            return self.get_by_id(model, id)
+        filter_condition = Equals.id_as_parameter(model, instance_id)
+        # todo: add logging
+        print("data:")
+        print(data)
+        self.update(model=model, filter_condition=filter_condition, data=data, prev_data=prev_data,
+                    instance_id=instance_id, commit=commit)
+        if return_updated_object:
+            a = self.get_by_id(model, instance_id, entity_format=EntityFormat.JSON)
+            print('update_by_id')
+            print(a)
+            return a
 
     def build_create_table_query(self, model, if_not_exists=False):
         model = self.get_model(model)
@@ -977,6 +1012,7 @@ class QueryWizzard:
     def create_table(self, model, if_not_exists=False):
         query = self.build_create_table_query(model, if_not_exists=if_not_exists)
         self.execute_query(query)
+        # todo: commit missingß
 
     def field_to_sql_data_type(self, field):
         # todo: dynamic method_name pattern

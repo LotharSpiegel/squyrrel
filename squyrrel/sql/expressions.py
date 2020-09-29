@@ -67,7 +67,6 @@ class Parameter(ValueExpression):
     def columns(self):
         return []
 
-
     def __repr__(self):
         return '?'
 
@@ -86,8 +85,7 @@ class Literal(ValueExpression):
         return []
 
 
-
-ScalarExpression=ValueExpression
+ScalarExpression = ValueExpression
 
 
 class StringLiteral(Literal):
@@ -136,7 +134,9 @@ class Predicate:
 
 
 class BooleanLiteral(Literal, Predicate):
+
     def __init__(self, value):
+        # init of super class
         self.value = value
 
     def __repr__(self):
@@ -148,7 +148,8 @@ class BooleanLiteral(Literal, Predicate):
 
 
 class BooleanExpression(Predicate):
-    """A boolean expr is built out of true, false, boolean operators and boolean functions (and other boolean expressions)"""
+    """A boolean expr is built out of true, false, boolean operators and boolean functions (and other boolean
+    expressions) """
     pass
 
 
@@ -210,7 +211,6 @@ class BooleanOperator(Predicate):
 
 
 class BooleanBinaryOperator(BooleanOperator):
-
     operator_name = None
 
     def __init__(self, lhs, rhs):
@@ -224,10 +224,12 @@ class BooleanBinaryOperator(BooleanOperator):
 
     @property
     def params(self):
+        # todo: lhs is of type Predicate, but params not resolved attribute of this class?
         return self.lhs.params + self.rhs.params
 
     @property
     def columns(self):
+        # todo: lhs is of type Predicate, but params not resolved attribute of this class?
         return self.lhs.columns + self.rhs.columns
 
     @classmethod
@@ -241,14 +243,11 @@ class BooleanBinaryOperator(BooleanOperator):
 
 
 class And(BooleanBinaryOperator):
-
     operator_name = 'AND'
 
 
 class Or(BooleanBinaryOperator):
-
     operator_name = 'OR'
-
 
 
 class Not(BooleanOperator):

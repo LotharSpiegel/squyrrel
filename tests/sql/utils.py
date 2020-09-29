@@ -14,6 +14,7 @@ def not_raises():
 def ci_assert_repr(object, expected_value):
     assert repr(object).lower() == expected_value
 
+
 def extract_separate_strings(value):
     test = value.replace('\n', ' ')
     test = test.replace('\t', ' ')

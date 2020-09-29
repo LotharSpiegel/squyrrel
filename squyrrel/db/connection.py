@@ -1,9 +1,8 @@
 
-
-
 class SqlDatabaseConnection:
 
     database_error_cls = None
+    integrity_error_cls = None
 
     def __init__(self):
         self.c = None
@@ -13,7 +12,7 @@ class SqlDatabaseConnection:
         self._cursor = self.c.cursor(*args, **kwargs)
         return self._cursor
 
-    def close_cursor():
+    def close_cursor(self):
         if self._cursor is not None:
             self._cursor.close()
             self._cursor = None

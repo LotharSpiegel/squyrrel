@@ -221,7 +221,7 @@ Packages not loaded (because they were filtered): {', '.join(filtered_packages)}
                 package_name=package.name))
         return package.add_module(module_name=module_name)
 
-    def load_module(self, module_name, package=None, load_classes=True):
+    def load_module(self, module_name, package=None, load_classes=True, raise_when_module_not_found=False):
 
         module_registered = False
 
@@ -237,6 +237,8 @@ Packages not loaded (because they were filtered): {', '.join(filtered_packages)}
 
         # if module_meta is None: raise ModuleNotRegisteredException('Error while loading module: Module {} not
         # registered yet'.format(module_name)) sys.path.append('c:\\users\\lothar\\passion\\math')
+        imported_module = None
+
         try:
             # TODO: enable relative import (pass package='example' to import_module...)
             imported_module = importlib.import_module(module_meta.import_string)  # , package=package.import_string)
@@ -247,7 +249,8 @@ Packages not loaded (because they were filtered): {', '.join(filtered_packages)}
 
             # imported_module = importlib.import_module('.'+module_name, package=package.import_string)
 
-            raise
+            if raise_when_module_not_found:
+                raise
         except Exception as exc:
             exc_type, exc_value, exc_traceback = sys.exc_info()
             module_meta.exception = (exc_type, exc_value, exc_traceback)
@@ -272,6 +275,8 @@ Packages not loaded (because they were filtered): {', '.join(filtered_packages)}
         # is_class_config
 
     def load_module_classes(self, module_meta, imported_module):
+        if imported_module is None:
+            pass
         self.debug('load classes of module {module}..'.format(module=module_meta))
         mod_imp_str = module_meta.import_string
         classes = {m[0]: m[1] for m in sorted(

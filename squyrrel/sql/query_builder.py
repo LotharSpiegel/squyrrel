@@ -1,14 +1,10 @@
 from typing import Type
 
 from squyrrel.orm.field import ManyToMany
-
 from squyrrel.orm.exceptions import RelationNotFoundException
-
 from squyrrel.sql.join import OnJoinCondition, JoinType
-
 from squyrrel.sql.utils import sanitize_column_reference, listify
 from squyrrel.orm.filter import ManyToOneFilter, ManyToManyFilter, StringFieldFilter
-from squyrrel.orm.wizzard import QueryWizzard
 from squyrrel.sql.references import ColumnReference
 from squyrrel.orm.model import Model
 from squyrrel.sql.clauses import SelectClause, FromClause, WhereClause, Pagination, OrderByClause
@@ -21,8 +17,11 @@ from squyrrel.sql.query import Query
 
 
 class QueryBuilder:
+    """ Usage:
+    query = QueryBuilder(DummyModel).select().model_filters().pagination().build()
+    """
 
-    def __init__(self, model: Type[Model], qw: QueryWizzard = None):
+    def __init__(self, model: Type[Model], qw):
         self._qw = qw
 
         self._model = self.get_model(model)
@@ -60,7 +59,7 @@ class QueryBuilder:
         self._build_select_clause()
         self._build_where_clause()
 
-        return Query(
+        query = Query(
             select_clause=self._select_clause,
             from_clause=self._from_clause,
             where_clause=self._where_clause,
@@ -72,12 +71,16 @@ class QueryBuilder:
             is_subquery=self._is_subquery,
             options=self._options
         )
+        query.model = self._model
+        return query
 
     def select(self, *args):
         self._select_fields = args
         return self
 
     def model_filters(self, filters):
+        if filters is None:
+            return self
         for filter in filters:
             if isinstance(filter, ManyToOneFilter):
                 conditions = []
@@ -113,7 +116,8 @@ class QueryBuilder:
         return self
 
     def add_filter_condition(self, condition):
-        self._filter_conditions.append(condition)
+        if condition is not None:
+            self._filter_conditions.append(condition)
         return self
 
     def by_id(self, instance_id):
@@ -123,7 +127,8 @@ class QueryBuilder:
         return self
 
     def fulltext_search(self, search_value):
-        self._filter_conditions.append(self.build_search_condition(search_value))
+        if search_value:
+            self._filter_conditions.append(self.build_search_condition(search_value))
         return self
 
     def build_search_condition(self, search_value, search_columns=None):

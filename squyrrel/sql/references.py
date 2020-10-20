@@ -1,5 +1,3 @@
-
-
 class ColumnReference:
     """
     Typically, a column reference looks like:
@@ -36,7 +34,6 @@ class ColumnReference:
     def columns(self):
         return [self]
 
-
     def __eq__(self, other):
         if isinstance(other, ColumnReference):
             return self.name == other.name and self.table == other.table
@@ -60,11 +57,7 @@ class ColumnReference:
 
 
 class TableReference:
-
     """
     a table name or a derived table or a join construct
     """
     pass
-
-
-

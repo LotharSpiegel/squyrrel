@@ -17,9 +17,48 @@ from squyrrel.sql.references import ColumnReference
 from squyrrel.sql.join import OnJoinCondition, JoinConstruct, JoinType
 
 
+def m2m_aggregation_subquery_alias(model, relation_name):
+    return f'{model.table_name}_{relation_name}'
+
+
+def build_select_fields(model, select_fields=None):
+    if select_fields is None:
+        select_fields = []
+        for field_name, field in model.fields():
+            select_fields.append(ColumnReference(field_name, table=model.table_name))
+    return select_fields
+
+
+def build_where_clause(model, filter_condition=None, **kwargs):
+    # todo: this is garbage
+    if filter_condition is None:
+        filter_conditions = []
+        for key, value in kwargs.items():
+            filter_conditions.append(
+                Equals.column_as_parameter(ColumnReference(key, table=model.table_name), value))
+        if filter_conditions:
+            return WhereClause(filter_conditions[0])
+        else:
+            return None
+    else:
+        return WhereClause(filter_condition)
+
+
+def field_to_sql_data_type(field):
+    # todo: dynamic method_name pattern
+    # at the moment only Sqlite...
+
+    if isinstance(field, StringField):
+        return 'TEXT'
+    if isinstance(field, IntegerField):
+        return 'INTEGER'
+    if isinstance(field, DateTimeField):
+        return 'TEXT'
+
+
 class QueryWizzard:
 
-    def __init__(self, db: SqlDatabaseConnection, builder):
+    def __init__(self, db: SqlDatabaseConnection, builder = None):
         self.db = db
         self.builder = builder
         self.last_sql_query = None
@@ -27,11 +66,9 @@ class QueryWizzard:
         model_loaded_signal.connect(self.on_model_loaded)
 
     def commit(self):
-        # print('COMMIT')
         self.db.commit()
 
     def rollback(self):
-        # print('ROLLBACK')
         self.db.rollback()
 
     def last_insert_rowid(self):
@@ -99,7 +136,7 @@ class QueryWizzard:
                 return self.models[model]
             except KeyError:
                 models = ', '.join(self.models.keys())
-                raise Exception(f'Orm: did not find model {model}. Registered models are: {models}')
+                raise ModelNotFoundException(model, models)
         return model
 
     def get_model_by_table(self, table_name):
@@ -108,33 +145,9 @@ class QueryWizzard:
                 return model
         return None
 
-    def build_select_fields(self, model, select_fields=None):
-        if select_fields is None:
-            select_fields = []
-            for field_name, field in model.fields():
-                select_fields.append(ColumnReference(field_name, table=model.table_name))
-        return select_fields
-
-    def build_where_clause(self, model, filter_condition=None, **kwargs):
-        # todo: this is garbage
-        if filter_condition is None:
-            filter_conditions = []
-            for key, value in kwargs.items():
-                filter_conditions.append(
-                    Equals.column_as_parameter(ColumnReference(key, table=model.table_name), value))
-            if filter_conditions:
-                return WhereClause(filter_conditions[0])
-            else:
-                return None
-        else:
-            return WhereClause(filter_condition)
-
-    def m2m_aggregation_subquery_alias(self, model, relation_name):
-        return f'{model.table_name}_{relation_name}'
-
-    def build_m2m_aggregation_subquery(self, model, from_clause, relation_name, m2m_relation):
+    def build_m2m_aggregation_subquery(self, model, relation_name, m2m_relation):
         foreign_model = self.get_model(m2m_relation.foreign_model)
-        subquery_tablename = self.m2m_aggregation_subquery_alias(model, relation_name)
+        subquery_tablename = m2m_aggregation_subquery_alias(model, relation_name)
         select_fields = [ColumnReference(model.id_field_name(), alias=model.id_field_name()),
                          m2m_relation.aggregation]
         join_condition = OnJoinCondition(
@@ -148,7 +161,7 @@ class QueryWizzard:
             join_condition=join_condition
         )
         return Query(
-            select_clause=SelectClause.build(*select_fields),
+            select_clause=SelectClause(*select_fields),
             from_clause=from_clause,
             groupby_clause=GroupByClause(model.id_field_name()),
             is_subquery=True,
@@ -158,7 +171,7 @@ class QueryWizzard:
     def handle_many_to_one(self, model, select_fields, relation, from_clause):
         relation.foreign_model = self.get_model(relation.foreign_model)
         foreign_model = self.get_model(relation.foreign_model)
-        foreign_select_fields = self.build_select_fields(foreign_model)
+        foreign_select_fields = build_select_fields(foreign_model)
 
         # todo: make builder method specially for columns on OnJoinCondition
         join_condition = OnJoinCondition(
@@ -211,7 +224,6 @@ class QueryWizzard:
 
         aggr_subquery = self.build_m2m_aggregation_subquery(
             model=model,
-            from_clause=from_clause,
             relation_name=relation_name,
             m2m_relation=relation
         )
@@ -241,7 +253,7 @@ class QueryWizzard:
         aggr_select_fields = [ColumnReference(model.id_field_name(), alias=model.id_field_name()),
                               aggregation]
         subquery = Query(
-            select_clause=SelectClause.build(*aggr_select_fields),
+            select_clause=SelectClause(*aggr_select_fields),
             from_clause=FromClause(relation.foreign_model.table_name),
             groupby_clause=GroupByClause(model.id_field_name()),
             is_subquery=True,
@@ -361,10 +373,9 @@ class QueryWizzard:
 
     def build_get_all_query(self,
                             model, select_fields=None, filter_condition=None, filters=None, fulltext_search=None,
-                            orderby=None, ascending=None, page_size=None, active_page=None):
+                            orderby=None, ascending=None, page_size=None, active_page=None) -> Query:
         """filters and filter_condition cannot be both not None"""
 
-        # print('\nbuild_get_all_query\n')
         qb = QueryBuilder(model=self.get_model(model), qw=self)
         return qb.build_get_all_query(
             select_fields=select_fields,
@@ -431,8 +442,8 @@ class QueryWizzard:
             entity_format=EntityFormat.MODEL, **kwargs):
 
         model = self.get_model(model)
-        select_fields = self.build_select_fields(model, select_fields)
-        where_clause = self.build_where_clause(model, filter_condition=filter_condition, **kwargs)
+        select_fields = build_select_fields(model, select_fields)
+        where_clause = build_where_clause(model, filter_condition=filter_condition, **kwargs)
         from_clause = FromClause(model.table_name)
 
         if disable_relations:
@@ -448,7 +459,7 @@ class QueryWizzard:
             model=model, select_fields=select_fields, from_clause=from_clause)
 
         query = Query(
-            select_clause=SelectClause.build(*select_fields),
+            select_clause=SelectClause(*select_fields),
             from_clause=from_clause,
             where_clause=where_clause,
             pagination=None
@@ -568,7 +579,6 @@ class QueryWizzard:
                                              many_to_one_entities, one_to_many_aggregations,
                                              m2m_aggregations)
                 )
-        print("include count: ", include_count)
         if include_count:
             count = self.count(model, query=query)
             return {'entities': entities, 'count': count}
@@ -677,7 +687,7 @@ class QueryWizzard:
         if query is not None:
             # or count(*)
             select_fields = [f'count ({ColumnReference(model.id_field_name(), table=model.table_name)})']
-            query.select_clause = SelectClause.build(*select_fields)
+            query.select_clause = SelectClause(*select_fields)
             query.pagination = None
             # query.select_clause.select_fields = [f'count ({ColumnReference(model.id_field_name(), table=model.table_name)})']
         else:
@@ -709,10 +719,10 @@ class QueryWizzard:
         # todo: replace with parameter builder method
         filter_condition = Equals(ColumnReference(search_column, table=model.table_name),
                                   literal)
-        where_clause = self.build_where_clause(model, filter_condition=filter_condition)
+        where_clause = build_where_clause(model, filter_condition=filter_condition)
 
         query = Query(
-            select_clause=SelectClause.build(*select_fields),
+            select_clause=SelectClause(*select_fields),
             from_clause=FromClause(model.table_name),
             where_clause=where_clause,
             pagination=None
@@ -977,6 +987,9 @@ class QueryWizzard:
         update_query = UpdateQuery.build(
             model, filter_condition=filter_condition, updates=updates)
 
+        print("m2m_update_queries:")
+        print(m2m_update_queries)
+
         self.execute_queries_in_transaction(queries=[update_query] + m2m_update_queries)
 
     def update_by_id(self, model, instance_id, data, prev_data, commit=True, return_updated_object=True):
@@ -1001,7 +1014,7 @@ class QueryWizzard:
         columns = {}
         for field_name, field in model.fields():
             columns[field_name] = {
-                'data_type': self.field_to_sql_data_type(field),
+                'data_type': field_to_sql_data_type(field),
                 'primary_key': field.primary_key,
                 'not_null': field.not_null,
                 'unique': field.unique,
@@ -1010,17 +1023,8 @@ class QueryWizzard:
         return query
 
     def create_table(self, model, if_not_exists=False):
+        model = self.get_model(model)
         query = self.build_create_table_query(model, if_not_exists=if_not_exists)
         self.execute_query(query)
         # todo: commit missingß
 
-    def field_to_sql_data_type(self, field):
-        # todo: dynamic method_name pattern
-        # at the moment only Sqlite...
-
-        if isinstance(field, StringField):
-            return 'TEXT'
-        if isinstance(field, IntegerField):
-            return 'INTEGER'
-        if isinstance(field, DateTimeField):
-            return 'TEXT'

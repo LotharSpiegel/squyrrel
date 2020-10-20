@@ -9,3 +9,9 @@ def sanitize_column_reference(column_reference):
         else:
             raise Exception(f'Missing table in column reference <{column_reference}>')
     return column_reference
+
+
+def listify(obj):
+    if not isinstance(obj, (list, tuple)):
+        return [obj]
+    return obj

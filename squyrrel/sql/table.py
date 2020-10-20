@@ -35,3 +35,4 @@ class TableName(TableReference):
             return cls(name=table_ref)
         else:
             return table_ref
+

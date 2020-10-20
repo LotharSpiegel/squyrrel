@@ -1,5 +1,4 @@
-from squyrrel.sql.expressions import (StringLiteral, NumericalLiteral,
-    Equals, Parameter)
+from squyrrel.sql.expressions import (Equals, Parameter)
 from squyrrel.sql.references import ColumnReference
 from squyrrel.sql.table import TableName
 
@@ -61,12 +60,19 @@ class HavingClause:
 
 
 class SelectClause:
+
     def __init__(self, *args):
         """every arg can be any of the following:
         a column name, a ColumnReference object or a Literal object
         """
-        self.items = list(args)
+        if not args:
+            raise ValueError('Need at least one select field!')
+        if len(args) == 1 and isinstance(args[0], (list, tuple)):
+            self.items = args[0]
+        else:
+            self.items = [arg for arg in args if arg]
 
+    # todo: make static
     def item_to_string(self, item):
         if isinstance(item, str):
             return str(item)
@@ -77,16 +83,6 @@ class SelectClause:
 
     def __repr__(self):
         return f'SELECT {self.items_tostring()}'
-
-    @classmethod
-    def build(cls, *args):
-        # todo: clear up this checking mess
-        if not args:
-            raise Exception('Empty Select Clause!')
-        for arg in args:
-            if not arg:
-                raise Exception('Empty Select Clause!')
-        return SelectClause(*args)
 
 
 class GroupByClause:

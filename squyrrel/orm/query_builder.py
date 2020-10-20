@@ -47,8 +47,8 @@ class QueryBuilder:
         # todo: check when needed to include relations joins (to have fields available for filtering)
 
         self.filter_conditions = []
-        print('filters:')
-        print(filters)
+        #print('filters:')
+        #print(filters)
         if filters is not None:
             for filter_ in filters:
                 if isinstance(filter_, ManyToOneFilter):
@@ -123,7 +123,7 @@ class QueryBuilder:
         # print('model, table_name', self.model.table_name)
         # print('include_column', column_reference.table, self.model.table_name)
         if column_reference.table != self.model.table_name:
-            foreign_model = self.qw.get_model_by_table(column_reference.table)
+            foreign_model = self.qw._get_model_by_table(column_reference.table)
             #print('\nforeign_model', foreign_model)
             try:
                 relation_name, relation = self.model.get_relation_by_foreign_model(foreign_model.__name__)
@@ -207,7 +207,7 @@ class QueryBuilder:
             else:
                 self.orderby_clause = None
                 return
-        ascending = {}
+        ascending_ = {}
         columns_ = []
         #print(columns)
         for column in listify(columns):
@@ -218,16 +218,17 @@ class QueryBuilder:
             else:
                 column = ColumnReference(column, table=self.model.table_name)
             columns_.append(column)
-            column_model = self.qw.get_model_by_table(column.table)
-            try:
-                ascending[column] = ascending[column]
-            except KeyError:
-                field = column_model.get_field(column.name)
-                ascending[column] = field.default_ascending
+            column_model = self.qw._get_model_by_table(column.table)
+            if ascending is not None:
+                try:
+                    ascending_[column] = ascending[column]
+                except KeyError:
+                    field = column_model.get_field(column.name)
+                    ascending_[column] = field.default_ascending
         if not columns_:
             self.orderby_clause = None
         else:
-            self.orderby_clause = OrderByClause(columns=columns_, ascending=ascending)
+            self.orderby_clause = OrderByClause(columns=columns_, ascending=ascending_)
 
     def build_pagination(self, active_page, page_size):
         if active_page is None or page_size is None:
@@ -268,7 +269,7 @@ class QueryBuilder:
 
     def build_query(self):
         return Query(
-            select_clause=SelectClause.build(*self.select_fields),
+            select_clause=SelectClause(*self.select_fields),
             from_clause=self.from_clause,
             where_clause=self.where_clause,
             orderby_clause=self.orderby_clause,

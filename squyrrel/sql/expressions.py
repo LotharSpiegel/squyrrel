@@ -130,7 +130,13 @@ class NumericalLiteral(Literal):
 
 
 class Predicate:
-    pass
+    @property
+    def params(self):
+        return []
+
+    @property
+    def columns(self):
+        return []
 
 
 class BooleanLiteral(Literal, Predicate):
@@ -168,7 +174,14 @@ class ComparisionOperator(Predicate):
 
     @property
     def columns(self):
-        return self.lhs.columns + self.rhs.columns
+        # todo: refactor this into utility method which takes as parameters an arbitrary number of objects
+        if hasattr(self.lhs, 'columns') and hasattr(self.rhs, 'columns'):
+            return self.lhs.columns + self.rhs.columns
+        if hasattr(self.lhs, 'columns'):
+            return self.lhs.columns
+        if hasattr(self.rhs, 'columns'):
+            return self.rhs.columns
+        return []
 
 
 class Equals(ComparisionOperator):

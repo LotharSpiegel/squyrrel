@@ -16,5 +16,5 @@ c:\users\lspiegel\sonarqube\sonarqube-8.3.1.34397\bin\windows-x86-64\StartSonar.
 ```
 2) cd into the project root director and start the scanner:
 ```
-c:\users\lspiegel\sonarqube\sonar-scanner-4.3.0.2102-windows\bin\sconar-scanner
+c:\users\lspiegel\sonarqube\sonar-scanner-4.3.0.2102-windows\bin\sonar-scanner
 ```

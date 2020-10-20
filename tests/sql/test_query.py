@@ -1,6 +1,6 @@
 import pytest
 
-from utils import ci_assert_repr, assert_query_lines
+from squyrrel.sql.test_utils import ci_assert_repr, assert_query_lines
 
 from squyrrel.sql.expressions import *
 from squyrrel.sql.clauses import *
@@ -16,12 +16,12 @@ def test_query_repr():
 
     print(query)
     assert_query_lines(query,
-        ('select table1.a_column, table2.b_column',
-         'from table1, table2',
-         'where table1.a_column = 17'))
-    #ci_assert_repr(query, """select table1.a_column, table2.b_column
-    #from )
+                       ('select table1.a_column, table2.b_column',
+                        'from table1, table2',
+                        'where table1.a_column = 17'))
+    # ci_assert_repr(query, """select table1.a_column, table2.b_column
+    # from )
 
 
-if __name__ == '__main__':
-    test_query_repr()
+class TestQuery:
+    pass

@@ -39,3 +39,8 @@ class SqlException(Exception):
 class SqlIntegryException(SqlException):
     pass
 
+
+class ModelNotFoundException(Exception):
+
+    def __init__(self, model, models):
+        super().__init__(f'Did not find model {str(model)}.\nRegistered models are: {models}')

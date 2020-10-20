@@ -3,27 +3,26 @@ PostgreSQL: https://www.postgresql.org/docs/9.5/sql-select.html
 """
 
 from squyrrel.sql.clauses import (UpdateClause, WhereClause, SetClause,
-    InsertClause, ValuesClause, DeleteClause)
-from squyrrel.sql.expressions import (StringLiteral, NumericalLiteral,
-    Equals, Parameter)
+                                  InsertClause, ValuesClause, DeleteClause, SelectClause)
+from squyrrel.sql.expressions import Parameter
 from squyrrel.sql.table import TableName
 
 
 class Query:
 
     def __init__(self,
-                select_clause,
-                from_clause,
-                where_clause=None,
-                groupby_clause=None,
-                having_clause=None,
-                orderby_clause=None,
-                pagination=None,
-                alias=None,
-                is_subquery=False,
-                options=None):
+                 select_clause: SelectClause,
+                 from_clause,
+                 where_clause=None,
+                 groupby_clause=None,
+                 having_clause=None,
+                 orderby_clause=None,
+                 pagination=None,
+                 alias=None,
+                 is_subquery=False,
+                 options=None):
 
-        self.select_clause = select_clause
+        self.select_clause: SelectClause = select_clause
         self.from_clause = from_clause
         self.where_clause = where_clause
         self.groupby_clause = groupby_clause
@@ -36,7 +35,7 @@ class Query:
         self.indent = ' ' * 4
         if options is not None:
             if 'indent' in options:
-                self.indent = options[indent]
+                self.indent = options['indent']
 
     def get_clauses(self):
         clauses = [self.select_clause, self.from_clause]
@@ -69,14 +68,13 @@ class Query:
         return output
 
 
-
 class ColumnDefinition:
 
     def __init__(self,
-                name,
-                data_type,
-                primary_key=False,
-                not_null=False):
+                 name,
+                 data_type,
+                 primary_key=False,
+                 not_null=False):
         self.name = name
         self.data_type = data_type
         self.primary_key = primary_key
@@ -122,7 +120,7 @@ class CreateTableQuery:
         col_outputs = []
         for col in self.column_definitions:
             col_outputs.append(repr(col))
-        output += (','+clause_separation).join(col_outputs)
+        output += (',' + clause_separation).join(col_outputs)
         output += ');'
         return output
 
@@ -235,7 +233,6 @@ class UpdateQuery:
             set_clause=SetClause(**updates),
             where_clause=WhereClause(filter_condition)
         )
-
 
 # class QueryBuilder:
 

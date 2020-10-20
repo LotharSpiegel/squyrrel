@@ -11,10 +11,12 @@ def build_package():
         package_import_string='a.b.c',
         namespace=None)
 
+
 def build_module():
     return ModuleMeta(
         package=build_package(),
         module_name='test_module')
+
 
 def build_class(class_name='TestClass'):
     class TestClass:
@@ -36,6 +38,7 @@ def test_add_module_to_package():
     assert module.import_string == '{}.test_module'.format(package.import_string)
     assert str(module) == '{}.test_module'.format(package.import_string)
 
+
 def test_add_class_to_module():
     module = build_module()
     module.add_class(build_class('TestClass'))
@@ -49,13 +52,16 @@ def test_add_class_to_module():
     assert TestClass is not None
     assert TestClass.__name__ == TestClassMeta.class_name
 
+
 def test_package_str():
     package = build_package()
     assert str(package) == 'test_package'
 
+
 def test_module_str():
     module = build_module()
     assert str(module) == 'a.b.c.test_module'
+
 
 def test_class_str():
     module = build_module()

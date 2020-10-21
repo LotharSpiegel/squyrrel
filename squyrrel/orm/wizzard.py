@@ -24,6 +24,7 @@ def m2m_aggregation_subquery_alias(model, relation_name):
     return f'{model.table_name}_{relation_name}'
 
 
+# todo: is used in e.g. handle_many_to_one,
 def build_select_fields(model, select_fields=None):
     if select_fields is None:
         select_fields = []
@@ -298,33 +299,27 @@ class QueryWizzard:
 
     def load_relation_to_many_entities(self, model, instance_id, relations_dict, options):
 
-        print('load_relation_to_many_entities')
-
         if not options.get('load_entities', True):
             return {}
 
         data = {}
-        #print('dict')
-        #print(relations_dict)
         for relation_name in relations_dict:
             relation = model.get_relation(relation_name)  # getattr(model, relation_name)
             if relation.lazy_load:
                 continue
-            print('handle relation: ', relation_name)
             relation_options = options.get(relation_name, None)
             if relation_options is not None and relation_options.get('skip', False):
                 continue
             query = self.build_relation_to_many_query(model, instance_id, relation, relation_options)
-            print(query)
             query.model = relation.foreign_model
             data[relation_name] = self.get_all(query, entity_format=options.get('entity_format', EntityFormat.MODEL))
-        print('data:')
-        print(data)
         return data
 
     # todo: make this method to method of FromClause
     def include_many_to_many_join(self, model, relation, from_clause):
         # !! todo: first check if not already joined!!
+
+        # todo: refactor: compare with QueryBuilder._include_many_to_many_join
 
         # foreign_model = self.get_model(relation.foreign_model)
         # foreign_select_fields = self.build_select_fields(foreign_model)
@@ -366,9 +361,8 @@ class QueryWizzard:
 
     def get_by_id(self, model, id, select_fields=None,
                   m2m_options=None, one_to_many_options=None,
-                  raise_ifnotfound=True, disable_relations=False,
+                  raise_if_not_found=True, disable_relations=False,
                   entity_format=EntityFormat.MODEL, **kwargs):
-
         model = self.get_model(model)
         filter_condition = Equals.id_as_parameter(model, id)
         # filter_condition = Equals(ColumnReference(model.id_field_name(), table=model.table_name),
@@ -381,9 +375,7 @@ class QueryWizzard:
                             disable_relations=disable_relations,
                             entity_format=entity_format,
                             **kwargs)
-        print('instance')
-        print(instance)
-        if instance is None and raise_ifnotfound:
+        if instance is None and raise_if_not_found:
             raise DidNotFindObjectWithIdException(
                 msg=f'Did not find {model.__name__} with id {id}',
                 model_name=model.__name__,
@@ -415,9 +407,6 @@ class QueryWizzard:
             m2m_aggregations = self.include_many_to_many_aggregations(
                 model=model, from_clause=from_clause, select_fields=select_fields)
 
-        print('select_fields')
-        print(select_fields)
-
         many_to_one_entities = self.handle_many_to_one_entities(
             model=model, select_fields=select_fields, from_clause=from_clause)
 
@@ -427,8 +416,6 @@ class QueryWizzard:
             where_clause=where_clause,
             pagination=None
         )
-
-        #print(query)
 
         self.execute_query(query)
         data = self.db.fetchone()

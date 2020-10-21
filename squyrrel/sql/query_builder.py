@@ -16,7 +16,6 @@ from squyrrel.sql.query import Query
 # where dummy_id = ?
 
 
-
 class QueryBuilder:
     """ Usage:
     query = QueryBuilder(DummyModel).select().model_filters().pagination().build()
@@ -279,6 +278,8 @@ class QueryBuilder:
     # todo: def _include_many_to_one_join()
 
     def _include_many_to_many_join(self, relation):
+        # todo: refactor: compare with QueryWizzard.include_many_to_many_join
+
         # !! todo: first check if not already joined!!
 
         # foreign_model = self.qw.get_model(relation.foreign_model)
@@ -290,6 +291,7 @@ class QueryBuilder:
             join_type=JoinType.INNER_JOIN,
             table=relation.junction_table,
             join_condition=junction_join_condition)
+
         foreign_model = self.get_model(relation.foreign_model)
         foreign_table = foreign_model.table_name
         join_condition = OnJoinCondition(

@@ -30,6 +30,7 @@ class GetAllCommand(OrmCommand):
         model = kwargs['model']
         page_size = kwargs.get('page_size', 20)
         active_page = kwargs.get('active_page', None)
+        # todo: adjust get_all call
         res = self._wizz.get_all(model, page_size=page_size, active_page=active_page)
         print(res)
 

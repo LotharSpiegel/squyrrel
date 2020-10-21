@@ -38,7 +38,7 @@ class ColumnReference:
         if isinstance(other, ColumnReference):
             return self.name == other.name and self.table == other.table
         if isinstance(other, str):
-            return self.name == other
+            return self.reference == other
         return False
 
     def __hash__(self):

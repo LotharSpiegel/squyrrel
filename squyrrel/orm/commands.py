@@ -44,6 +44,7 @@ class GetCommand(OrmCommand):
     def handle(self, *args, **kwargs):
         model = kwargs.pop('model')
         # todo: build/parse filter_condition
+        # todo: adjust wizz.get to new versoin
         res = self._wizz.get(model, filter_condition=None)
         print(res)
 
@@ -58,6 +59,7 @@ class GetByIdCommand(OrmCommand):
     def handle(self, *args, **kwargs):
         model = kwargs.pop('model')
         id_ = kwargs.pop('id')
+        # todo: adjust wizz.get to new versoin
         model = self._wizz.get_model(model)
         filter_condition = Equals(ColumnReference(model.id_field_name()), NumericalLiteral(id_))
         res = self._wizz.get(model, filter_condition=filter_condition)

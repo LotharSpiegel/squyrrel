@@ -1,6 +1,6 @@
 from typing import Type
 
-from squyrrel.orm.field import ManyToMany
+from squyrrel.orm.field import ManyToMany, OneToMany
 from squyrrel.orm.exceptions import RelationNotFoundException
 from squyrrel.sql.join import OnJoinCondition, JoinType
 from squyrrel.sql.utils import sanitize_column_reference, listify
@@ -14,6 +14,7 @@ from squyrrel.sql.query import Query
 
 # todo: options: use paramters or not:
 # where dummy_id = ?
+
 
 
 class QueryBuilder:
@@ -36,7 +37,11 @@ class QueryBuilder:
 
         self._groupby_clause = None
         self._having_clause = None
+
+        self._orderby_columns = []
+        self._ascending = {}
         self._orderby_clause = None
+
         self._pagination = None
         self._alias = None
         self._is_subquery = None
@@ -45,19 +50,26 @@ class QueryBuilder:
         self._m2m_relations = []
         self._m2m_joined_models = []
 
+        self._one_to_many_relations = []
+        self._one_to_many_joined_models = []
+
     def get_model(self, model):
         if self._qw is not None:
             return self._qw.get_model(model)
         return model
 
     def build(self):
-        if self._select_clause is None:
-            raise ValueError('Select clause is missing!')
+
         if self._from_clause is None:
             raise ValueError('From clause is missing!')
 
         self._build_select_clause()
+
         self._build_where_clause()
+
+        self._build_orderby_clause()
+
+        self._build_necessary_joins()
 
         query = Query(
             select_clause=self._select_clause,
@@ -160,34 +172,31 @@ class QueryBuilder:
         columns is either a single column (ColumnReference or str) or a list of columns (or ColumnReferences)
         ascending is a dictionary containig as keys the order columns and values if ascending (otherwise descending)"""
 
-        # todo: replace parameters by type OrderByColumn(column_reference, ascending=None)
-
         if columns is None:
             if self._model.default_orderby:
                 columns = self._model.default_orderby
             else:
-                self.orderby_clause = None
-                return
-        ascending_ = {}
-        columns_ = []
+                self._orderby_clause = None
+                return self
+
+        self._orderby_columns = []
+        self._ascending = {}
+
         for column in listify(columns):
             if isinstance(column, ColumnReference):
                 if column.table is None:
                     column.table = self._model.table_name
             else:
                 column = ColumnReference(column, table=self._model.table_name)
-            columns_.append(column)
+            self._orderby_columns.append(column)
+
             column_model = self._get_model_by_table(column.table)
             if ascending is not None:
                 try:
-                    ascending_[column] = ascending[column]
+                    self._ascending[column] = ascending[column]
                 except KeyError:
                     field = column_model.get_field(column.name)
-                    ascending_[column] = field.default_ascending
-        if not columns_:
-            self.orderby_clause = None
-        else:
-            self.orderby_clause = OrderByClause(columns=columns_, ascending=ascending_)
+                    self._ascending[column] = field.default_ascending
 
         return self
 
@@ -196,6 +205,18 @@ class QueryBuilder:
             self._where_clause = WhereClause(And.concat(self._filter_conditions))
         else:
             self._where_clause = None
+
+    def _build_orderby_clause(self):
+        if not self._orderby_columns:
+            self._orderby_clause = None
+        else:
+            orderby_columns = []
+            for column in self._orderby_columns:
+                if column in self._select_fields:
+                    orderby_columns.append(column)
+                else:
+                    print(f'Warning: The orderby column <{column}> is not specified in the select clause')
+            self._orderby_clause = OrderByClause(columns=orderby_columns, ascending= self._ascending)
 
     def _get_model_by_table(self, table):
         if self._qw is None:
@@ -209,36 +230,53 @@ class QueryBuilder:
                 select_fields.append(ColumnReference(field_name, table=self._model.table_name))
         else:
             select_fields = self._select_fields
+        self._select_fields = select_fields
+
+        if not select_fields:
+            # replace by warning and select * by default
+            raise ValueError('Select clause is missing!')
 
         self._select_clause = SelectClause(*select_fields)
 
     def _build_necessary_joins(self):
         columns_to_check = set()
+
         for condition in self._filter_conditions:
             for column in condition.columns:
                 columns_to_check.add(column)
+
+        if self._orderby_clause is not None:
+            for column in self._orderby_clause.columns:
+                columns_to_check.add(column)
+
         for column_reference in list(columns_to_check):
             self._include_column(column_reference)
 
         for relation_name, relation in self._m2m_relations:
-            #if self.does_filter_condition_concern_relation(filter_condition, relation):
-            #print('include_many_to_many_join:', relation_name)
+            # if self.does_filter_condition_concern_relation(filter_condition, relation):
+            # print('include_many_to_many_join:', relation_name)
             self._include_many_to_many_join(relation=relation)
 
     def _include_column(self, column_reference):
         # print('model, table_name', self.model.table_name)
-        # print('include_column', column_reference.table, self.model.table_name)
+        # print('include_column', column_reference.table, self._model.table_name)
         if column_reference.table != self._model.table_name:
             foreign_model = self._get_model_by_table(column_reference.table)
-            #print('\nforeign_model', foreign_model)
+            # print('\nforeign_model', foreign_model)
             try:
                 relation_name, relation = self._model.get_relation_by_foreign_model(foreign_model.__name__)
             except RelationNotFoundException as exc:
                 raise
             else:
-                # TODO: handle m21 and 12m
+                # TODO: handle m21
                 if isinstance(relation, ManyToMany):
-                    self._add_m2m_relation(foreign_model=foreign_model, relation_name=relation_name) # relation_name=search_column.table
+                    self._add_m2m_relation(foreign_model=foreign_model,
+                                           relation_name=relation_name)  # relation_name=search_column.table
+                elif isinstance(relation, OneToMany):
+                    self._add_one_to_many_relation(foreign_model=foreign_model,
+                                                   relation_name=relation_name)
+
+    # todo: def _include_many_to_one_join()
 
     def _include_many_to_many_join(self, relation):
         # !! todo: first check if not already joined!!
@@ -271,8 +309,14 @@ class QueryBuilder:
         )
 
     def _add_m2m_relation(self, foreign_model, relation_name):
-        if not foreign_model in self._m2m_joined_models:
+        if foreign_model not in self._m2m_joined_models:
             self._m2m_joined_models.append(foreign_model)
             relation = self._model.get_relation(relation_name)
             self._m2m_relations.append((relation_name, relation))
     #     column_model = self.qw.get_model_by_table(column.table)
+
+    def _add_one_to_many_relation(self, foreign_model, relation_name):
+        if foreign_model not in self._one_to_many_joined_models:
+            self._one_to_many_joined_models.append(foreign_model)
+            relation = self._model.get_relation(relation_name)
+            self._one_to_many_relations.append((relation_name, relation))

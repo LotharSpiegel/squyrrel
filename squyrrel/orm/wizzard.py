@@ -277,94 +277,50 @@ class QueryWizzard:
         relation.table_name = subquery_tablename
         aggregations.append((relation_name, relation))
 
-    def load_many_to_many_entities(self, model, id, m2m_options, entity_format=EntityFormat.MODEL):
+    def build_relation_to_many_query(self, model, instance_id, relation, options) -> Query:
+        orderby = None
+        page_size = None
+        active_page = None
 
-        # todo: refactor: combine with load_one_to_many_entities
+        if options is not None:
+            orderby = options.get('orderby', None)
+            page_size = options.get('page_size', None)
+            active_page = options.get('active_page', None)
 
-        if m2m_options is None:
-            m2m_options = {'load_m2m': True}
-        else:
-            if not m2m_options.get('load_m2m', True):
-                return {}
+        filter_condition = Equals(ColumnReference(model.id_field_name(), table=model.table_name),
+                                  NumericalLiteral(instance_id))
+
+        return QueryBuilder(relation.foreign_model, self) \
+            .add_filter_condition(filter_condition) \
+            .orderby(orderby) \
+            .pagination(active_page, page_size) \
+            .build()
+
+    def load_relation_to_many_entities(self, model, instance_id, relations_dict, options):
+
+        print('load_relation_to_many_entities')
+
+        if not options.get('load_entities', True):
+            return {}
 
         data = {}
-
-        for relation_name in model.many_to_many_dict():
-            relation = getattr(model, relation_name)
-
+        #print('dict')
+        #print(relations_dict)
+        for relation_name in relations_dict:
+            relation = model.get_relation(relation_name)  # getattr(model, relation_name)
             if relation.lazy_load:
                 continue
-            filter_condition = Equals(ColumnReference(model.id_field_name(), table=model.table_name),
-                                      NumericalLiteral(id))
-
-            orderby = None
-            page_size = None
-            active_page = None
-
-            # todo: refactor, how to make sure, options is dict?
-            options = m2m_options.get(relation_name, None)
-            if options is not None:
-                dont_load = options.get('dont_load', False)
-                if dont_load:
-                    continue
-                orderby = options.get('orderby', None)
-                page_size = options.get('page_size', None)
-                active_page = options.get('active_page', None)
-
-            # print('handle relation:', relation_name)
-            query = QueryBuilder(relation.foreign_model, self) \
-                .add_filter_condition(filter_condition) \
-                .orderby(orderby) \
-                .pagination(active_page, page_size) \
-                .build()
-            data[relation_name] = self.get_all(query, entity_format=entity_format)
-            # print('entities:', relation.entities)
+            print('handle relation: ', relation_name)
+            relation_options = options.get(relation_name, None)
+            if relation_options is not None and relation_options.get('skip', False):
+                continue
+            query = self.build_relation_to_many_query(model, instance_id, relation, relation_options)
+            print(query)
+            query.model = relation.foreign_model
+            data[relation_name] = self.get_all(query, entity_format=options.get('entity_format', EntityFormat.MODEL))
+        print('data:')
+        print(data)
         return data
-
-    def load_one_to_many_entities(self, model, id, one_to_many_options, entity_format=EntityFormat.MODEL):
-
-        # todo: refactor: combine with load_one_to_many_entities
-
-        # print('load_one_to_many_entities, options:')
-        # print(one_to_many_options)
-
-        if one_to_many_options is None:
-            one_to_many_options = {'load_12m': True}
-        else:
-            if not one_to_many_options.get('load_12m', True):
-                return
-
-        data = {}
-
-        for relation_name in model.one_to_many_dict():
-            relation = model.get_relation(relation_name)
-            if relation.lazy_load:
-                continue
-
-            filter_condition = Equals(ColumnReference(model.id_field_name(), table=model.table_name),
-                                      NumericalLiteral(id))
-            orderby = None
-            page_size = None
-            active_page = None
-
-            options = one_to_many_options.get(relation_name, None)
-            if options is not None:
-                dont_load = options.get('dont_load', False)
-                if dont_load:
-                    continue
-                orderby = options.get('orderby', None)
-                page_size = options.get('page_size', None)
-                active_page = options.get('active_page', None)
-
-            # print('handle relation:', relation_name)
-            query = QueryBuilder(relation.foreign_model, self) \
-                .add_filter_condition(filter_condition) \
-                .orderby(orderby) \
-                .pagination(active_page, page_size) \
-                .build()
-            data[relation_name] = self.get_all(query, entity_format=entity_format)
-            # print(f'loaded {len(relation.entities)} entities')
-            return data
 
     # todo: make this method to method of FromClause
     def include_many_to_many_join(self, model, relation, from_clause):
@@ -412,6 +368,7 @@ class QueryWizzard:
                   m2m_options=None, one_to_many_options=None,
                   raise_ifnotfound=True, disable_relations=False,
                   entity_format=EntityFormat.MODEL, **kwargs):
+
         model = self.get_model(model)
         filter_condition = Equals.id_as_parameter(model, id)
         # filter_condition = Equals(ColumnReference(model.id_field_name(), table=model.table_name),
@@ -424,6 +381,8 @@ class QueryWizzard:
                             disable_relations=disable_relations,
                             entity_format=entity_format,
                             **kwargs)
+        print('instance')
+        print(instance)
         if instance is None and raise_ifnotfound:
             raise DidNotFindObjectWithIdException(
                 msg=f'Did not find {model.__name__} with id {id}',
@@ -431,16 +390,22 @@ class QueryWizzard:
                 id=id)
         return instance
 
-    def get(self, model, select_fields=None,
-            filter_condition=None, m2m_options=None,
-            one_to_many_options=None, disable_relations=False,
-            entity_format=EntityFormat.MODEL, **kwargs):
+    def get(self,
+            model,
+            select_fields=None,
+            filter_condition=None,
+            m2m_options=None,
+            one_to_many_options=None,
+            disable_relations=False,
+            entity_format=EntityFormat.MODEL,
+            **kwargs):
 
         model = self.get_model(model)
         select_fields = build_select_fields(model, select_fields)
         where_clause = build_where_clause(model, filter_condition=filter_condition, **kwargs)
         from_clause = FromClause(model.table_name)
 
+        # todo: move blow to next if not disable_relations...
         if disable_relations:
             one_to_many_aggregations = []
             m2m_aggregations = []
@@ -449,6 +414,9 @@ class QueryWizzard:
                 model=model, from_clause=from_clause, select_fields=select_fields)
             m2m_aggregations = self.include_many_to_many_aggregations(
                 model=model, from_clause=from_clause, select_fields=select_fields)
+
+        print('select_fields')
+        print(select_fields)
 
         many_to_one_entities = self.handle_many_to_one_entities(
             model=model, select_fields=select_fields, from_clause=from_clause)
@@ -460,6 +428,8 @@ class QueryWizzard:
             pagination=None
         )
 
+        #print(query)
+
         self.execute_query(query)
         data = self.db.fetchone()
 
@@ -470,22 +440,23 @@ class QueryWizzard:
                                         m2m_aggregations)
         entity_id = data.get(model.id_field_name())
 
-        if not disable_relations:
-            m2m_data = self.load_many_to_many_entities(
-                model,
-                id=entity_id,
-                m2m_options=m2m_options,
-                entity_format=entity_format)
-            if m2m_data is not None:
-                data.update(**m2m_data)
+        print(data)
 
-            one_to_many_data = self.load_one_to_many_entities(
-                model,
-                id=entity_id,
-                one_to_many_options=one_to_many_options,
-                entity_format=entity_format)
-            if one_to_many_data is not None:
-                data.update(**one_to_many_data)
+        if not disable_relations:
+            data.update(
+                **self.load_relation_to_many_entities(model,
+                                                      instance_id=entity_id,
+                                                      relations_dict=model.many_to_many_dict(),
+                                                      options={**(m2m_options or {}),
+                                                               'entity_format': entity_format})
+            )
+            data.update(
+                **self.load_relation_to_many_entities(model,
+                                                      instance_id=entity_id,
+                                                      relations_dict=model.one_to_many_dict(),
+                                                      options={**(one_to_many_options or {}),
+                                                               'entity_format': entity_format})
+            )
 
         # todo: refactor in method/class entitybuilder
         if entity_format == EntityFormat.MODEL:
@@ -503,7 +474,6 @@ class QueryWizzard:
     def load_filter_values(self, filters):
         if filters is None:
             return
-        kwargs = {}
         for filter_ in filters:
             if isinstance(filter_, (ManyToOneFilter, ManyToManyFilter)):
                 filter_.entities = list()
@@ -514,9 +484,10 @@ class QueryWizzard:
                                            id=id_value, disable_relations=True)
                         )
 
-    def get_all(self, query, include_count=False,
+    def get_all(self, query: Query, include_count=False,
                 entity_format=EntityFormat.MODEL):
         # todo: put include_count and entity_format into options
+        # todo: somehow manage query.model better: possibly as extra parameter of this method instead of attribute of query
 
         from_clause = query.from_clause
         select_fields = query.select_clause.items
@@ -552,9 +523,14 @@ class QueryWizzard:
         entities = []
         if entity_format == EntityFormat.MODEL:
             for r in res:
-                data = self.model_instance_dict(model, r, entity_format, select_fields,
-                                                many_to_one_entities, one_to_many_aggregations,
-                                                m2m_aggregations)
+                data = self.model_instance_dict(
+                    model,
+                    r,
+                    entity_format,
+                    select_fields,
+                    many_to_one_entities,
+                    one_to_many_aggregations,
+                    m2m_aggregations)
                 entities.append(
                     self.build_entity(
                         model,

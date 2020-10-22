@@ -861,9 +861,6 @@ class QueryWizzard:
                 updates[column] = value
                 continue
 
-            if not value:
-                continue
-
             relation = model.get_relation(column)
 
             # todo: refactor
@@ -896,9 +893,6 @@ class QueryWizzard:
         update_query = UpdateQuery.build(
             model, filter_condition=filter_condition, updates=updates)
 
-        print("m2m_update_queries:")
-        print(m2m_update_queries)
-
         self.execute_queries_in_transaction(queries=[update_query] + m2m_update_queries)
 
     def update_by_id(self, model, instance_id, data, prev_data, commit=True, return_updated_object=True):
@@ -907,15 +901,10 @@ class QueryWizzard:
         model = self.get_model(model)
         filter_condition = Equals.id_as_parameter(model, instance_id)
         # todo: add logging
-        print("data:")
-        print(data)
         self.update(model=model, filter_condition=filter_condition, data=data, prev_data=prev_data,
                     instance_id=instance_id, commit=commit)
         if return_updated_object:
-            a = self.get_by_id(model, instance_id, entity_format=EntityFormat.JSON)
-            print('update_by_id')
-            print(a)
-            return a
+            return self.get_by_id(model, instance_id, entity_format=EntityFormat.JSON)
 
     def field_to_sql_data_type(self, field):
         # todo: dynamic method_name pattern
@@ -928,10 +917,8 @@ class QueryWizzard:
         if isinstance(field, DateTimeField):
             return 'TEXT'
 
-
     def build_create_table_query(self, model, if_not_exists=False):
         model = self.get_model(model)
-
         columns = {}
         for field_name, field in model.fields():
             columns[field_name] = {
@@ -947,4 +934,4 @@ class QueryWizzard:
         model = self.get_model(model)
         query = self.build_create_table_query(model, if_not_exists=if_not_exists)
         self.execute_query(query)
-        # todo: commit missingß
+        # todo: commit missing

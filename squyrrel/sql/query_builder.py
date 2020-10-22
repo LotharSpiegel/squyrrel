@@ -1,10 +1,10 @@
-from typing import Type
+from typing import Type, List
 
 from squyrrel.orm.field import ManyToMany, OneToMany
 from squyrrel.orm.exceptions import RelationNotFoundException
 from squyrrel.sql.join import OnJoinCondition, JoinType
 from squyrrel.sql.utils import sanitize_column_reference, listify
-from squyrrel.orm.filter import ManyToOneFilter, ManyToManyFilter, StringFieldFilter
+from squyrrel.orm.filter import ManyToOneFilter, ManyToManyFilter, StringFieldFilter, OrFieldFilter, FieldFilter
 from squyrrel.sql.references import ColumnReference
 from squyrrel.orm.model import Model
 from squyrrel.sql.clauses import SelectClause, FromClause, WhereClause, Pagination, OrderByClause
@@ -88,52 +88,71 @@ class QueryBuilder:
         self._select_fields = args
         return self
 
-    def model_filters(self, filters):
+    def many_to_one_filter_condition(self, filter: ManyToOneFilter):
+        # todo: handle filter.negate
+        conditions = []
+        # print(filter.id_values)
+        for id_value in filter.id_values:
+            conditions.append(
+                Equals.column_as_parameter(
+                    ColumnReference(filter.key, table=self._model.table_name),
+                    id_value
+                )
+            )
+        if conditions:
+            return Or.concat(conditions)
+        return None
+
+    def many_to_many_filter_condition(self, filter: ManyToManyFilter):
+        # todo: handle filter.negate
+        conditions = []
+        filterforeign_model = self.get_model(filter.foreign_model)
+        for id_value in filter.id_values:
+            conditions.append(
+                Equals.column_as_parameter(
+                    ColumnReference(filter.key, table=filterforeign_model.table_name),
+                    id_value
+                )
+            )
+        if conditions:
+            return Or.concat(conditions)
+        return None
+
+    def string_filter_condition(self, filter: StringFieldFilter):
+        if filter.negate:
+            return Not(
+                Equals.column_as_parameter(
+                    ColumnReference(filter.key, table=self._model.table_name),
+                    value=filter.value))
+        else:
+            return Like.column_as_parameter(
+                ColumnReference(filter.key, table=self._model.table_name),
+                search_value=filter.value)
+
+    def or_filter_condition(self, filter: OrFieldFilter):
+        conditions = []
+        for filter in filter.filters:
+            conditions.append(self.filter_condition(filter))
+        return Or.concat(conditions)
+
+    def filter_condition(self, filter: Type[FieldFilter]):
+        if isinstance(filter, ManyToOneFilter):
+            return self.many_to_one_filter_condition(filter)
+        elif isinstance(filter, ManyToManyFilter):
+            return self.many_to_many_filter_condition(filter)
+        elif isinstance(filter, StringFieldFilter):
+            return self.string_filter_condition(filter)
+        elif isinstance(filter, OrFieldFilter):
+            return self.or_filter_condition(filter)
+        return None
+
+    def model_filters(self, filters: List[Type[FieldFilter]]):
         if filters is None:
             return self
         for filter in filters:
-            if isinstance(filter, ManyToOneFilter):
-                # todo: handle filter.negate
-                conditions = []
-                # print(filter.id_values)
-                for id_value in filter.id_values:
-                    conditions.append(
-                        Equals.column_as_parameter(
-                            ColumnReference(filter.key, table=self._model.table_name),
-                            id_value
-                        )
-                    )
-                if conditions:
-                    self._filter_conditions.append(Or.concat(conditions))
-            elif isinstance(filter, ManyToManyFilter):
-                # todo: handle filter.negate
-                conditions = []
-                filterforeign_model = self.get_model(filter.foreign_model)
-                for id_value in filter.id_values:
-                    conditions.append(
-                        Equals.column_as_parameter(
-                            ColumnReference(filter.key, table=filterforeign_model.table_name),
-                            id_value
-                        )
-                    )
-                if conditions:
-                    self._filter_conditions.append(Or.concat(conditions))
-            elif isinstance(filter, StringFieldFilter):
-                if filter.negate:
-                    condition = Not(
-                        Equals.column_as_parameter(
-                            ColumnReference(filter.key, table=self._model.table_name),
-                            value=filter.value
-                        )
-                    )
-                else:
-                    condition = Like.column_as_parameter(
-                        ColumnReference(filter.key, table=self._model.table_name),
-                        search_value=filter.value
-                    )
-                self._filter_conditions.append(
-                    condition
-                )
+            condition = self.filter_condition(filter)
+            if condition is not None:
+                self._filter_conditions.append(condition)
         return self
 
     def add_filter_condition(self, condition):

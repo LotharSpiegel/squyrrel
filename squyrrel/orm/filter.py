@@ -1,3 +1,5 @@
+from typing import List
+
 
 class FieldFilter:
 
@@ -125,3 +127,10 @@ class ManyToManyFilter(RelationFilter):
     @property
     def relation(self):
         return self.model.get_many_to_many_relation(self._relation)
+
+
+class OrFieldFilter(FieldFilter):
+
+    def __init__(self, name: str, model, filters: List[FieldFilter], description: str = None, negate: bool = False):
+        super().__init__(name, model, description=description, negate=negate)
+        self.filters = filters

@@ -21,9 +21,9 @@ class QueryBuilder:
     query = QueryBuilder(DummyModel).select().model_filters().pagination().build()
     """
 
-    def __init__(self, model: Type[Model], qw):
+    def __init__(self, model: Type[Model] or str, qw):
         self._qw = qw
-        self._model = self.get_model(model)
+        self._model = self._get_model(model)
 
         self._from_clause = FromClause(self._model.table_name)
 
@@ -51,10 +51,16 @@ class QueryBuilder:
         self._one_to_many_relations = []
         self._one_to_many_joined_models = []
 
-    def get_model(self, model):
+    def _get_model(self, model: Type[Model] or str):
         if self._qw is not None:
+            print('model:')
+            print(self._qw.get_model(model))
             return self._qw.get_model(model)
         return model
+
+    @property
+    def model(self):
+        return self._model
 
     def build(self):
 
@@ -84,8 +90,8 @@ class QueryBuilder:
         query.model = self._model
         return query
 
-    def select(self, *args):
-        self._select_fields = args
+    def select(self, select_fields):
+        self._select_fields = select_fields
         return self
 
     def many_to_one_filter_condition(self, filter: ManyToOneFilter):
@@ -106,7 +112,7 @@ class QueryBuilder:
     def many_to_many_filter_condition(self, filter: ManyToManyFilter):
         # todo: handle filter.negate
         conditions = []
-        filterforeign_model = self.get_model(filter.foreign_model)
+        filterforeign_model = self._get_model(filter.foreign_model)
         for id_value in filter.id_values:
             conditions.append(
                 Equals.column_as_parameter(
@@ -252,10 +258,10 @@ class QueryBuilder:
         return self._qw.get_model_by_table(table)
 
     def _build_select_clause(self):
-        select_fields = []
         if self._select_fields is None:
-            for field_name, field in self._model.fields():
-                select_fields.append(ColumnReference(field_name, table=self._model.table_name))
+            if not hasattr(self._model, 'build_select_fields'):
+                raise ValueError('self._model must be an instance of Model')
+            select_fields = self._model.build_select_fields()
         else:
             select_fields = self._select_fields
         self._select_fields = select_fields
@@ -321,7 +327,7 @@ class QueryBuilder:
             table=relation.junction_table,
             join_condition=junction_join_condition)
 
-        foreign_model = self.get_model(relation.foreign_model)
+        foreign_model = self._get_model(relation.foreign_model)
         foreign_table = foreign_model.table_name
         join_condition = OnJoinCondition(
             Equals(ColumnReference(foreign_model.id_field_name(), table=relation.junction_table),

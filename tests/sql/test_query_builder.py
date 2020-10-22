@@ -28,7 +28,7 @@ class TestQueryBuilder:
             qb.build()
 
     def test_build_basic_query(self, qb: QueryBuilder):
-        query = qb.select('dummy_id', 'name').build()
+        query = qb.select(['dummy_id', 'name']).build()
         assert_query_lines(query, ('select dummy_id, name',
                                    'from dummy_table'))
 
@@ -38,7 +38,7 @@ class TestQueryBuilder:
                                    'from dummy_table'))
 
     def test_build_query_by_id(self, qb: QueryBuilder):
-        query = qb.select('*').by_id(17).build()
+        query = qb.select(['*']).by_id(17).build()
         assert_query_lines(query, ('select *',
                                    'from dummy_table',
                                    'where dummy_table.dummy_id = ?'))

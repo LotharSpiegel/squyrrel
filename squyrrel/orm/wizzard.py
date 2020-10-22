@@ -342,7 +342,7 @@ class QueryWizzard:
         return instance
 
     def get(self,
-            model: Type[Model],
+            model: Type[Model] or str,
             select_fields=None,
             filter_condition=None,
             m2m_options=None,
@@ -350,29 +350,30 @@ class QueryWizzard:
             disable_relations=False,
             entity_format=EntityFormat.MODEL):
 
-        if select_fields is None:
-            select_fields = model.build_select_fields()
-
         query = QueryBuilder(model, self) \
             .select(select_fields) \
             .add_filter_condition(filter_condition) \
             .build()
+
+        select_fields = query.select_clause.items
 
         # todo: move blow to next if not disable_relations...
         if disable_relations:
             one_to_many_aggregations = []
             m2m_aggregations = []
         else:
-            one_to_many_aggregations = self.include_one_to_many_aggregations(model=model,
+            one_to_many_aggregations = self.include_one_to_many_aggregations(model=query.model,
                                                                              from_clause=query.from_clause,
                                                                              select_fields=select_fields)
-            m2m_aggregations = self.include_many_to_many_aggregations(model=model,
+            m2m_aggregations = self.include_many_to_many_aggregations(model=query.model,
                                                                       from_clause=query.from_clause,
                                                                       select_fields=select_fields)
 
-        many_to_one_entities = self.handle_many_to_one_entities(model=model,
+        many_to_one_entities = self.handle_many_to_one_entities(model=query.model,
                                                                 select_fields=select_fields,
                                                                 from_clause=query.from_clause)
+
+        print(query)
 
         self.execute_query(query)
         data = self.db.fetchone()
@@ -380,25 +381,25 @@ class QueryWizzard:
         if data is None:
             return None
 
-        data = self.model_instance_dict(model, data, entity_format, select_fields,
+        data = self.model_instance_dict(query.model, data, entity_format, select_fields,
                                         many_to_one_entities, one_to_many_aggregations,
                                         m2m_aggregations)
-        entity_id = data.get(model.id_field_name())
+        entity_id = data.get(query.model.id_field_name())
 
         # print(data)
 
         if not disable_relations:
             data.update(
-                **self.load_relation_to_many_entities(model,
+                **self.load_relation_to_many_entities(query.model,
                                                       instance_id=entity_id,
-                                                      relations_dict=model.many_to_many_dict(),
+                                                      relations_dict=query.model.many_to_many_dict(),
                                                       options={**(m2m_options or {}),
                                                                'entity_format': entity_format})
             )
             data.update(
-                **self.load_relation_to_many_entities(model,
+                **self.load_relation_to_many_entities(query.model,
                                                       instance_id=entity_id,
-                                                      relations_dict=model.one_to_many_dict(),
+                                                      relations_dict=query.model.one_to_many_dict(),
                                                       options={**(one_to_many_options or {}),
                                                                'entity_format': entity_format})
             )
@@ -406,7 +407,7 @@ class QueryWizzard:
         # todo: refactor in method/class entitybuilder
         if entity_format == EntityFormat.MODEL:
             entity = self.build_entity(
-                model,
+                query.model,
                 data,
                 select_fields,
                 m2m_aggregations=m2m_aggregations

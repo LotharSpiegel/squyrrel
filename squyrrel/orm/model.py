@@ -3,6 +3,7 @@ from squyrrel.orm.field import (Field, Relation, ManyToOne,
 from squyrrel.orm.exceptions import RelationNotFoundException
 from squyrrel.orm.filter import ManyToOneFilter, ManyToManyFilter, StringFieldFilter
 from squyrrel.orm.entity_format import EntityFormat
+from squyrrel.sql.references import ColumnReference
 
 
 class AbstractModel:
@@ -12,7 +13,7 @@ class AbstractModel:
         return {k: v for k, v in cls.__dict__.items() if not k.startswith('__')}
 
     @classmethod
-    def attr_dict(cls, field_cls, exclude_cls=CongregateField):
+    def attr_dict(cls, field_cls, exclude_cls=CongregateField or None):
         if exclude_cls is not None:
             return {k: v for k, v in cls.attributes().items() if
                     isinstance(v, field_cls) and not isinstance(v, exclude_cls)}
@@ -35,6 +36,10 @@ class Model(AbstractModel):
     @classmethod
     def fields(cls):
         return cls.fields_dict().items()
+
+    @classmethod
+    def build_select_fields(cls):
+        return [ColumnReference(field_name, table=cls.table_name) for field_name in cls.fields_dict().keys()]
 
     @classmethod
     def congregate_fields(cls):

@@ -23,7 +23,6 @@ class QueryBuilder:
 
     def __init__(self, model: Type[Model], qw):
         self._qw = qw
-
         self._model = self.get_model(model)
 
         self._from_clause = FromClause(self._model.table_name)

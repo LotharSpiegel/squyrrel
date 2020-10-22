@@ -1,3 +1,5 @@
+from typing import Type
+
 from squyrrel.db.connection import SqlDatabaseConnection
 
 from squyrrel.orm.entity_format import EntityFormat
@@ -5,8 +7,9 @@ from squyrrel.orm.exceptions import *
 from squyrrel.orm.field import (ManyToOne, ManyToMany, StringField,
                                 DateTimeField, IntegerField)
 from squyrrel.orm.filter import (ManyToOneFilter, ManyToManyFilter)
+from squyrrel.orm.model import Model
 from squyrrel.orm.signals import model_loaded_signal
-from squyrrel.orm.utils import sanitize_id_array
+from squyrrel.orm.utils import sanitize_id_array, m2m_aggregation_subquery_alias
 from squyrrel.sql.query import (Query, UpdateQuery, InsertQuery,
                                 DeleteQuery, CreateTableQuery)
 from squyrrel.sql.clauses import *
@@ -15,49 +18,6 @@ from squyrrel.sql.expressions import (Equals, NumericalLiteral,
 from squyrrel.sql.query_builder import QueryBuilder
 from squyrrel.sql.references import ColumnReference
 from squyrrel.sql.join import OnJoinCondition, JoinConstruct, JoinType
-
-
-# todo: put these methods into utility or make static
-
-
-def m2m_aggregation_subquery_alias(model, relation_name):
-    return f'{model.table_name}_{relation_name}'
-
-
-# todo: is used in e.g. handle_many_to_one,
-def build_select_fields(model, select_fields=None):
-    if select_fields is None:
-        select_fields = []
-        for field_name, field in model.fields():
-            select_fields.append(ColumnReference(field_name, table=model.table_name))
-    return select_fields
-
-
-def build_where_clause(model, filter_condition=None, **kwargs):
-    # todo: this is garbage
-    if filter_condition is None:
-        filter_conditions = []
-        for key, value in kwargs.items():
-            filter_conditions.append(
-                Equals.column_as_parameter(ColumnReference(key, table=model.table_name), value))
-        if filter_conditions:
-            return WhereClause(filter_conditions[0])
-        else:
-            return None
-    else:
-        return WhereClause(filter_condition)
-
-
-def field_to_sql_data_type(field):
-    # todo: dynamic method_name pattern
-    # at the moment only Sqlite...
-
-    if isinstance(field, StringField):
-        return 'TEXT'
-    if isinstance(field, IntegerField):
-        return 'INTEGER'
-    if isinstance(field, DateTimeField):
-        return 'TEXT'
 
 
 class QueryWizzard:
@@ -176,7 +136,7 @@ class QueryWizzard:
     def handle_many_to_one(self, model, select_fields, relation, from_clause):
         relation.foreign_model = self.get_model(relation.foreign_model)
         foreign_model = self.get_model(relation.foreign_model)
-        foreign_select_fields = build_select_fields(foreign_model)
+        foreign_select_fields = foreign_model.build_select_fields()
 
         # todo: make builder method specially for columns on OnJoinCondition
         join_condition = OnJoinCondition(
@@ -362,7 +322,7 @@ class QueryWizzard:
     def get_by_id(self, model, id, select_fields=None,
                   m2m_options=None, one_to_many_options=None,
                   raise_if_not_found=True, disable_relations=False,
-                  entity_format=EntityFormat.MODEL, **kwargs):
+                  entity_format=EntityFormat.MODEL):
         model = self.get_model(model)
         filter_condition = Equals.id_as_parameter(model, id)
         # filter_condition = Equals(ColumnReference(model.id_field_name(), table=model.table_name),
@@ -373,8 +333,7 @@ class QueryWizzard:
                             m2m_options=m2m_options,
                             one_to_many_options=one_to_many_options,
                             disable_relations=disable_relations,
-                            entity_format=entity_format,
-                            **kwargs)
+                            entity_format=entity_format)
         if instance is None and raise_if_not_found:
             raise DidNotFindObjectWithIdException(
                 msg=f'Did not find {model.__name__} with id {id}',
@@ -383,51 +342,50 @@ class QueryWizzard:
         return instance
 
     def get(self,
-            model,
+            model: Type[Model],
             select_fields=None,
             filter_condition=None,
             m2m_options=None,
             one_to_many_options=None,
             disable_relations=False,
-            entity_format=EntityFormat.MODEL,
-            **kwargs):
+            entity_format=EntityFormat.MODEL):
 
-        model = self.get_model(model)
-        select_fields = build_select_fields(model, select_fields)
-        where_clause = build_where_clause(model, filter_condition=filter_condition, **kwargs)
-        from_clause = FromClause(model.table_name)
+        if select_fields is None:
+            select_fields = model.build_select_fields()
+
+        query = QueryBuilder(model, self) \
+            .select(select_fields) \
+            .add_filter_condition(filter_condition) \
+            .build()
 
         # todo: move blow to next if not disable_relations...
         if disable_relations:
             one_to_many_aggregations = []
             m2m_aggregations = []
         else:
-            one_to_many_aggregations = self.include_one_to_many_aggregations(
-                model=model, from_clause=from_clause, select_fields=select_fields)
-            m2m_aggregations = self.include_many_to_many_aggregations(
-                model=model, from_clause=from_clause, select_fields=select_fields)
+            one_to_many_aggregations = self.include_one_to_many_aggregations(model=model,
+                                                                             from_clause=query.from_clause,
+                                                                             select_fields=select_fields)
+            m2m_aggregations = self.include_many_to_many_aggregations(model=model,
+                                                                      from_clause=query.from_clause,
+                                                                      select_fields=select_fields)
 
-        many_to_one_entities = self.handle_many_to_one_entities(
-            model=model, select_fields=select_fields, from_clause=from_clause)
-
-        query = Query(
-            select_clause=SelectClause(*select_fields),
-            from_clause=from_clause,
-            where_clause=where_clause,
-            pagination=None
-        )
+        many_to_one_entities = self.handle_many_to_one_entities(model=model,
+                                                                select_fields=select_fields,
+                                                                from_clause=query.from_clause)
 
         self.execute_query(query)
         data = self.db.fetchone()
 
         if data is None:
             return None
+
         data = self.model_instance_dict(model, data, entity_format, select_fields,
                                         many_to_one_entities, one_to_many_aggregations,
                                         m2m_aggregations)
         entity_id = data.get(model.id_field_name())
 
-        print(data)
+        # print(data)
 
         if not disable_relations:
             data.update(
@@ -673,16 +631,13 @@ class QueryWizzard:
         # todo: replace with parameter builder method
         filter_condition = Equals(ColumnReference(search_column, table=model.table_name),
                                   literal)
-        where_clause = build_where_clause(model, filter_condition=filter_condition)
 
-        query = Query(
-            select_clause=SelectClause(*select_fields),
-            from_clause=FromClause(model.table_name),
-            where_clause=where_clause,
-            pagination=None
-        )
-        return query
+        return QueryBuilder(model, self) \
+            .select(select_fields) \
+            .add_filter_condition(filter_condition) \
+            .build()
 
+    # todo: make static
     def prepare_m2m_data(self, model, prepared_data, instance=None):
         for m2m_relation_name, m2m_relation in model.many_to_many_relations():
             prepared_data[m2m_relation_name] = getattr(instance, m2m_relation_name).entities
@@ -698,15 +653,15 @@ class QueryWizzard:
                 pass
             else:
                 if isinstance(relation, ManyToOne):
-                    print('handle m21:', relation_name)
+                    # print('handle m21:', relation_name)
                     # if columns not equal
                     # refactor: retrieve value by id
                     relation_foreign_model = self.get_model(relation.foreign_model)
                     if relation.load_all:
-                        print('load_all')
+                        # print('load_all')
                         query = QueryBuilder(relation_foreign_model, self).build()
                         prepared_data[relation_name + '_all'] = self.get_all(query)
-                        print(prepared_data[relation_name + '_all'])
+                        # print(prepared_data[relation_name + '_all'])
 
                     prepared_value = self.retrieve_value_by_value(
                         model=relation_foreign_model,
@@ -962,13 +917,25 @@ class QueryWizzard:
             print(a)
             return a
 
+    def field_to_sql_data_type(self, field):
+        # todo: dynamic method_name pattern
+        # at the moment only Sqlite...
+
+        if isinstance(field, StringField):
+            return 'TEXT'
+        if isinstance(field, IntegerField):
+            return 'INTEGER'
+        if isinstance(field, DateTimeField):
+            return 'TEXT'
+
+
     def build_create_table_query(self, model, if_not_exists=False):
         model = self.get_model(model)
 
         columns = {}
         for field_name, field in model.fields():
             columns[field_name] = {
-                'data_type': field_to_sql_data_type(field),
+                'data_type': self.field_to_sql_data_type(field),
                 'primary_key': field.primary_key,
                 'not_null': field.not_null,
                 'unique': field.unique,

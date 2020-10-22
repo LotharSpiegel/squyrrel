@@ -1,10 +1,11 @@
 
 class FieldFilter:
 
-    def __init__(self, name: str, model, description: str = None):
+    def __init__(self, name: str, model, description: str = None, negate: bool = False):
         self.name = name
         self.model = model
         self.description = description
+        self.negate = negate
 
     @property
     def model_name(self):
@@ -16,8 +17,8 @@ class FieldFilter:
 
 class StringFieldFilter(FieldFilter):
 
-    def __init__(self, name, model, field_name, value=None):
-        super().__init__(name=name, model=model)
+    def __init__(self, name, model, field_name, value=None, description: str = None, negate: bool = False):
+        super().__init__(name=name, model=model, description=description, negate=negate)
         self.field_name = field_name
         self._value = value
 
@@ -41,14 +42,23 @@ class StringFieldFilter(FieldFilter):
         return f'{self.name} = {self.value}'
 
 
+#class CoalesceFilter(FieldFilter):
+#
+#    def __init__(self, name, model, description: str = None):
+#        super().__init__(name=name, model=model, description=description)
+#
+#    def __str__(self):
+#        return ''
+
+
 # todo: inherit relationfilter from clonable!! (see field)
 
 
 class RelationFilter(FieldFilter):
     conjunction = 'AND'
 
-    def __init__(self, name, model, relation, id_values=None, entities=None, load_all=False):
-        super().__init__(name=name, model=model)
+    def __init__(self, name, model, relation, id_values=None, entities=None, load_all=False, description: str = None, negate: bool = False):
+        super().__init__(name=name, model=model, description=description, negate=negate)
         self._relation = relation
         self.id_values = id_values
         self._entities = None

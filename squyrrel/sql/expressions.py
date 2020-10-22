@@ -104,13 +104,14 @@ class NumericalLiteral(Literal):
     def __init__(self, value):
         if isinstance(value, str):
             if NumericalLiteral.is_int(value):
-                self.value = int(value)
+                v = int(value)
             elif NumericalLiteral.is_float(value):
-                self.value = float(value)
+                v = float(value)
             else:
-                self.value = value
+                v = value
         else:
-            self.value = value
+            v = value
+        super().__init__(v)
 
     @staticmethod
     def is_float(value):
@@ -130,6 +131,7 @@ class NumericalLiteral(Literal):
 
 
 class Predicate:
+
     @property
     def params(self):
         return []
@@ -142,8 +144,7 @@ class Predicate:
 class BooleanLiteral(Literal, Predicate):
 
     def __init__(self, value):
-        # init of super class
-        self.value = value
+        super().__init__(value)
 
     def __repr__(self):
         if self.value is None:

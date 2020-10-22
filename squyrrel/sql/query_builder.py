@@ -8,7 +8,7 @@ from squyrrel.orm.filter import ManyToOneFilter, ManyToManyFilter, StringFieldFi
 from squyrrel.sql.references import ColumnReference
 from squyrrel.orm.model import Model
 from squyrrel.sql.clauses import SelectClause, FromClause, WhereClause, Pagination, OrderByClause
-from squyrrel.sql.expressions import Equals, Or, Like, And
+from squyrrel.sql.expressions import Equals, Or, Like, And, Not
 from squyrrel.sql.query import Query
 
 
@@ -93,6 +93,7 @@ class QueryBuilder:
             return self
         for filter in filters:
             if isinstance(filter, ManyToOneFilter):
+                # todo: handle filter.negate
                 conditions = []
                 # print(filter.id_values)
                 for id_value in filter.id_values:
@@ -105,6 +106,7 @@ class QueryBuilder:
                 if conditions:
                     self._filter_conditions.append(Or.concat(conditions))
             elif isinstance(filter, ManyToManyFilter):
+                # todo: handle filter.negate
                 conditions = []
                 filterforeign_model = self.get_model(filter.foreign_model)
                 for id_value in filter.id_values:
@@ -117,11 +119,20 @@ class QueryBuilder:
                 if conditions:
                     self._filter_conditions.append(Or.concat(conditions))
             elif isinstance(filter, StringFieldFilter):
-                self._filter_conditions.append(
-                    Like.column_as_parameter(
+                if filter.negate:
+                    condition = Not(
+                        Equals.column_as_parameter(
+                            ColumnReference(filter.key, table=self._model.table_name),
+                            value=filter.value
+                        )
+                    )
+                else:
+                    condition = Like.column_as_parameter(
                         ColumnReference(filter.key, table=self._model.table_name),
                         search_value=filter.value
                     )
+                self._filter_conditions.append(
+                    condition
                 )
         return self
 
@@ -214,7 +225,7 @@ class QueryBuilder:
                     orderby_columns.append(column)
                 else:
                     print(f'Warning: The orderby column <{column}> is not specified in the select clause')
-            self._orderby_clause = OrderByClause(columns=orderby_columns, ascending= self._ascending)
+            self._orderby_clause = OrderByClause(columns=orderby_columns, ascending=self._ascending)
 
     def _get_model_by_table(self, table):
         if self._qw is None:
@@ -314,6 +325,7 @@ class QueryBuilder:
             self._m2m_joined_models.append(foreign_model)
             relation = self._model.get_relation(relation_name)
             self._m2m_relations.append((relation_name, relation))
+
     #     column_model = self.qw.get_model_by_table(column.table)
 
     def _add_one_to_many_relation(self, foreign_model, relation_name):

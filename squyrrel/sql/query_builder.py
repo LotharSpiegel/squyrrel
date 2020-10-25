@@ -96,27 +96,19 @@ class QueryBuilder:
 
     def many_to_one_filter_condition(self, filter: ManyToOneFilter):
         # todo: handle filter.negate
-        conditions = []
-        # print(filter.id_values)
-        for id_value in filter.id_values:
-            conditions.append(
-                Equals.column_as_parameter(
-                    ColumnReference(filter.key, table=self._model.table_name),
-                    id_value
-                )
-            )
-        if conditions:
-            return Or.concat(conditions)
-        return None
+        return Equals.column_as_parameter(
+            ColumnReference(filter.key, table=self._model.table_name),
+            filter.value
+        )
 
     def many_to_many_filter_condition(self, filter: ManyToManyFilter):
         # todo: handle filter.negate
         conditions = []
-        filterforeign_model = self._get_model(filter.foreign_model)
-        for id_value in filter.id_values:
+        filter_foreign_model = self._get_model(filter.foreign_model)
+        for id_value in filter.value:
             conditions.append(
                 Equals.column_as_parameter(
-                    ColumnReference(filter.key, table=filterforeign_model.table_name),
+                    ColumnReference(filter.key, table=filter_foreign_model.table_name),
                     id_value
                 )
             )
@@ -156,6 +148,8 @@ class QueryBuilder:
         if filters is None:
             return self
         for filter in filters:
+            print('handle filter:')
+            print(filter)
             condition = self.filter_condition(filter)
             if condition is not None:
                 self._filter_conditions.append(condition)
@@ -237,6 +231,7 @@ class QueryBuilder:
     def _build_where_clause(self):
         if self._filter_conditions:
             self._where_clause = WhereClause(And.concat(self._filter_conditions))
+            print(self._where_clause)
         else:
             self._where_clause = None
 

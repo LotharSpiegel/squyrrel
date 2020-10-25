@@ -1,7 +1,7 @@
 from squyrrel.orm.field import (Field, Relation, ManyToOne,
-                                ManyToMany, OneToMany, StringField, CongregateField)
+                                ManyToMany, OneToMany, CongregateField)
 from squyrrel.orm.exceptions import RelationNotFoundException
-from squyrrel.orm.filter import ManyToOneFilter, ManyToManyFilter, StringFieldFilter
+from squyrrel.orm.filter import ManyToOneFilter, ManyToManyFilter
 from squyrrel.orm.entity_format import EntityFormat
 from squyrrel.sql.references import ColumnReference
 
@@ -217,28 +217,6 @@ class Model(AbstractModel):
         for field_name, field in cls.fields():
             json_dict[field_name] = field.value
         return json_dict
-
-    @classmethod
-    def build_many_to_one_filter(cls, model, name, relation, load_all=False):
-        return ManyToOneFilter(
-            model=model,
-            name=name,
-            relation=relation,
-            load_all=load_all)
-
-    @classmethod
-    def build_many_to_many_filter(cls, model, name, relation):
-        return ManyToManyFilter(
-            model=model,
-            name=name,
-            relation=relation)
-
-    @classmethod
-    def build_filter(cls, model, name, field_name):
-        field = model.get_field(field_name)
-        if isinstance(field, StringField):
-            return StringFieldFilter(name=name, model=model, field_name=field_name)
-        return None
 
     @classmethod
     def build_rows(cls, items, max_rows, columns, entity_format=EntityFormat.MODEL):

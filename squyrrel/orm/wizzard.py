@@ -373,7 +373,7 @@ class QueryWizzard:
                                                                 select_fields=select_fields,
                                                                 from_clause=query.from_clause)
 
-        print(query)
+        # print(query)
 
         self.execute_query(query)
         data = self.db.fetchone()
@@ -423,8 +423,8 @@ class QueryWizzard:
         for filter_ in filters:
             if isinstance(filter_, (ManyToOneFilter, ManyToManyFilter)):
                 filter_.entities = list()
-                if filter_.id_values:
-                    for id_value in filter_.id_values:
+                if filter_.value:
+                    for id_value in filter_.value:
                         filter_.entities.append(
                             self.get_by_id(model=filter_.relation.foreign_model,
                                            id=id_value, disable_relations=True)

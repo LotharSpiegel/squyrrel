@@ -20,6 +20,19 @@ class FieldFilter:
         else:
             return self.model.name()
 
+    @property
+    def value(self):
+        return self._value
+
+    def to_dict(self):
+        data = {
+            'name': self.name,
+            'value': self.value,
+            'description': self.description,
+            'negate': self.negate
+        }
+        return data
+
 
 class StringFieldFilter(FieldFilter):
 
@@ -46,6 +59,17 @@ class StringFieldFilter(FieldFilter):
     @property
     def value(self):
         return self._value
+
+    def to_dict(self):
+        return {
+            'name': self.name,
+            'fieldName': self.field_name,
+            'value': self.value,
+            'description': self.description,
+            'negate': self.negate
+        }
+
+    # todo: implement json.JSONEncoder instead
 
     def __str__(self):
         return f'{self.name} = {self.value}'
@@ -142,6 +166,15 @@ class ManyToOneFilter(RelationFilter):
     def relation(self):
         return self.model.get_many_to_one_relation(self._relation)
 
+    def to_dict(self):
+        return {
+            'name': self.name,
+            'relation': self.relation.name,
+            'value': self.value,
+            'description': self.description,
+            'negate': self.negate
+        }
+
 
 class ManyToManyFilter(RelationFilter):
     many_to_many = True # needed?
@@ -156,6 +189,15 @@ class ManyToManyFilter(RelationFilter):
     def relation(self):
         return self.model.get_many_to_many_relation(self._relation)
 
+    def to_dict(self):
+        return {
+            'name': self.name,
+            'relation': self.relation.name,
+            'value': self.value,
+            'description': self.description,
+            'negate': self.negate
+        }
+
 
 class OrFieldFilter(FieldFilter):
 
@@ -163,8 +205,17 @@ class OrFieldFilter(FieldFilter):
                  name: str,
                  model,
                  filters: List[FieldFilter],
+                 value = None,
                  description: str = None,
                  display_name: str = None,
                  negate: bool = False):
-        super().__init__(name, model, description=description, display_name=display_name, negate=negate)
+        super().__init__(name, model, value=value, description=description, display_name=display_name, negate=negate)
         self.filters = filters
+
+    def to_dict(self):
+        return {
+            'name': self.name,
+            'filters': [f.to_dict() for f in self.filters],
+            'description': self.description,
+            'negate': self.negate
+        }

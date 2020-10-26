@@ -4,7 +4,8 @@ from squyrrel.orm.field import ManyToMany, OneToMany
 from squyrrel.orm.exceptions import RelationNotFoundException
 from squyrrel.sql.join import OnJoinCondition, JoinType
 from squyrrel.sql.utils import sanitize_column_reference, listify
-from squyrrel.orm.filter import ManyToOneFilter, ManyToManyFilter, StringFieldFilter, OrFieldFilter, FieldFilter
+from squyrrel.orm.filter import ManyToOneFilter, ManyToManyFilter, StringFieldFilter, OrFieldFilter, FieldFilter, \
+    BooleanFieldFilter
 from squyrrel.sql.references import ColumnReference
 from squyrrel.orm.model import Model
 from squyrrel.sql.clauses import SelectClause, FromClause, WhereClause, Pagination, OrderByClause
@@ -127,6 +128,12 @@ class QueryBuilder:
                 ColumnReference(filter.key, table=self._model.table_name),
                 search_value=filter.value)
 
+    def boolean_filter_condition(self, filter: BooleanFieldFilter):
+        return Equals.column_as_parameter(
+            ColumnReference(filter.key, table=self._model.table_name),
+            value=filter.value
+        )
+
     def or_filter_condition(self, filter: OrFieldFilter):
         conditions = []
         for filter in filter.filters:
@@ -142,6 +149,8 @@ class QueryBuilder:
             return self.string_filter_condition(filter)
         elif isinstance(filter, OrFieldFilter):
             return self.or_filter_condition(filter)
+        elif isinstance(filter, BooleanFieldFilter):
+            return self.boolean_filter_condition(filter)
         return None
 
     def model_filters(self, filters: List[Type[FieldFilter]]):

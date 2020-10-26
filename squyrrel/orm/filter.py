@@ -1,6 +1,6 @@
 from typing import List
 
-from squyrrel.orm.field import StringField
+from squyrrel.orm.field import StringField, BooleanField
 
 
 class FieldFilter:
@@ -32,6 +32,51 @@ class FieldFilter:
             'negate': self.negate
         }
         return data
+
+
+# todo: refactor BooleanFieldFilter und StringFieldFilter: both descend from
+# new class FieldValueFilter
+
+
+class BooleanFieldFilter(FieldFilter):
+
+    def __init__(self, name, model, field_name, value=None, description: str = None, display_name: str = None):
+        if not hasattr(model, 'get_field'):
+            raise ValueError('Invalid model')
+        if not isinstance(model.get_field(field_name), BooleanField):
+            raise ValueError(f'Invalid field_name <{field_name}> for model {model.name()}')
+        super().__init__(name=name, model=model, value=value, description=description, display_name=display_name)
+        self.field_name = field_name
+
+    def clone(self, value):
+        return BooleanFieldFilter(
+            name=self.name,
+            model=self.model,
+            field_name=self.field_name,
+            value=value
+        )
+
+    @property
+    def key(self):
+        return self.field_name
+
+    @property
+    def value(self):
+        return self._value
+
+    def to_dict(self):
+        return {
+            'name': self.name,
+            'fieldName': self.field_name,
+            'value': self.value,
+            'description': self.description,
+            'negate': self.negate
+        }
+
+    # todo: implement json.JSONEncoder instead
+
+    def __str__(self):
+        return f'{self.name} = {self.value}'
 
 
 class StringFieldFilter(FieldFilter):

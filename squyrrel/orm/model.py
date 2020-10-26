@@ -26,8 +26,12 @@ class AbstractModel:
 
 class Model(AbstractModel):
     table_name = None
+    entities_key = None
+    entity_key = None
     default_orderby = None
     fulltext_search_columns = None
+    duplicate_search_columns = None
+    duplicate_exact_columns_matchers = None
 
     @classmethod
     def fields_dict(cls):

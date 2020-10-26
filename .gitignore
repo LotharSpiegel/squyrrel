@@ -106,3 +106,9 @@ venv.bak/
 res.txt
 todo.txt
 *.db
+
+# SonarScanner
+.scannerwork
+
+# IntelliJ
+.idea

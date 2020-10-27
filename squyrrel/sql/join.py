@@ -12,6 +12,7 @@ class JoinType(Enum):
     NATURAL_JOIN = 5
     CROSS_JOIN = 6
 
+
 join_type = [
     'invalid',
     'INNER JOIN',
@@ -22,7 +23,9 @@ join_type = [
     'CROSS JOIN',
 ]
 
+
 # todo remove table1 from JoinConstruct!
+
 
 class JoinConstruct(TableReference):
     def __init__(self, table1, join_type, table2, join_condition=None):
@@ -62,8 +65,10 @@ class JoinConstruct(TableReference):
         lines = self.as_lines()
         return '\n'.join(lines)
 
+
 class JoinCondition:
     pass
+
 
 class OnJoinCondition(JoinCondition):
     def __init__(self, boolean_expr):
@@ -72,6 +77,7 @@ class OnJoinCondition(JoinCondition):
     def __repr__(self):
         return 'ON {}'.format(repr(self.boolean_expr))
 
+
 class UsingJoinCondition(JoinCondition):
     def __init__(self, columns_list):
         self.columns_list = columns_list
@@ -79,13 +85,15 @@ class UsingJoinCondition(JoinCondition):
     def __repr__(self):
         return 'USING {}'.format(str(self.columns_list))
 
+
 class JoinChain:
     """A more complex sort table reference"""
+
     def __init__(self, first_table, joins):
         self.joins = joins
         self.joins[0].table1 = first_table
         for i, join in enumerate(joins[1:]):
-            join.table1 = None#joins[i-1]
+            join.table1 = None  # joins[i-1]
 
     def __str__(self):
         return 'JoinChain'

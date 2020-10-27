@@ -103,8 +103,9 @@ class GroupByClause:
     def __repr__(self):
         return f'GROUP BY {self.items_tostring()}'
 
-def get_clauses(self):
-        clauses = [self.select_clause, self.from_clause]
+    # whats that?
+    def get_clauses(self):
+            clauses = [self.select_clause, self.from_clause]
 
 
 class Pagination:

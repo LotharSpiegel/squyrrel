@@ -1,11 +1,25 @@
+from enum import Enum
 from typing import List
 
 from squyrrel.orm.field import StringField, BooleanField
 
 
+class JunctionType(Enum):
+    AND = 1
+    OR = 2
+
+    def __str__(self):
+        if self.value == JunctionType.AND.value:
+            return 'AND'
+        elif self.value == JunctionType.OR.value:
+            return 'OR'
+        return 'OR'
+
+
 class FieldFilter:
 
-    def __init__(self, name: str, model, value=None, display_name: str = None, description: str = None, negate: bool = False):
+    def __init__(self, name: str, model, value=None, display_name: str = None, description: str = None,
+                 negate: bool = False):
         self.name = name
         self.model = model
         self.description = description
@@ -81,12 +95,14 @@ class BooleanFieldFilter(FieldFilter):
 
 class StringFieldFilter(FieldFilter):
 
-    def __init__(self, name, model, field_name, value=None, description: str = None, display_name: str = None, negate: bool = False):
+    def __init__(self, name, model, field_name, value=None, description: str = None, display_name: str = None,
+                 negate: bool = False):
         if not hasattr(model, 'get_field'):
             raise ValueError('Invalid model')
         if not isinstance(model.get_field(field_name), StringField):
             raise ValueError(f'Invalid field_name <{field_name}> for model {model.name()}')
-        super().__init__(name=name, model=model, value=value, description=description, display_name=display_name, negate=negate)
+        super().__init__(name=name, model=model, value=value, description=description, display_name=display_name,
+                         negate=negate)
         self.field_name = field_name
 
     def clone(self, value):
@@ -95,7 +111,7 @@ class StringFieldFilter(FieldFilter):
             model=self.model,
             field_name=self.field_name,
             value=value
-    )
+        )
 
     @property
     def key(self):
@@ -120,7 +136,7 @@ class StringFieldFilter(FieldFilter):
         return f'{self.name} = {self.value}'
 
 
-#class CoalesceFilter(FieldFilter):
+# class CoalesceFilter(FieldFilter):
 #
 #    def __init__(self, name, model, description: str = None):
 #        super().__init__(name=name, model=model, description=description)
@@ -133,7 +149,6 @@ class StringFieldFilter(FieldFilter):
 
 
 class RelationFilter(FieldFilter):
-    conjunction = 'AND'
 
     def __init__(self,
                  name,
@@ -144,8 +159,9 @@ class RelationFilter(FieldFilter):
                  load_all=False,
                  description: str = None,
                  display_name: str = None,
-                 negate: bool = False):
-        # todo: entities?
+                 negate: bool = False,
+                 junction_type=JunctionType.OR):
+
         if isinstance(relation, str) and hasattr(model, 'get_relation'):
             self._relation = model.get_relation(relation)
         else:
@@ -156,17 +172,24 @@ class RelationFilter(FieldFilter):
                          description=description,
                          display_name=display_name if display_name is not None else self._relation.name,
                          negate=negate)
-        self._entities = None
+        # todo: refactor: put junction_type on M2MFilter and replace entities by entity for m21 filter
+        self._entities = entities
+        self._junction_type = junction_type
         self.load_all = load_all
         self.select_options = None
 
-    def clone(self, value, entities=None, relation=None):
+    # todo: make into classmethod
+    def clone(self, value, entities=None, relation=None, junction_type=JunctionType.OR):
         field_clone = self.__class__(
             name=self.name,
             model=self.model,
             value=value,
             relation=relation or self._relation,
-            load_all=self.load_all)
+            description=self.description,
+            display_name=self.display_name,
+            load_all=self.load_all,
+            junction_type=junction_type)
+        # todo: put this below on m21 resp. m2m and junction_type only on m2m filter
         # for attr in self.clone_attributes:
         #    setattr(field_clone, attr, getattr(self, attr))
         field_clone.entities = entities
@@ -183,6 +206,10 @@ class RelationFilter(FieldFilter):
         return str(self._relation)
 
     @property
+    def junction_type(self):
+        return self._junction_type
+
+    @property
     def entities(self):
         return self._entities
 
@@ -190,17 +217,8 @@ class RelationFilter(FieldFilter):
     def entities(self, value):
         self._entities = value
 
-    # todo: decomposition into simple manytoonefilter (only one entity)
-
-    def __str__(self):
-        if not self._entities:
-            return ''
-        return f' {self.conjunction} '.join([f'{self.name} = {entity}' for entity in self._entities])
-
 
 class ManyToOneFilter(RelationFilter):
-    many_to_one = True # needed?
-    conjunction = 'ODER' # todo: i18n
 
     @property
     def value(self):
@@ -220,10 +238,13 @@ class ManyToOneFilter(RelationFilter):
             'negate': self.negate
         }
 
+    def __str__(self):
+        if not self._entities:
+            return ''
+        return f' {str(self.junction_type)} '.join([f'{self.name} = {entity}' for entity in self._entities])
+
 
 class ManyToManyFilter(RelationFilter):
-    many_to_many = True # needed?
-    conjunction = 'UND' # todo: either and or or
 
     @property
     def value(self):
@@ -240,7 +261,8 @@ class ManyToManyFilter(RelationFilter):
             'relation': self.relation.name,
             'value': self.value,
             'description': self.description,
-            'negate': self.negate
+            'negate': self.negate,
+            'junctionType': str(self.junction_type)
         }
 
 
@@ -250,7 +272,7 @@ class OrFieldFilter(FieldFilter):
                  name: str,
                  model,
                  filters: List[FieldFilter],
-                 value = None,
+                 value=None,
                  description: str = None,
                  display_name: str = None,
                  negate: bool = False):

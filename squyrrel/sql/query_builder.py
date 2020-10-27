@@ -5,7 +5,7 @@ from squyrrel.orm.exceptions import RelationNotFoundException
 from squyrrel.sql.join import OnJoinCondition, JoinType
 from squyrrel.sql.utils import sanitize_column_reference, listify
 from squyrrel.orm.filter import ManyToOneFilter, ManyToManyFilter, StringFieldFilter, OrFieldFilter, FieldFilter, \
-    BooleanFieldFilter
+    BooleanFieldFilter, JunctionType
 from squyrrel.sql.references import ColumnReference
 from squyrrel.orm.model import Model
 from squyrrel.sql.clauses import SelectClause, FromClause, WhereClause, Pagination, OrderByClause
@@ -54,8 +54,7 @@ class QueryBuilder:
 
     def _get_model(self, model: Type[Model] or str):
         if self._qw is not None:
-            print('model:')
-            print(self._qw.get_model(model))
+            # print('model:', self._qw.get_model(model))
             return self._qw.get_model(model)
         return model
 
@@ -114,7 +113,14 @@ class QueryBuilder:
                 )
             )
         if conditions:
-            return Or.concat(conditions)
+            if len(conditions) > 1:
+                if filter.junction_type == JunctionType.AND:
+                    condition = And.concat(conditions)
+                else:
+                    condition = Or.concat(conditions)
+            else:
+                condition = conditions[0]
+            return condition
         return None
 
     def string_filter_condition(self, filter: StringFieldFilter):
@@ -157,8 +163,6 @@ class QueryBuilder:
         if filters is None:
             return self
         for filter in filters:
-            print('handle filter:')
-            print(filter)
             condition = self.filter_condition(filter)
             if condition is not None:
                 self._filter_conditions.append(condition)
@@ -240,7 +244,7 @@ class QueryBuilder:
     def _build_where_clause(self):
         if self._filter_conditions:
             self._where_clause = WhereClause(And.concat(self._filter_conditions))
-            print(self._where_clause)
+            # print(self._where_clause)
         else:
             self._where_clause = None
 

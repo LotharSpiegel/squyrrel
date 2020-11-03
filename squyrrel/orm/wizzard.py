@@ -1,15 +1,15 @@
+import sqlite3
 from typing import Type
 
 from squyrrel.db.connection import SqlDatabaseConnection
 
 from squyrrel.orm.entity_format import EntityFormat
 from squyrrel.orm.exceptions import *
-from squyrrel.orm.field import (ManyToOne, ManyToMany, StringField,
-                                DateTimeField, IntegerField)
+from squyrrel.orm.field import (ManyToOne, ManyToMany)
 from squyrrel.orm.filter import (ManyToOneFilter, ManyToManyFilter)
 from squyrrel.orm.model import Model
 from squyrrel.orm.signals import model_loaded_signal
-from squyrrel.orm.utils import sanitize_id_array, m2m_aggregation_subquery_alias
+from squyrrel.orm.utils import sanitize_id_array, m2m_aggregation_subquery_alias, field_to_sql_data_type
 from squyrrel.sql.query import (Query, UpdateQuery, InsertQuery,
                                 DeleteQuery, CreateTableQuery)
 from squyrrel.sql.clauses import *
@@ -468,7 +468,11 @@ class QueryWizzard:
             model=query.model, from_clause=from_clause, select_fields=select_fields)
 
         self.db.create_cursor()
-        self.execute_query(query)
+        try:
+            self.execute_query(query)
+        except (sqlite3.OperationalError, sqlite3.Error, sqlite3.Warning) as e:
+            print(query)
+            raise e
 
         res = self.db.fetchall()
         return self.build_get_all_response(res=res, include_count=include_count, query=query,
@@ -930,29 +934,29 @@ class QueryWizzard:
         if return_updated_object:
             return self.get_by_id(model, instance_id, entity_format=EntityFormat.JSON)
 
-    def field_to_sql_data_type(self, field):
-        # todo: dynamic method_name pattern
-        # at the moment only Sqlite...
-
-        if isinstance(field, StringField):
-            return 'TEXT'
-        if isinstance(field, IntegerField):
-            return 'INTEGER'
-        if isinstance(field, DateTimeField):
-            return 'TEXT'
-
+    # todo: put into CreateQueryBuilder
     def build_create_table_query(self, model, if_not_exists=False):
         model = self.get_model(model)
         columns = {}
         for field_name, field in model.fields():
             columns[field_name] = {
-                'data_type': self.field_to_sql_data_type(field),
+                'data_type': field_to_sql_data_type(field),
                 'primary_key': field.primary_key,
+                'foreign_key': field.foreign_key,
                 'not_null': field.not_null,
+                'default': field.default,
                 'unique': field.unique,
+                'collate': field.collate if hasattr(field, 'collate') else None
             }
-        query = CreateTableQuery.build(table=model.table_name, columns=columns, if_not_exists=if_not_exists)
+        query = CreateTableQuery.build(
+            table=model.table_name,
+            columns=columns,
+            if_not_exists=if_not_exists,
+            uniqueness_constraints=model.uniqueness_constraints
+        )
         return query
+
+    # def build_
 
     def create_table(self, model, if_not_exists=False):
         model = self.get_model(model)

@@ -1,14 +1,15 @@
 from datetime import datetime
+from enum import Enum
 
 from squyrrel.sql.table import TableName
 
 
 # todo: make Relation(Clonable)
 class Clonable:
-
     clone_attributes = []
 
     def clone(self, **kwargs):
+        # todo: deeply clone attributes?
         field_clone = self.__class__(**kwargs)
         for attr in self.clone_attributes:
             setattr(field_clone, attr, getattr(self, attr))
@@ -16,15 +17,16 @@ class Clonable:
 
 
 class Field(Clonable):
+    clone_attributes = ['_value', 'primary_key', 'not_null',
+                        'default', 'unique', 'foreign_key',
+                        'default_ascending', 'name']
 
-    clone_attributes = ['_value', 'primary_key', 'not_null', 'unique', 'foreign_key',
-                    'default_ascending', 'name']
-
-    def __init__(self, primary_key=False, not_null=False, unique=False,
-                 foreign_key=None, default_ascending=True, name=None):
+    def __init__(self, primary_key=False, not_null=False, default=None,
+                 unique=False, foreign_key=None, default_ascending=True, name=None):
         self._value = None
         self.primary_key = primary_key
         self.not_null = not_null
+        self.default = default
         self.unique = unique
         self.foreign_key = foreign_key
         self.default_ascending = default_ascending
@@ -55,7 +57,6 @@ class IntegerField(Field):
 
 
 class BooleanField(Field):
-
     clone_attributes = Field.clone_attributes + ['nice_true', 'nice_false']
 
     def __init__(self, *args, **kwargs):
@@ -69,7 +70,12 @@ class BooleanField(Field):
 
 
 class StringField(Field):
-    pass
+
+    def __init__(self, primary_key=False, not_null=False, default=None, unique=False,
+                 foreign_key=None, default_ascending=True, name=None, collate='NOCASE'):
+        super().__init__(primary_key=primary_key, not_null=not_null, default=default,  unique=unique,
+                         foreign_key=foreign_key, default_ascending=default_ascending, name=name)
+        self.collate = collate
 
 
 class CongregateField(Field):
@@ -80,14 +86,13 @@ class CongregateField(Field):
 
 
 class DateTimeField(Field):
-
     DEFAULT_TIMESTAMP_FORMAT = '%Y-%m-%d %H:%M:%S'
     DEFAULT_TIMESTAMP_PYTHON_FORMAT = '%Y-%m-%d %H:%M:%S.%f'
     DEFAULT_ANCIENT = '1970-1-1 00:00:00'
 
     def __init__(self, *args, **kwargs):
-        # actually, only needed for sqlite (which does not have a proper DateTime object, but uses Text for dates and times)
-        # therefore todo: make this into SqliteDateTimeField
+        # actually, only needed for sqlite (which does not have a proper DateTime object, but uses Text for dates and
+        # times) therefore todo: make this into SqliteDateTimeField
         self.timestamp_format = kwargs.pop('timestamp_format', self.DEFAULT_TIMESTAMP_FORMAT)
         self.ancient = kwargs.pop('ancient', self.DEFAULT_ANCIENT)
         super().__init__(*args, **kwargs)
@@ -120,9 +125,53 @@ class DateTimeField(Field):
 
 class ForeignKey:
 
-    def __init__(self, model, foreign_field=None):
+    class ReferentialAction(Enum):
+        SET_NULL = 1
+        SET_DEFAULT = 2
+        RESTRICT = 3
+        NO_ACTION = 4
+        CASCADE = 5
+
+        def __str__(self):
+            if self.value == self.SET_NULL.value:
+                return 'SET NULL'
+            if self.value == self.SET_DEFAULT.value:
+                return 'SET DEFAULT'
+            if self.value == self.RESTRICT.value:
+                return 'RESTRICT'
+            if self.value == self.NO_ACTION.value:
+                return 'NO ACTION'
+            if self.value == self.CASCADE.value:
+                return 'CASCADE'
+            return ''
+
+    def __init__(self, model, foreign_field, on_delete=None, on_update=None):
+
+        # todo: replace by setter which also sets self.table_name
         self.model = model
-        self.foreign_field = foreign_field
+        self.foreign_table_name = model.table_name
+
+        if foreign_field is None:
+            raise ValueError('Must specify a foreign_field for ForeignKey')
+        if not isinstance(foreign_field, str):
+            raise ValueError('foreign_field must be a str')
+
+        self.foreign_field_name = foreign_field
+        self.foreign_field = model.get_field(foreign_field)
+        if self.foreign_field is None:
+            raise ValueError(f'Did not find field {foreign_field} on model{model.name()}')
+         # todo: check if it has field_name -> get_field_name()
+
+        self.on_delete = on_delete
+        self.on_update = on_update
+
+    def __repr__(self):
+        referential_action = ''
+        if self.on_delete is not None:
+            referential_action = f' ON DELETE {str(self.on_delete)}'
+        if self.on_update is not None:
+            referential_action = f' ON UPDATE {str(self.on_update)}'
+        return f'REFERENCES {self.foreign_table_name}({self.foreign_field_name}){referential_action}'
 
 
 class Relation:
@@ -135,8 +184,8 @@ class Relation:
 class ManyToOne(Relation):
 
     def __init__(self, foreign_model, foreign_key_field,
-                foreign_model_key_field=None, update_search_column=None,
-                load_all=False, lazy_load=True, name=None):
+                 foreign_model_key_field=None, update_search_column=None,
+                 load_all=False, lazy_load=True, name=None):
         super().__init__(foreign_model=foreign_model, name=name)
         self.foreign_key_field = foreign_key_field
         if foreign_model_key_field is None:
@@ -179,8 +228,8 @@ class ManyToMany(Relation):
     """docstring for ManyToMany"""
 
     def __init__(self, foreign_model, junction_table,
-                foreign_key_field, lazy_load=True, aggregation=None,
-                name=None):
+                 foreign_key_field, lazy_load=True, aggregation=None,
+                 name=None):
         super().__init__(foreign_model=foreign_model, name=name)
         self.foreign_key_field = foreign_key_field
         self.junction_table = TableName.build(junction_table)
@@ -225,7 +274,7 @@ class ManyToMany(Relation):
     def __str__(self):
         if self.aggregation is not None:
             return str(self._aggregation_value) if self._aggregation_value is not None else ''
-        return '' # todo: represent entities, durch komma getrennt, same for OneToMany
+        return ''  # todo: represent entities, durch komma getrennt, same for OneToMany
 
 
 class OneToMany(Relation):
@@ -271,4 +320,4 @@ class OneToMany(Relation):
     def __str__(self):
         if self.aggregation is not None:
             return str(self._aggregation_value) if self._aggregation_value is not None else ''
-        return '' # todo: represent entities, durch komma getrennt
+        return ''  # todo: represent entities, durch komma getrennt

@@ -9,6 +9,7 @@ class FromClause:
     a derived table (such as a subquery) or a joni construct.
     Instead of a table name,there can be a comma separated list of multiple tabl (interpreted as cross join)
     """
+
     def __init__(self, table_reference):
         if isinstance(table_reference, str):
             self.table_reference = TableName(name=table_reference)
@@ -103,10 +104,6 @@ class GroupByClause:
     def __repr__(self):
         return f'GROUP BY {self.items_tostring()}'
 
-    # whats that?
-    def get_clauses(self):
-            clauses = [self.select_clause, self.from_clause]
-
 
 class Pagination:
 
@@ -121,7 +118,6 @@ class Pagination:
         if self.offset is None:
             return f'LIMIT {self.page_size}'
         return f'LIMIT {self.page_size} OFFSET {self.offset}'
-
 
 
 #### UPDATE STATEMENT ###

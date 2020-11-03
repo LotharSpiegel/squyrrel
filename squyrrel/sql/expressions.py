@@ -48,12 +48,17 @@ from squyrrel.sql.utils import sanitize_column_reference
 class ValueExpression:
 
     def __init__(self, value):
+        # todo: getter and setter for value
         self.value = value
 
     def __repr__(self):
+        if self.value is None:
+            return 'NULL'
         return repr(self.value)
 
     def __str__(self):
+        if self.value is None:
+            return 'NULL'
         return str(self.value)
 
 
@@ -90,9 +95,21 @@ ScalarExpression = ValueExpression
 
 class StringLiteral(Literal):
 
+    def __init__(self, value):
+        # if value is None:
+        #     value = ''
+        if value is not None:
+            value = value.replace("'", "''")
+        super().__init__(value)
+
     @classmethod
     def empty(cls):
         return StringLiteral('')
+
+    def __repr__(self):
+        if self.value is None:
+            return 'NULL'
+        return f"'{str(self.value)}'"
 
 
 class DateLiteral(StringLiteral):

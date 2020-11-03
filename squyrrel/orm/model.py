@@ -32,6 +32,7 @@ class Model(AbstractModel):
     fulltext_search_columns = None
     duplicate_search_columns = None
     duplicate_exact_columns_matchers = None
+    uniqueness_constraints = None
 
     @classmethod
     def fields_dict(cls):
@@ -50,12 +51,20 @@ class Model(AbstractModel):
         return cls.congregate_attr_dict().items()
 
     @classmethod
+    def id_field(cls) -> Field:
+        return getattr(cls, cls.id_field_name())
+
+    @classmethod
     def id_field_name(cls) -> str:
         # todo: handle more different cases
         for field_name, field in cls.fields():
             if field.primary_key:
                 return field_name
         raise Exception('Model has no primary_key field')
+
+    @classmethod
+    def id_column_reference(cls):
+        return ColumnReference(cls.id_field_name(), table=cls.table_name)
 
     @classmethod
     def relations_dict(cls):
@@ -197,9 +206,6 @@ class Model(AbstractModel):
 
     def instance_fields(self):
         return self.instance_fields_dict().items()
-
-    def id_field(self) -> Field:
-        return getattr(self, self.model.id_field_name())
 
     @property
     def id(self) -> str:

@@ -60,6 +60,12 @@ class TsvTableDocument:
     def get_columns(self):
         return self.column_headers
 
+    def get_column_index(self, column_name):
+        for i, col in enumerate(self.column_headers):
+            if col == column_name:
+                return i
+        return None
+
     def __getitem__(self, item):
         return self.rows[item]
 

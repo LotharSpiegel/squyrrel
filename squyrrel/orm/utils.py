@@ -1,3 +1,4 @@
+from squyrrel.orm.field import StringField, IntegerField, DateTimeField, BooleanField
 
 
 def extract_ids(string):
@@ -35,6 +36,20 @@ def sanitize_id_array(model, obj):
 
 def m2m_aggregation_subquery_alias(model, relation_name):
     return f'{model.table_name}_{relation_name}'
+
+
+def field_to_sql_data_type(field):
+    # todo: dynamic method_name pattern
+    # at the moment only Sqlite...
+
+    if isinstance(field, StringField):
+        return 'TEXT'
+    if isinstance(field, IntegerField):
+        return 'INTEGER'
+    if isinstance(field, DateTimeField):
+        return 'TEXT'
+    if isinstance(field, BooleanField):
+        return 'INTEGER'
 
 
 #def build_where_clause(model, filter_condition=None, **kwargs):

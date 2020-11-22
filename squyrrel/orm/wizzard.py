@@ -795,10 +795,8 @@ class QueryWizzard:
         model = self.get_model(model)
         self.delete_by_condition(model, Equals.id_as_parameter(model, instance_id), commit=commit)
 
-    def execute_create_queries(self, model, data, insert_query, m2m_insert_queries):
-        model = self.get_model(model)
-        self.execute_query(insert_query)
-        inserted_id = self.last_insert_rowid()
+    def get_m2m_insert_queries(self, model, instance_id, data):
+        m2m_insert_queries = []
         for column, value in data.items():
             field = model.get_field(column)
             # print('field:', field)
@@ -810,15 +808,13 @@ class QueryWizzard:
                     m2m_insert_queries.extend(
                         self.build_m2m_update_queries(
                             model=model,
-                            instance_id=inserted_id,
+                            instance_id=instance_id,
                             relation=relation,
                             current_ids=[],
                             new_ids=value
                         )
                     )
-        for query in m2m_insert_queries:
-            self.execute_query(query)
-        return inserted_id
+        return m2m_insert_queries
 
     def get_m21_value(self, relation, value):
         if relation.load_all:
@@ -830,11 +826,10 @@ class QueryWizzard:
                 filter_value=value
             )
 
-    def create(self, model, data, commit=True, return_created_object=True):
+    def insert_query(self, model, data):
+        # todo: refactor: put on merge query builder?
         model = self.get_model(model)
         inserts = dict()
-        m2m_insert_queries = []
-
         for column, value in data.items():
             field = model.get_field(column)
             if field is None:
@@ -858,12 +853,20 @@ class QueryWizzard:
                 #             alias=subquery_tablename
                 #         )
                 inserts[column] = value
-
-        insert_query = InsertQuery.build(
+        return InsertQuery.build(
             table=model.table_name, inserts=inserts)
 
+    def create(self, model, data, return_created_object=True):
+        model = self.get_model(model)
+        insert_query = self.insert_query(model, data)
+
         try:
-            inserted_id = self.execute_create_queries(model, data, insert_query, m2m_insert_queries)
+            self.execute_query(insert_query)
+            inserted_id = self.last_insert_rowid()
+
+            m2m_insert_queries = self.get_m2m_insert_queries(model, inserted_id, data)
+            for query in m2m_insert_queries:
+                self.execute_query(query)
         except Exception as exc:
             self.rollback()
             # todo: reraise special exception class
@@ -875,7 +878,7 @@ class QueryWizzard:
                 return self.get_by_id(model, inserted_id, entity_format=EntityFormat.JSON)
             return inserted_id
 
-    def update(self, model, filter_condition, instance_id, prev_data, data, commit=True, fetch_m21_values=False):
+    def update(self, model, filter_condition, instance_id, prev_data, data, fetch_m21_values=False):
         # todo only update changed data
         # i.e. difference data - instance.data
         # todo: what about commit?
@@ -933,7 +936,7 @@ class QueryWizzard:
         filter_condition = Equals.id_as_parameter(model, instance_id)
         # todo: add logging
         self.update(model=model, filter_condition=filter_condition, data=data, prev_data=prev_data,
-                    instance_id=instance_id, commit=commit)
+                    instance_id=instance_id)
         if return_updated_object:
             return self.get_by_id(model, instance_id, entity_format=EntityFormat.JSON)
 

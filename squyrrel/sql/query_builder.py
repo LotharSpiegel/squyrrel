@@ -29,6 +29,7 @@ class QueryBuilder:
         self._from_clause = FromClause(self._model.table_name)
 
         self._select_fields = None
+        self._exclude_fields = None
         self._select_clause = None
 
         self._filter_conditions = []
@@ -90,8 +91,9 @@ class QueryBuilder:
         query.model = self._model
         return query
 
-    def select(self, select_fields):
+    def select(self, select_fields, exclude_fields=None):
         self._select_fields = select_fields
+        self._exclude_fields = exclude_fields
         return self
 
     def many_to_one_filter_condition(self, filter: ManyToOneFilter):
@@ -272,6 +274,12 @@ class QueryBuilder:
             select_fields = self._model.build_select_fields()
         else:
             select_fields = self._select_fields
+
+        if self._exclude_fields is not None:
+            for to_exclude in self._exclude_fields:
+                if to_exclude in select_fields:
+                    select_fields.remove(to_exclude)
+
         self._select_fields = select_fields
 
         if not select_fields:

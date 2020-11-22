@@ -19,10 +19,11 @@ class Clonable:
 class Field(Clonable):
     clone_attributes = ['_value', 'primary_key', 'not_null',
                         'default', 'unique', 'foreign_key',
-                        'default_ascending', 'name']
+                        'default_ascending', 'name', 'never_select']
 
     def __init__(self, primary_key=False, not_null=False, default=None,
-                 unique=False, foreign_key=None, default_ascending=True, name=None):
+                 unique=False, foreign_key=None, default_ascending=True, name=None,
+                 never_select=False):
         self._value = None
         self.primary_key = primary_key
         self.not_null = not_null
@@ -31,6 +32,7 @@ class Field(Clonable):
         self.foreign_key = foreign_key
         self.default_ascending = default_ascending
         self.name = name
+        self.never_select = never_select
 
     @property
     def value(self):
@@ -72,9 +74,9 @@ class BooleanField(Field):
 class StringField(Field):
 
     def __init__(self, primary_key=False, not_null=False, default=None, unique=False,
-                 foreign_key=None, default_ascending=True, name=None, collate='NOCASE'):
+                 foreign_key=None, default_ascending=True, name=None, collate='NOCASE', never_select=False):
         super().__init__(primary_key=primary_key, not_null=not_null, default=default,  unique=unique,
-                         foreign_key=foreign_key, default_ascending=default_ascending, name=name)
+                         foreign_key=foreign_key, default_ascending=default_ascending, name=name, never_select=never_select)
         self.collate = collate
 
 

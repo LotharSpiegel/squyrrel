@@ -13,15 +13,22 @@ class AbstractModel:
         return {k: v for k, v in cls.__dict__.items() if not k.startswith('__')}
 
     @classmethod
-    def attr_dict(cls, field_cls, exclude_cls=CongregateField or None):
+    def attr_dict(cls, field_cls, exclude_cls=CongregateField or None, include_never_select_fields=False):
         if exclude_cls is not None:
-            return {k: v for k, v in cls.attributes().items() if
-                    isinstance(v, field_cls) and not isinstance(v, exclude_cls)}
-        return {k: v for k, v in cls.attributes().items() if isinstance(v, field_cls)}
+            if include_never_select_fields:
+                return {k: v for k, v in cls.attributes().items() if
+                        isinstance(v, field_cls) and not isinstance(v, exclude_cls)}
+            else:
+                return {k: v for k, v in cls.attributes().items() if
+                        isinstance(v, field_cls) and not isinstance(v, exclude_cls) and not v.never_select}
+        if include_never_select_fields:
+            return {k: v for k, v in cls.attributes().items() if isinstance(v, field_cls)}
+        else:
+            return {k: v for k, v in cls.attributes().items() if isinstance(v, field_cls) and not v.never_select}
 
     @classmethod
-    def congregate_attr_dict(cls):
-        return cls.attr_dict(field_cls=CongregateField, exclude_cls=None)
+    def congregate_attr_dict(cls, include_never_select_fields=False):
+        return cls.attr_dict(field_cls=CongregateField, exclude_cls=None, include_never_select_fields=include_never_select_fields)
 
 
 class Model(AbstractModel):
@@ -35,12 +42,12 @@ class Model(AbstractModel):
     uniqueness_constraints = None
 
     @classmethod
-    def fields_dict(cls):
-        return cls.attr_dict(Field)
+    def fields_dict(cls, include_never_select_fields=False):
+        return cls.attr_dict(Field, include_never_select_fields=include_never_select_fields)
 
     @classmethod
-    def fields(cls):
-        return cls.fields_dict().items()
+    def fields(cls, include_never_select_fields=False):
+        return cls.fields_dict(include_never_select_fields=include_never_select_fields).items()
 
     @classmethod
     def build_select_fields(cls):

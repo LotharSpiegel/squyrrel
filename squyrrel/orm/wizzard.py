@@ -333,6 +333,7 @@ class QueryWizzard:
                   model,
                   id,
                   select_fields=None,
+                  exclude_fields=None,
                   m2m_options=None,
                   one_to_many_options=None,
                   raise_if_not_found=True,
@@ -346,6 +347,7 @@ class QueryWizzard:
         #                          NumericalLiteral(id))
         instance = self.get(model=model,
                             select_fields=select_fields,
+                            exclude_fields=exclude_fields,
                             filter_condition=filter_condition,
                             m2m_options=m2m_options,
                             one_to_many_options=one_to_many_options,
@@ -362,6 +364,7 @@ class QueryWizzard:
     def get(self,
             model: Type[Model] or str,
             select_fields=None,
+            exclude_fields=None,
             filter_condition=None,
             m2m_options=None,
             one_to_many_options=None,
@@ -370,7 +373,7 @@ class QueryWizzard:
             entity_format=EntityFormat.MODEL):
 
         query = QueryBuilder(model, self) \
-            .select(select_fields) \
+            .select(select_fields, exclude_fields) \
             .add_filter_condition(filter_condition) \
             .build()
 
@@ -938,7 +941,7 @@ class QueryWizzard:
     def build_create_table_query(self, model, if_not_exists=False):
         model = self.get_model(model)
         columns = {}
-        for field_name, field in model.fields():
+        for field_name, field in model.fields(include_never_select_fields=True):
             columns[field_name] = {
                 'data_type': field_to_sql_data_type(field),
                 'primary_key': field.primary_key,

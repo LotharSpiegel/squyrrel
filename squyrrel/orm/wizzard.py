@@ -856,27 +856,46 @@ class QueryWizzard:
         return InsertQuery.build(
             table=model.table_name, inserts=inserts)
 
-    def create(self, model, data, return_created_object=True):
+    def merge(self, model, new_instance_data, old_instance_ids, return_created_object=True):
+        model = self.get_model(model)
+        delete_queries = [DeleteQuery(model.table_name, Equals.id_as_parameter(model, instance_id)) for instance_id in old_instance_ids]
+        inserted_id = None
+        try:
+            for query in delete_queries:
+                self.execute_query(query)
+            inserted_id = self.create(model, new_instance_data, return_created_object=False, commit=False)
+        except Exception as exc:
+            self.rollback()
+            raise exc
+        else:
+            self.commit()
+        if return_created_object and inserted_id:
+            return self.get_by_id(model, inserted_id, entity_format=EntityFormat.JSON)
+        return inserted_id
+
+    def execute_insert(self, model, data, insert_query):
+        self.execute_query(insert_query)
+        inserted_id = self.last_insert_rowid()
+        m2m_insert_queries = self.get_m2m_insert_queries(model, inserted_id, data)
+        for query in m2m_insert_queries:
+            self.execute_query(query)
+        return inserted_id
+
+    def create(self, model, data, return_created_object=True, commit=True):
         model = self.get_model(model)
         insert_query = self.insert_query(model, data)
-
         try:
-            self.execute_query(insert_query)
-            inserted_id = self.last_insert_rowid()
-
-            m2m_insert_queries = self.get_m2m_insert_queries(model, inserted_id, data)
-            for query in m2m_insert_queries:
-                self.execute_query(query)
+            inserted_id = self.execute_insert(model, data, insert_query)
         except Exception as exc:
             self.rollback()
             # todo: reraise special exception class
             raise exc
         else:
-            self.commit()
-
-            if return_created_object:
-                return self.get_by_id(model, inserted_id, entity_format=EntityFormat.JSON)
-            return inserted_id
+            if commit:
+                self.commit()
+        if return_created_object:
+            return self.get_by_id(model, inserted_id, entity_format=EntityFormat.JSON)
+        return inserted_id
 
     def update(self, model, filter_condition, instance_id, prev_data, data, fetch_m21_values=False):
         # todo only update changed data

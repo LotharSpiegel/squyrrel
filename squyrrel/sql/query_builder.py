@@ -92,6 +92,8 @@ class QueryBuilder:
         return query
 
     def select(self, select_fields, exclude_fields=None):
+        if select_fields is not None and not isinstance(select_fields, (list, tuple)):
+            raise ValueError('Please use a list or tuple as first argument of QueryBuilder.select()')
         self._select_fields = select_fields
         self._exclude_fields = exclude_fields
         return self

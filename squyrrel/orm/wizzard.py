@@ -2,10 +2,9 @@ import sqlite3
 from typing import Type
 
 from squyrrel.db.connection import SqlDatabaseConnection
-
 from squyrrel.orm.entity_format import EntityFormat
 from squyrrel.orm.exceptions import *
-from squyrrel.orm.field import (ManyToOne, ManyToMany)
+from squyrrel.orm.field import (ManyToOne, ManyToMany, OneToMany)
 from squyrrel.orm.filter import (ManyToOneFilter, ManyToManyFilter)
 from squyrrel.orm.model import Model
 from squyrrel.orm.signals import model_loaded_signal
@@ -94,7 +93,7 @@ class QueryWizzard:
         self.models[key] = model_cls_meta.class_reference
         # print('register_model:', key)
 
-    def get_model(self, model):
+    def get_model(self, model) -> Type[Model]:
         if isinstance(model, str):
             try:
                 return self.models[model]
@@ -255,9 +254,10 @@ class QueryWizzard:
             page_size = options.get('page_size', None)
             active_page = options.get('active_page', None)
 
-        filter_condition = Equals(ColumnReference(model.id_field_name(), table=model.table_name),
-                                  NumericalLiteral(instance_id))
-
+        # deprecated:
+        # filter_condition = Equals(ColumnReference(model.id_field_name(), table=model.table_name),
+        #                           NumericalLiteral(instance_id))
+        filter_condition = Equals.id_as_parameter(model, instance_id)
         return QueryBuilder(relation.foreign_model, self) \
             .add_filter_condition(filter_condition) \
             .orderby(orderby) \
@@ -343,8 +343,6 @@ class QueryWizzard:
 
         model = self.get_model(model)
         filter_condition = Equals.id_as_parameter(model, id)
-        # filter_condition = Equals(ColumnReference(model.id_field_name(), table=model.table_name),
-        #                          NumericalLiteral(id))
         instance = self.get(model=model,
                             select_fields=select_fields,
                             exclude_fields=exclude_fields,
@@ -608,6 +606,32 @@ class QueryWizzard:
                     results.append((i, data[i]))
         return results
 
+    def get_m2m_related_ids(self, model, instance_id, relation_name):
+        m2m_relation = model.get_many_to_many_relation(relation_name)
+        foreign_model = self.get_model(m2m_relation.foreign_model)
+        select_clause = SelectClause(ColumnReference(foreign_model.id_field_name(), table=m2m_relation.junction_table))
+        where_clause = Equals.column_as_parameter(ColumnReference(model.id_field_name(),
+                                                                  table=m2m_relation.junction_table), instance_id)
+        query = Query(select_clause=select_clause,
+                      from_clause=FromClause(m2m_relation.junction_table),
+                      where_clause=WhereClause(where_clause))
+        self.execute_query(query)
+        return self.db.fetchall()
+
+    def get_one_to_many_related_ids(self, model, instance_id, relation_name):
+        one_to_many_relation = model.get_one_to_many_relation(relation_name)
+        foreign_model = self.get_model(one_to_many_relation.foreign_model)
+        filter_condition = Equals.column_as_parameter(
+            ColumnReference(model.id_field_name(), table=foreign_model.table_name),
+            instance_id)
+        query = QueryBuilder(foreign_model, self) \
+            .select([foreign_model.id_field_name()]) \
+            .add_filter_condition(filter_condition) \
+            .build()
+        self.execute_query(query)
+        res = self.db.fetchall()
+        return [val for sublist in res for val in sublist]
+
     def count_m2m(self, entity, relation_name):
         model = entity.model
         relation = getattr(entity, relation_name)
@@ -618,11 +642,9 @@ class QueryWizzard:
             .add_filter_condition(filter_condition) \
             .orderby(None) \
             .build()
-
         self.include_many_to_many_join(model, relation, query.from_clause)
 
         self.execute_query(query)
-
         data = self.db.fetchone()
         return int(data[0])
 
@@ -642,7 +664,6 @@ class QueryWizzard:
                 .model_filters(filters) \
                 .fulltext_search(fulltext_search) \
                 .build()
-
         query.orderby_clause = None
 
         self.execute_query(query)
@@ -755,14 +776,11 @@ class QueryWizzard:
     def build_m2m_update_queries(self, model, instance_id, relation, current_ids, new_ids):
         model = self.get_model(model)
         foreign_model = self.get_model(relation.foreign_model)
-
         current_ids = set(sanitize_id_array(foreign_model, current_ids))
         new_ids = set(sanitize_id_array(foreign_model, new_ids))
         ids_to_add = new_ids - current_ids
         ids_to_remove = current_ids - new_ids
-
         queries = []
-
         id_field_name = model.id_field_name()
         foreign_id_field_name = foreign_model.id_field_name()
         table = relation.junction_table
@@ -784,6 +802,20 @@ class QueryWizzard:
         # todo: delete in one query with 'IN' expression
         return queries
 
+    def build_one_to_many_update_queries(self, model, instance_id, relation, related_ids):
+        model = self.get_model(model)
+        foreign_model = self.get_model(relation.foreign_model)
+        queries = []
+        updates = {model.id_field_name(): instance_id}
+        for related_id in related_ids:
+            filter_condition = Equals.id_as_parameter(foreign_model, related_id)
+            queries.append(
+                UpdateQuery.build(foreign_model,
+                                  filter_condition=filter_condition,
+                                  updates=updates)
+            )
+        return queries
+
     def delete_by_condition(self, model, filter_condition, commit=True):
         model = self.get_model(model)
         delete_query = DeleteQuery(model.table_name, filter_condition)
@@ -795,17 +827,16 @@ class QueryWizzard:
         model = self.get_model(model)
         self.delete_by_condition(model, Equals.id_as_parameter(model, instance_id), commit=commit)
 
-    def get_m2m_insert_queries(self, model, instance_id, data):
-        m2m_insert_queries = []
+    def get_related_to_many_insert_and_update_queries(self, model, instance_id, data):
+        related_queries = []
         for column, value in data.items():
             field = model.get_field(column)
-            # print('field:', field)
             if field is None:
                 if not value:
                     continue
                 relation = model.get_relation(column)
                 if isinstance(relation, ManyToMany):
-                    m2m_insert_queries.extend(
+                    related_queries.extend(
                         self.build_m2m_update_queries(
                             model=model,
                             instance_id=instance_id,
@@ -814,7 +845,16 @@ class QueryWizzard:
                             new_ids=value
                         )
                     )
-        return m2m_insert_queries
+                elif isinstance(relation, OneToMany):
+                    related_queries.extend(
+                        self.build_one_to_many_update_queries(
+                            model=model,
+                            instance_id=instance_id,
+                            relation=relation,
+                            related_ids=value
+                        )
+                    )
+        return related_queries
 
     def get_m21_value(self, relation, value):
         if relation.load_all:
@@ -858,27 +898,53 @@ class QueryWizzard:
 
     def merge(self, model, new_instance_data, old_instance_ids, return_created_object=True):
         model = self.get_model(model)
-        delete_queries = [DeleteQuery(model.table_name, Equals.id_as_parameter(model, instance_id)) for instance_id in old_instance_ids]
+
+        # update_one_to_many_queries = []
+        # for relation_name, relation in model.one_to_many_relations():
+        #    foreign_model = self.get_model(relation.foreign_model)
+        #    for old_instance_id in old_instance_ids:
+        #        filter_condition = Equals.column_as_parameter(
+        #            ColumnReference(model.id_field_name(), table=foreign_model.table_name),
+        #            old_instance_id)
+        #        updates = {model.id_field_name(): 'placeholder'}
+        #        update_one_to_many_queries.append(
+        #            UpdateQuery.build(foreign_model,
+        #                              filter_condition=filter_condition,
+        #                              updates=updates)
+        #        )
+
+        delete_queries = [DeleteQuery(model.table_name, Equals.id_as_parameter(model, instance_id)) for instance_id in
+                          old_instance_ids]
+
         inserted_id = None
         try:
             for query in delete_queries:
                 self.execute_query(query)
             inserted_id = self.create(model, new_instance_data, return_created_object=False, commit=False)
+            # for query in update_one_to_many_queries:
+            #    query.set_clause.updates[0].rhs.value = inserted_id
+            #    print('update_query:')
+            #    print(query)
+            #    self.execute_query(query)
         except Exception as exc:
             self.rollback()
             raise exc
         else:
             self.commit()
-        if return_created_object and inserted_id:
+        if return_created_object and inserted_id is not None:
             return self.get_by_id(model, inserted_id, entity_format=EntityFormat.JSON)
         return inserted_id
 
     def execute_insert(self, model, data, insert_query):
         self.execute_query(insert_query)
         inserted_id = self.last_insert_rowid()
-        m2m_insert_queries = self.get_m2m_insert_queries(model, inserted_id, data)
-        for query in m2m_insert_queries:
+
+        related_queries = self.get_related_to_many_insert_and_update_queries(model, inserted_id, data)
+        print('related_queries')
+        print(related_queries)
+        for query in related_queries:
             self.execute_query(query)
+
         return inserted_id
 
     def create(self, model, data, return_created_object=True, commit=True):
@@ -928,7 +994,6 @@ class QueryWizzard:
             elif isinstance(relation, ManyToMany):
                 # compare difference
                 # if instance is None, needs to be loaded first..
-
                 m2m_update_queries.extend(
                     self.build_m2m_update_queries(
                         model=model,

@@ -308,7 +308,7 @@ class UpdateQuery:
     WHERE condition;
     """
 
-    def __init__(self, update_clause, set_clause, where_clause):
+    def __init__(self, update_clause: UpdateClause, set_clause: SetClause, where_clause: WhereClause):
         self.update_clause = update_clause
         self.set_clause = set_clause
         self.where_clause = where_clause

@@ -114,7 +114,7 @@ class Model(AbstractModel):
         return cls.relations_dict().get(relation_name)
 
     @classmethod
-    def get_many_to_one_relation(cls, relation):
+    def get_many_to_one_relation(cls, relation) -> ManyToOne:
         if isinstance(relation, str):
             try:
                 return cls.many_to_one_dict().get(relation)
@@ -123,10 +123,19 @@ class Model(AbstractModel):
         return relation
 
     @classmethod
-    def get_many_to_many_relation(cls, relation):
+    def get_many_to_many_relation(cls, relation) -> ManyToMany:
         if isinstance(relation, str):
             try:
                 return cls.many_to_many_dict().get(relation)
+            except KeyError:
+                raise Exception(f'Did not find relation {relation} on model {cls.name()}!')
+        return relation
+
+    @classmethod
+    def get_one_to_many_relation(cls, relation) -> OneToMany:
+        if isinstance(relation, str):
+            try:
+                return cls.one_to_many_dict().get(relation)
             except KeyError:
                 raise Exception(f'Did not find relation {relation} on model {cls.name()}!')
         return relation

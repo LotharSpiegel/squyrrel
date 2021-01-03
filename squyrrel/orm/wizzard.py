@@ -941,7 +941,9 @@ class QueryWizzard:
 
         related_queries = self.get_related_to_many_insert_and_update_queries(model, inserted_id, data)
         print('related_queries')
-        print(related_queries)
+        for query in related_queries:
+            print(query)
+            print(query.params)
         for query in related_queries:
             self.execute_query(query)
 

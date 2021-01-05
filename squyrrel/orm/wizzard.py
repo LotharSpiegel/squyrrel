@@ -430,7 +430,6 @@ class QueryWizzard:
             entity = self.build_entity(
                 query.model,
                 data,
-                select_fields,
                 m2m_aggregations=m2m_aggregations
             )
             # self.handle_one_to_many(entity, one_to_many_options=one_to_many_options)
@@ -507,7 +506,6 @@ class QueryWizzard:
                     self.build_entity(
                         model,
                         data,
-                        select_fields,
                         m2m_aggregations=m2m_aggregations)
                 )
         elif entity_format == EntityFormat.JSON:
@@ -521,26 +519,6 @@ class QueryWizzard:
             count = self.count(model, query=query)
             return {'entities': entities, 'count': count}
         return entities
-
-    def add_m2m_aggregations_to_entity(self, entity, m2m_aggregations, data, select_fields):
-        # todo: delete this, before it was:
-        # for aggr in m2m_aggregations:
-        #     relation_name = aggr[0]
-        #     aggr_column_ref = aggr[1]
-        for relation_name, aggr_column_ref in m2m_aggregations:
-            relation = getattr(entity, relation_name)
-            # todo: enable to also check equality of whole ColumnReference (column_name is here: 'aggr'), not only table_name
-            results = self.get_data(data, select_fields, aggr_column_ref)
-            if results:
-                first_result = results[0]
-                relation.aggregation_value = first_result[1]
-
-    # todo: make to instance or class method of Model?
-    def add_congregation_values_to_entity(self, entity, data, select_fields):
-        congregate_fields = entity.congregate_fields()
-        for congregate_field_name, congregate_field in congregate_fields:
-            instance_congregate_field = getattr(entity, congregate_field_name)
-            instance_congregate_field.value = getattr(entity, congregate_field.attr)
 
     def model_instance_dict(self, model, data, entity_format, select_fields,
                             many_to_one_relations, one_to_many_aggregations,
@@ -581,14 +559,9 @@ class QueryWizzard:
 
         return kwargs
 
-    def build_entity(self, model, data, select_fields, m2m_aggregations=None):
+    def build_entity(self, model, data, m2m_aggregations=None):
         model = self.get_model(model)
-        entity = model(**data)
-        # TODO: REPAIR m2m aggregations
-        # self.add_m2m_aggregations_to_entity(entity, m2m_aggregations, data, select_fields)
-        # todo: refactor to put data inside model() constructor
-        self.add_congregation_values_to_entity(entity, data, select_fields)
-        return entity
+        return model(m2m_aggregations=m2m_aggregations, **data)
 
     # todo: make static or utility
     def get_data(self, data, select_fields, reference):

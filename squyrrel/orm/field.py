@@ -23,7 +23,7 @@ class Field(Clonable):
 
     def __init__(self, primary_key=False, not_null=False, default=None,
                  unique=False, foreign_key=None, default_ascending=True, name=None,
-                 never_select=False):
+                 never_select=False, print_options=None):
         self._value = None
         self.primary_key = primary_key
         self.not_null = not_null
@@ -33,6 +33,7 @@ class Field(Clonable):
         self.default_ascending = default_ascending
         self.name = name
         self.never_select = never_select
+        self.print_options = print_options
 
     @property
     def value(self):
@@ -73,14 +74,18 @@ class BooleanField(Field):
 
 class StringField(Field):
 
-    def __init__(self, primary_key=False, not_null=False, default=None, unique=False,
-                 foreign_key=None, default_ascending=True, name=None, collate='NOCASE', never_select=False):
-        super().__init__(primary_key=primary_key, not_null=not_null, default=default,  unique=unique,
-                         foreign_key=foreign_key, default_ascending=default_ascending, name=name, never_select=never_select)
-        self.collate = collate
+    # todo: replace by **kwargs
+    #def __init__(self, primary_key=False, not_null=False, default=None, unique=False,
+    #             foreign_key=None, default_ascending=True, name=None, collate='NOCASE', never_select=False, print_options=None):
+    #    super().__init__(primary_key=primary_key, not_null=not_null, default=default,  unique=unique,
+    #                     foreign_key=foreign_key, default_ascending=default_ascending, name=name, never_select=never_select, print_options=print_options)
+    def __init__(self, *args, **kwargs):
+        self.collate = kwargs.pop('collate', None)
+        super().__init__(*args, **kwargs)
 
 
 class CongregateField(Field):
+    clone_attributes = Field.clone_attributes + ['attr']
 
     def __init__(self, *args, **kwargs):
         self.attr = kwargs.pop('attr', None)
@@ -178,17 +183,18 @@ class ForeignKey:
 
 class Relation:
 
-    def __init__(self, foreign_model, name=None):
+    def __init__(self, foreign_model, name=None, print_options=None):
         self.foreign_model = foreign_model
         self.name = name
+        self.print_options = print_options
 
 
 class ManyToOne(Relation):
 
     def __init__(self, foreign_model, foreign_key_field,
                  foreign_model_key_field=None, update_search_column=None,
-                 load_all=False, lazy_load=True, name=None):
-        super().__init__(foreign_model=foreign_model, name=name)
+                 load_all=False, lazy_load=True, name=None, print_options=None):
+        super().__init__(foreign_model=foreign_model, name=name, print_options=print_options)
         self.foreign_key_field = foreign_key_field
         if foreign_model_key_field is None:
             self.foreign_model_key_field = self.foreign_key_field
@@ -231,8 +237,8 @@ class ManyToMany(Relation):
 
     def __init__(self, foreign_model, junction_table,
                  foreign_key_field, lazy_load=True, aggregation=None,
-                 name=None):
-        super().__init__(foreign_model=foreign_model, name=name)
+                 name=None, print_options=None):
+        super().__init__(foreign_model=foreign_model, name=name, print_options=print_options)
         self.foreign_key_field = foreign_key_field
         self.junction_table = TableName.build(junction_table)
         self.lazy_load = lazy_load
@@ -281,8 +287,8 @@ class ManyToMany(Relation):
 
 class OneToMany(Relation):
 
-    def __init__(self, foreign_model, lazy_load=True, aggregation=None, name=None):
-        super().__init__(foreign_model=foreign_model, name=name)
+    def __init__(self, foreign_model, lazy_load=True, aggregation=None, name=None, print_options=None):
+        super().__init__(foreign_model=foreign_model, name=name, print_options=print_options)
         self.lazy_load = lazy_load
         self.aggregation = aggregation
         self._entities = None

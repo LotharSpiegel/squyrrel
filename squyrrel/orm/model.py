@@ -40,6 +40,7 @@ class Model(AbstractModel):
     duplicate_search_columns = None
     duplicate_exact_columns_matchers = None
     uniqueness_constraints = None
+    column_names = None
 
     @classmethod
     def fields_dict(cls, include_never_select_fields=False):
@@ -169,12 +170,15 @@ class Model(AbstractModel):
                 return relation_name, relation
         raise RelationNotFoundException(fk_id_column=fk_id_column)
 
-    def __init__(self, **kwargs):
+    def __init__(self, m2m_aggregations=None, **kwargs):
         self.init_fields(**kwargs)
-        self.init_congregate_fields(**kwargs)
+        self.init_congregate_fields()
         self.init_many_to_one_relations(**kwargs)
         self.init_one_to_many_relations(**kwargs)
-        self.init_many_to_many_relations(**kwargs)
+        self.init_many_to_many_relations()
+
+        self.init_many_to_many_aggregation_values(m2m_aggregations=m2m_aggregations, **kwargs)
+        self.init_congregate_field_values()
 
     # todo: refactor the following init_ methods
 
@@ -184,11 +188,15 @@ class Model(AbstractModel):
             instance_field.value = kwargs.get(field_name, None)
             setattr(self, field_name, instance_field)
 
-    def init_congregate_fields(self, **kwargs):
+    def init_congregate_fields(self):
         for field_name, class_field in self.model.congregate_fields():
             instance_field = class_field.clone()
-            instance_field.value = kwargs.get(field_name, None)
             setattr(self, field_name, instance_field)
+
+    def init_congregate_field_values(self):
+        for field_name, class_field in self.model.congregate_fields():
+            instance_field = getattr(self, field_name)
+            instance_field.value = self.get_value(instance_field.attr)
 
     def init_many_to_one_relations(self, **kwargs):
         for relation_name, relation in self.model.many_to_one_relations():
@@ -205,10 +213,17 @@ class Model(AbstractModel):
                 instance_relation.aggregation_value = kwargs.get(relation_name, None)
                 setattr(self, relation_name, instance_relation)
 
-    def init_many_to_many_relations(self, **kwargs):
+    def init_many_to_many_relations(self):
         for relation_name, relation in self.model.many_to_many_relations():
             instance_relation = relation.clone()
             setattr(self, relation_name, instance_relation)
+
+    def init_many_to_many_aggregation_values(self, m2m_aggregations, **kwargs):
+        if m2m_aggregations is None: return
+        for relation_name, aggr_column_ref in m2m_aggregations:
+            # todo check against m2m relations on self
+            relation = getattr(self, relation_name)
+            relation.aggregation_value = kwargs[relation_name]
 
     def instance_fields_dict(self):
         fields = {}
@@ -237,6 +252,20 @@ class Model(AbstractModel):
     def data(self):
         return self.as_json()
 
+    def get_value(self, attribute):
+        if '.' in attribute:
+            related_entity_name, attr = attribute.split('.')
+            try:
+                related_entity = getattr(self, related_entity_name)
+            except AttributeError:
+                raise AttributeError(f'Model {self.model.name()} has no related entity {related_entity_name}')
+            return related_entity.get_value(attr)
+        try:
+            attr = getattr(self, attribute)
+        except AttributeError:
+            raise AttributeError(f'Attribute {attribute} does not exist on model {self.model.name()}')
+        return str(attr)
+
     @classmethod
     def model_data(cls):
         json_dict = {}
@@ -249,18 +278,17 @@ class Model(AbstractModel):
         rows = []
         if max_rows is None:
             max_rows = len(items)
-        print('build_rows:', max_rows)
+        # print('build_rows:', max_rows)
         if entity_format == EntityFormat.MODEL:
             for item in items[:max_rows]:
                 row = []
                 for col in columns:
-                    column = getattr(item, col)
-                    val = str(column)
-                    # if isinstance(column, CongregateField):
+                    value = item.get_value(attribute=col)
+                    # if isinstance(column, ):
                     #     val = column.value
                     # else:
                     #     val = str(column)
-                    row.append(val)
+                    row.append(value)
                 rows.append(row)
         elif entity_format == EntityFormat.JSON:
             for item in items[:max_rows]:
@@ -280,15 +308,35 @@ class Model(AbstractModel):
 
     @classmethod
     def get_column_name(cls, column):
-        col = getattr(cls, column)
+        if '.' in column:
+            if cls.column_names is None:
+                raise AttributeError(f'Model {cls.name()} has no column_names map configured!')
+            try:
+                return cls.column_names[column]
+            except KeyError:
+                raise KeyError(f'The column {column} is missing in {cls.name()}.column_names!')
+        field = getattr(cls, column)
         try:
-            return col.name
+            return field.name
         except AttributeError:
             return column
 
     @classmethod
     def build_column_names(cls, columns):
         return [cls.get_column_name(column) for column in columns]
+
+    @classmethod
+    def get_print_column_options(cls, columns):
+        print_options = []
+        for column in columns:
+            try:
+                field = getattr(cls, column)
+            except AttributeError:
+                print_options.append(None)
+            else:
+                print_options.append(field.print_options)
+
+        return print_options
 
     @classmethod
     def filters(cls):
